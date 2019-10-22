@@ -106,7 +106,7 @@ namespace Rappen.XTB.PAC.Helpers
         public PACRule() { }
         public override string ToString()
         {
-            return Code;
+            return string.IsNullOrWhiteSpace(Summary) ? Code : Summary;
         }
     }
 }
