@@ -3,7 +3,6 @@ using Microsoft.Crm.Sdk.Messages;
 using Microsoft.Xrm.Sdk;
 using Rappen.XTB.PAC.Helpers;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
@@ -17,17 +16,22 @@ namespace Rappen.XTB.PAC
 {
     public partial class PAC : PluginControlBase
     {
+        #region Private Fields
+
         private HttpClient client;
+
+        #endregion Private Fields
+
+        #region Public Constructors
 
         public PAC()
         {
             InitializeComponent();
         }
 
-        private void PAC_Load(object sender, EventArgs e)
-        {
-            //txtTenant_TextChanged(null, null);
-        }
+        #endregion Public Constructors
+
+        #region Public Methods
 
         public override void UpdateConnection(IOrganizationService newService, ConnectionDetail detail, string actionName, object parameter)
         {
@@ -36,37 +40,23 @@ namespace Rappen.XTB.PAC
             Enable(true);
         }
 
+        #endregion Public Methods
+
+        #region Private event handlers
+
+        private void btnAnalyze_Click(object sender, EventArgs e)
+        {
+            Analyze(linkBlob.Text);
+        }
+
         private void btnConnectPAC_Click(object sender, EventArgs e)
         {
             ConnectPAChecker();
         }
 
-        private void cbRuleset_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (cbRuleset.SelectedItem != null)
-            {
-                LoadRuleSetSelections(cbRuleset.SelectedItem as PACRuleSet);
-            }
-        }
-
-        private void cdSolutions_SelectedItemChanged(object sender, EventArgs e)
-        {
-            Enable(true);
-        }
-
         private void btnExport_Click(object sender, EventArgs e)
         {
             Export(cbSolutions.SelectedSolution);
-        }
-
-        private void btnUpload_Click(object sender, EventArgs e)
-        {
-            Upload();
-        }
-
-        private void btnAnalyze_Click(object sender, EventArgs e)
-        {
-            Analyze(linkBlob.Text);
         }
 
         private void btnOpenFile_Click(object sender, EventArgs e)
@@ -82,37 +72,22 @@ namespace Rappen.XTB.PAC
             Enable(true);
         }
 
-        private void lvRules_SelectedIndexChanged(object sender, EventArgs e)
+        private void btnUpload_Click(object sender, EventArgs e)
         {
-            if (lvRules.SelectedItems.Count > 0 && lvRules.SelectedItems[0].Tag is PACRule rule)
+            Upload();
+        }
+
+        private void cbRuleset_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cbRuleset.SelectedItem != null)
             {
-                txtRuleDescr.Text = rule.Description;
-            }
-            else
-            {
-                txtRuleDescr.Text = "";
+                LoadRuleSetSelections(cbRuleset.SelectedItem as PACRuleSet);
             }
         }
 
-        private void txtTenant_TextChanged(object sender, EventArgs e)
+        private void cdSolutions_SelectedItemChanged(object sender, EventArgs e)
         {
-            if (Guid.TryParse(txtTenantId.Text, out Guid t) && Guid.TryParse(txtClientId.Text, out Guid c) && !string.IsNullOrWhiteSpace(txtClientSec.Text))
-            {
-                ConnectPAChecker();
-            }
-        }
-
-        private void lvRules_ItemChecked(object sender, ItemCheckedEventArgs e)
-        {
-            UpdateRuleCounts();
-        }
-
-        private void rbGroupBy_CheckedChanged(object sender, EventArgs e)
-        {
-            if (((RadioButton)sender).Checked)
-            {
-                LoadRules();
-            }
+            Enable(true);
         }
 
         private void chkAllRules_CheckedChanged(object sender, EventArgs e)
@@ -128,16 +103,69 @@ namespace Rappen.XTB.PAC
             Process.Start(linkBlob.Text);
         }
 
-        private void Enable(bool enable)
+        private void lvRules_ItemChecked(object sender, ItemCheckedEventArgs e)
         {
-            Enabled = enable;
-            btnConnectPAC.Enabled = enable && Guid.TryParse(txtTenantId.Text, out Guid t) && Guid.TryParse(txtClientId.Text, out Guid c) && !string.IsNullOrWhiteSpace(txtClientSec.Text);
-            cbRuleset.Enabled = enable && client != null && cbRuleset.Items.Count > 0;
-            cbSolutions.Enabled = enable && Service != null;
-            btnExport.Enabled = enable && cbSolutions.SelectedSolution is Entity solution
-                    && (solution["ismanaged"] as bool? == false);
-            btnUpload.Enabled = enable && client != null && File.Exists(txtFilename.Text);
-            btnAnalyze.Enabled = enable && client != null && !string.IsNullOrEmpty(linkBlob.Text);
+            UpdateRuleCounts();
+        }
+
+        private void lvRules_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (lvRules.SelectedItems.Count > 0 && lvRules.SelectedItems[0].Tag is PACRule rule)
+            {
+                txtRuleDescr.Text = rule.Description;
+            }
+            else
+            {
+                txtRuleDescr.Text = "";
+            }
+        }
+
+        private void PAC_Load(object sender, EventArgs e)
+        {
+            //txtTenant_TextChanged(null, null);
+        }
+        private void rbGroupBy_CheckedChanged(object sender, EventArgs e)
+        {
+            if (((RadioButton)sender).Checked)
+            {
+                LoadRules();
+            }
+        }
+
+        private void txtTenant_TextChanged(object sender, EventArgs e)
+        {
+            if (Guid.TryParse(txtTenantId.Text, out Guid t) && Guid.TryParse(txtClientId.Text, out Guid c) && !string.IsNullOrWhiteSpace(txtClientSec.Text))
+            {
+                ConnectPAChecker();
+            }
+        }
+
+        #endregion Private event handlers
+
+        #region Private Methods
+
+        private void Analyze(string blobfile)
+        {
+            Enable(false);
+            WorkAsync(new WorkAsyncInfo
+            {
+                Message = "Initiating analysis",
+                Work = (worker, args) =>
+                {
+                },
+                PostWorkCallBack = (args) =>
+                {
+                    if (args.Error != null)
+                    {
+                        MessageBox.Show(args.Error.Message);
+                    }
+                    else //if (args.Result is string bloburl)
+                    {
+                        txtAnalysis.Text = "\n\n    ....analyzing.....";
+                    }
+                    Enable(true);
+                }
+            });
         }
 
         private void ConnectPAChecker()
@@ -178,19 +206,35 @@ namespace Rappen.XTB.PAC
             });
         }
 
-        private void LoadRuleSets()
+        private void Enable(bool enable)
+        {
+            Enabled = enable;
+            btnConnectPAC.Enabled = enable && Guid.TryParse(txtTenantId.Text, out Guid t) && Guid.TryParse(txtClientId.Text, out Guid c) && !string.IsNullOrWhiteSpace(txtClientSec.Text);
+            cbRuleset.Enabled = enable && client != null && cbRuleset.Items.Count > 0;
+            cbSolutions.Enabled = enable && Service != null;
+            btnExport.Enabled = enable && cbSolutions.SelectedSolution is Entity solution
+                    && (solution["ismanaged"] as bool? == false);
+            btnUpload.Enabled = enable && client != null && File.Exists(txtFilename.Text);
+            btnAnalyze.Enabled = enable && client != null && !string.IsNullOrEmpty(linkBlob.Text);
+        }
+
+        private void Export(Entity solution)
         {
             Enable(false);
-            cbRuleset.Items.Clear();
-            cbRuleset.Items.Add("");
-            WorkAsync(new WorkAsyncInfo()
+            var solname = solution["uniquename"].ToString();
+            WorkAsync(new WorkAsyncInfo
             {
-                Message = "Loading rulesets",
+                Message = "Exporting",
+                AsyncArgument = solname,
                 Work = (worker, args) =>
                 {
-                    var rulesets = client.Get("ruleset");
-                    var jss = new JavaScriptSerializer();
-                    args.Result = jss.Deserialize<PACRuleSet[]>(rulesets);
+                    var sol = args.Argument as string;
+                    var req = new ExportSolutionRequest
+                    {
+                        SolutionName = sol,
+                        Managed = false
+                    };
+                    args.Result = Service.Execute(req) as ExportSolutionResponse;
                 },
                 PostWorkCallBack = (args) =>
                 {
@@ -198,14 +242,37 @@ namespace Rappen.XTB.PAC
                     {
                         MessageBox.Show(args.Error.Message);
                     }
-                    else if (args.Result is PACRuleSet[] rulesetlist)
+                    else if (args.Result is ExportSolutionResponse resp)
                     {
-                        cbRuleset.Items.AddRange(rulesetlist);
-                        LoadRules();
+                        var exportXml = resp.ExportSolutionFile;
+                        var filename = Path.Combine(Paths.LogsPath, solname + ".zip");
+                        File.WriteAllBytes(filename, exportXml);
+                        txtFilename.Text = filename;
                     }
                     Enable(true);
                 }
             });
+        }
+
+        private ListViewGroup GetGroupForRule(PACRule rule)
+        {
+            var groupby = (rbGroupCategory.Checked ? $"Category: {rule.PrimaryCategory}" : $"Severity: {rule.Severity}");
+            ListViewGroup[] groups = new ListViewGroup[lvRules.Groups.Count];
+            lvRules.Groups.CopyTo(groups, 0);
+            var group = groups.FirstOrDefault(g => g.Header == groupby);
+            if (group == null)
+            {
+                group = lvRules.Groups.Add(groupby, groupby);
+                group.HeaderAlignment = HorizontalAlignment.Center;
+            }
+            return group;
+        }
+
+        private ListViewItem GetListViewItemByRule(PACRule rule)
+        {
+            ListViewItem[] items = new ListViewItem[lvRules.Items.Count];
+            lvRules.Items.CopyTo(items, 0);
+            return items.FirstOrDefault(i => i.Tag is PACRule && ((PACRule)i.Tag).Code == rule.Code);
         }
 
         private void LoadRules()
@@ -235,6 +302,36 @@ namespace Rappen.XTB.PAC
                         {
                             LoadRuleSetSelections(cbRuleset.SelectedItem as PACRuleSet);
                         }
+                    }
+                    Enable(true);
+                }
+            });
+        }
+
+        private void LoadRuleSets()
+        {
+            Enable(false);
+            cbRuleset.Items.Clear();
+            cbRuleset.Items.Add("");
+            WorkAsync(new WorkAsyncInfo()
+            {
+                Message = "Loading rulesets",
+                Work = (worker, args) =>
+                {
+                    var rulesets = client.Get("ruleset");
+                    var jss = new JavaScriptSerializer();
+                    args.Result = jss.Deserialize<PACRuleSet[]>(rulesets);
+                },
+                PostWorkCallBack = (args) =>
+                {
+                    if (args.Error != null)
+                    {
+                        MessageBox.Show(args.Error.Message);
+                    }
+                    else if (args.Result is PACRuleSet[] rulesetlist)
+                    {
+                        cbRuleset.Items.AddRange(rulesetlist);
+                        LoadRules();
                     }
                     Enable(true);
                 }
@@ -283,13 +380,6 @@ namespace Rappen.XTB.PAC
             });
         }
 
-        private ListViewItem GetListViewItemByRule(PACRule rule)
-        {
-            ListViewItem[] items = new ListViewItem[lvRules.Items.Count];
-            lvRules.Items.CopyTo(items, 0);
-            return items.FirstOrDefault(i => i.Tag is PACRule && ((PACRule)i.Tag).Code == rule.Code);
-        }
-
         private ListViewItem RuleToListItem(PACRule rule)
         {
             var group = GetGroupForRule(rule);
@@ -302,54 +392,9 @@ namespace Rappen.XTB.PAC
             return item;
         }
 
-        private ListViewGroup GetGroupForRule(PACRule rule)
+        private void UpdateRuleCounts()
         {
-            var groupby = (rbGroupCategory.Checked ? $"Category: {rule.PrimaryCategory}" : $"Severity: {rule.Severity}");
-            ListViewGroup[] groups = new ListViewGroup[lvRules.Groups.Count];
-            lvRules.Groups.CopyTo(groups, 0);
-            var group = groups.FirstOrDefault(g => g.Header == groupby);
-            if (group == null)
-            {
-                group = lvRules.Groups.Add(groupby, groupby);
-                group.HeaderAlignment = HorizontalAlignment.Center;
-            }
-            return group;
-        }
-
-        private void Export(Entity solution)
-        {
-            Enable(false);
-            var solname = solution["uniquename"].ToString();
-            WorkAsync(new WorkAsyncInfo
-            {
-                Message = "Exporting",
-                AsyncArgument = solname,
-                Work = (worker, args) =>
-                {
-                    var sol = args.Argument as string;
-                    var req = new ExportSolutionRequest
-                    {
-                        SolutionName = sol,
-                        Managed = false
-                    };
-                    args.Result = Service.Execute(req) as ExportSolutionResponse;
-                },
-                PostWorkCallBack = (args) =>
-                {
-                    if (args.Error != null)
-                    {
-                        MessageBox.Show(args.Error.Message);
-                    }
-                    else if (args.Result is ExportSolutionResponse resp)
-                    {
-                        var exportXml = resp.ExportSolutionFile;
-                        var filename = Path.Combine(Paths.LogsPath, solname + ".zip");
-                        File.WriteAllBytes(filename, exportXml);
-                        txtFilename.Text = filename;
-                    }
-                    Enable(true);
-                }
-            });
+            lblRules.Text = $"{lvRules.CheckedItems.Count}  selected of {lvRules.Items.Count} rules.";
         }
 
         private void Upload()
@@ -380,34 +425,6 @@ namespace Rappen.XTB.PAC
             });
         }
 
-        private void Analyze(string blobfile)
-        {
-            Enable(false);
-            WorkAsync(new WorkAsyncInfo
-            {
-                Message = "Initiating analysis",
-                Work = (worker, args) =>
-                {
-                    
-                },
-                PostWorkCallBack = (args) =>
-                {
-                    if (args.Error != null)
-                    {
-                        MessageBox.Show(args.Error.Message);
-                    }
-                    else //if (args.Result is string bloburl)
-                    {
-                        txtAnalysis.Text = "\n\n    ....analyzing.....";
-                    }
-                    Enable(true);
-                }
-            });
-        }
-
-        private void UpdateRuleCounts()
-        {
-            lblRules.Text = $"{lvRules.CheckedItems.Count}  selected of {lvRules.Items.Count} rules.";
-        }
+        #endregion Private Methods
     }
 }
