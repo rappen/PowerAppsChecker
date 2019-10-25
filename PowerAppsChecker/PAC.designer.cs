@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PAC));
             this.label1 = new System.Windows.Forms.Label();
             this.txtTenantId = new System.Windows.Forms.TextBox();
@@ -48,6 +49,7 @@
             this.label7 = new System.Windows.Forms.Label();
             this.btnOpenFile = new System.Windows.Forms.Button();
             this.gbRules = new System.Windows.Forms.GroupBox();
+            this.picRuleHelp = new System.Windows.Forms.PictureBox();
             this.rbGroupCategory = new System.Windows.Forms.RadioButton();
             this.rbGroupSeverity = new System.Windows.Forms.RadioButton();
             this.chkAllRules = new System.Windows.Forms.CheckBox();
@@ -56,20 +58,34 @@
             this.lvRules = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.gbSolution = new System.Windows.Forms.GroupBox();
+            this.btnUpload = new System.Windows.Forms.Button();
             this.btnExport = new System.Windows.Forms.Button();
             this.linkBlob = new System.Windows.Forms.LinkLabel();
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.btnUpload = new System.Windows.Forms.Button();
             this.btnAnalyze = new System.Windows.Forms.Button();
-            this.panel1 = new System.Windows.Forms.Panel();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.txtAnalysis = new System.Windows.Forms.TextBox();
+            this.gbAnalysis = new System.Windows.Forms.GroupBox();
+            this.txtStatusUrl = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.rbScopeRules = new System.Windows.Forms.RadioButton();
+            this.rbScopeRuleset = new System.Windows.Forms.RadioButton();
+            this.label9 = new System.Windows.Forms.Label();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.tmStatus = new System.Windows.Forms.Timer(this.components);
+            this.txtRunCorrId = new System.Windows.Forms.TextBox();
+            this.label11 = new System.Windows.Forms.Label();
+            this.progAnalysis = new System.Windows.Forms.ProgressBar();
+            this.label12 = new System.Windows.Forms.Label();
+            this.txtStatus = new System.Windows.Forms.TextBox();
             this.groupBox2.SuspendLayout();
             this.gbRules.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.picRuleHelp)).BeginInit();
             this.gbSolution.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
+            this.gbAnalysis.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -90,7 +106,6 @@
             this.txtTenantId.Size = new System.Drawing.Size(327, 20);
             this.txtTenantId.TabIndex = 6;
             this.txtTenantId.Text = "03ef9e5e-caa4-41ad-b7a5-d657624eb692";
-            this.txtTenantId.TextChanged += new System.EventHandler(this.txtTenant_TextChanged);
             // 
             // txtClientId
             // 
@@ -101,7 +116,6 @@
             this.txtClientId.Size = new System.Drawing.Size(327, 20);
             this.txtClientId.TabIndex = 7;
             this.txtClientId.Text = "774beb47-454d-450c-980e-07bad5477469";
-            this.txtClientId.TextChanged += new System.EventHandler(this.txtTenant_TextChanged);
             // 
             // label2
             // 
@@ -122,7 +136,6 @@
             this.txtClientSec.Size = new System.Drawing.Size(327, 20);
             this.txtClientSec.TabIndex = 9;
             this.txtClientSec.Text = "7:7.RNl]/7yoqsR9/+e54JGE4A3.MM6z";
-            this.txtClientSec.TextChanged += new System.EventHandler(this.txtTenant_TextChanged);
             // 
             // label3
             // 
@@ -267,6 +280,7 @@
             // 
             // gbRules
             // 
+            this.gbRules.Controls.Add(this.picRuleHelp);
             this.gbRules.Controls.Add(this.rbGroupCategory);
             this.gbRules.Controls.Add(this.rbGroupSeverity);
             this.gbRules.Controls.Add(this.chkAllRules);
@@ -283,6 +297,18 @@
             this.gbRules.TabIndex = 21;
             this.gbRules.TabStop = false;
             this.gbRules.Text = "Rules";
+            // 
+            // picRuleHelp
+            // 
+            this.picRuleHelp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.picRuleHelp.Cursor = System.Windows.Forms.Cursors.No;
+            this.picRuleHelp.Image = ((System.Drawing.Image)(resources.GetObject("picRuleHelp.Image")));
+            this.picRuleHelp.Location = new System.Drawing.Point(398, 436);
+            this.picRuleHelp.Name = "picRuleHelp";
+            this.picRuleHelp.Size = new System.Drawing.Size(24, 24);
+            this.picRuleHelp.TabIndex = 18;
+            this.picRuleHelp.TabStop = false;
+            this.picRuleHelp.Click += new System.EventHandler(this.picRuleHelp_Click);
             // 
             // rbGroupCategory
             // 
@@ -339,7 +365,7 @@
             this.txtRuleDescr.Multiline = true;
             this.txtRuleDescr.Name = "txtRuleDescr";
             this.txtRuleDescr.ReadOnly = true;
-            this.txtRuleDescr.Size = new System.Drawing.Size(408, 53);
+            this.txtRuleDescr.Size = new System.Drawing.Size(377, 53);
             this.txtRuleDescr.TabIndex = 1;
             // 
             // lvRules
@@ -367,7 +393,6 @@
             // 
             // gbSolution
             // 
-            this.gbSolution.Controls.Add(this.btnAnalyze);
             this.gbSolution.Controls.Add(this.btnUpload);
             this.gbSolution.Controls.Add(this.btnExport);
             this.gbSolution.Controls.Add(this.linkBlob);
@@ -382,10 +407,20 @@
             this.gbSolution.Dock = System.Windows.Forms.DockStyle.Top;
             this.gbSolution.Location = new System.Drawing.Point(0, 0);
             this.gbSolution.Name = "gbSolution";
-            this.gbSolution.Size = new System.Drawing.Size(471, 234);
+            this.gbSolution.Size = new System.Drawing.Size(471, 193);
             this.gbSolution.TabIndex = 22;
             this.gbSolution.TabStop = false;
             this.gbSolution.Text = "Solution";
+            // 
+            // btnUpload
+            // 
+            this.btnUpload.Location = new System.Drawing.Point(88, 104);
+            this.btnUpload.Name = "btnUpload";
+            this.btnUpload.Size = new System.Drawing.Size(75, 23);
+            this.btnUpload.TabIndex = 25;
+            this.btnUpload.Text = "Upload";
+            this.btnUpload.UseVisualStyleBackColor = true;
+            this.btnUpload.Click += new System.EventHandler(this.btnUpload_Click);
             // 
             // btnExport
             // 
@@ -408,6 +443,16 @@
             this.linkBlob.TabIndex = 23;
             this.linkBlob.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
             // 
+            // btnAnalyze
+            // 
+            this.btnAnalyze.Location = new System.Drawing.Point(88, 50);
+            this.btnAnalyze.Name = "btnAnalyze";
+            this.btnAnalyze.Size = new System.Drawing.Size(75, 23);
+            this.btnAnalyze.TabIndex = 26;
+            this.btnAnalyze.Text = "Analyze";
+            this.btnAnalyze.UseVisualStyleBackColor = true;
+            this.btnAnalyze.Click += new System.EventHandler(this.btnAnalyze_Click);
+            // 
             // splitContainer1
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -423,31 +468,95 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.txtAnalysis);
+            this.splitContainer1.Panel2.Controls.Add(this.gbAnalysis);
             this.splitContainer1.Panel2.Controls.Add(this.gbSolution);
             this.splitContainer1.Size = new System.Drawing.Size(913, 632);
             this.splitContainer1.SplitterDistance = 434;
             this.splitContainer1.SplitterWidth = 8;
             this.splitContainer1.TabIndex = 23;
             // 
-            // btnUpload
+            // txtAnalysis
             // 
-            this.btnUpload.Location = new System.Drawing.Point(88, 104);
-            this.btnUpload.Name = "btnUpload";
-            this.btnUpload.Size = new System.Drawing.Size(75, 23);
-            this.btnUpload.TabIndex = 25;
-            this.btnUpload.Text = "Upload";
-            this.btnUpload.UseVisualStyleBackColor = true;
-            this.btnUpload.Click += new System.EventHandler(this.btnUpload_Click);
+            this.txtAnalysis.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtAnalysis.Location = new System.Drawing.Point(0, 359);
+            this.txtAnalysis.Multiline = true;
+            this.txtAnalysis.Name = "txtAnalysis";
+            this.txtAnalysis.ReadOnly = true;
+            this.txtAnalysis.Size = new System.Drawing.Size(471, 273);
+            this.txtAnalysis.TabIndex = 23;
             // 
-            // btnAnalyze
+            // gbAnalysis
             // 
-            this.btnAnalyze.Location = new System.Drawing.Point(88, 184);
-            this.btnAnalyze.Name = "btnAnalyze";
-            this.btnAnalyze.Size = new System.Drawing.Size(75, 23);
-            this.btnAnalyze.TabIndex = 26;
-            this.btnAnalyze.Text = "Analyze";
-            this.btnAnalyze.UseVisualStyleBackColor = true;
-            this.btnAnalyze.Click += new System.EventHandler(this.btnAnalyze_Click);
+            this.gbAnalysis.Controls.Add(this.txtStatus);
+            this.gbAnalysis.Controls.Add(this.label12);
+            this.gbAnalysis.Controls.Add(this.progAnalysis);
+            this.gbAnalysis.Controls.Add(this.txtRunCorrId);
+            this.gbAnalysis.Controls.Add(this.label11);
+            this.gbAnalysis.Controls.Add(this.txtStatusUrl);
+            this.gbAnalysis.Controls.Add(this.label10);
+            this.gbAnalysis.Controls.Add(this.btnAnalyze);
+            this.gbAnalysis.Controls.Add(this.rbScopeRules);
+            this.gbAnalysis.Controls.Add(this.rbScopeRuleset);
+            this.gbAnalysis.Controls.Add(this.label9);
+            this.gbAnalysis.Dock = System.Windows.Forms.DockStyle.Top;
+            this.gbAnalysis.Location = new System.Drawing.Point(0, 193);
+            this.gbAnalysis.Name = "gbAnalysis";
+            this.gbAnalysis.Size = new System.Drawing.Size(471, 166);
+            this.gbAnalysis.TabIndex = 24;
+            this.gbAnalysis.TabStop = false;
+            this.gbAnalysis.Text = "Analysis";
+            // 
+            // txtStatusUrl
+            // 
+            this.txtStatusUrl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtStatusUrl.Location = new System.Drawing.Point(88, 80);
+            this.txtStatusUrl.Name = "txtStatusUrl";
+            this.txtStatusUrl.ReadOnly = true;
+            this.txtStatusUrl.Size = new System.Drawing.Size(333, 20);
+            this.txtStatusUrl.TabIndex = 28;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(12, 83);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(53, 13);
+            this.label10.TabIndex = 27;
+            this.label10.Text = "Status Url";
+            // 
+            // rbScopeRules
+            // 
+            this.rbScopeRules.AutoSize = true;
+            this.rbScopeRules.Location = new System.Drawing.Point(224, 27);
+            this.rbScopeRules.Name = "rbScopeRules";
+            this.rbScopeRules.Size = new System.Drawing.Size(97, 17);
+            this.rbScopeRules.TabIndex = 22;
+            this.rbScopeRules.Text = "Selected Rules";
+            this.rbScopeRules.UseVisualStyleBackColor = true;
+            this.rbScopeRules.CheckedChanged += new System.EventHandler(this.rbScope_CheckedChanged);
+            // 
+            // rbScopeRuleset
+            // 
+            this.rbScopeRuleset.AutoSize = true;
+            this.rbScopeRuleset.Checked = true;
+            this.rbScopeRuleset.Location = new System.Drawing.Point(88, 27);
+            this.rbScopeRuleset.Name = "rbScopeRuleset";
+            this.rbScopeRuleset.Size = new System.Drawing.Size(106, 17);
+            this.rbScopeRuleset.TabIndex = 21;
+            this.rbScopeRuleset.TabStop = true;
+            this.rbScopeRuleset.Text = "Selected Ruleset";
+            this.rbScopeRuleset.UseVisualStyleBackColor = true;
+            this.rbScopeRuleset.CheckedChanged += new System.EventHandler(this.rbScope_CheckedChanged);
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(12, 29);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(38, 13);
+            this.label9.TabIndex = 20;
+            this.label9.Text = "Scope";
             // 
             // panel1
             // 
@@ -457,15 +566,55 @@
             this.panel1.Size = new System.Drawing.Size(913, 10);
             this.panel1.TabIndex = 24;
             // 
-            // txtAnalysis
+            // tmStatus
             // 
-            this.txtAnalysis.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtAnalysis.Location = new System.Drawing.Point(0, 234);
-            this.txtAnalysis.Multiline = true;
-            this.txtAnalysis.Name = "txtAnalysis";
-            this.txtAnalysis.ReadOnly = true;
-            this.txtAnalysis.Size = new System.Drawing.Size(471, 398);
-            this.txtAnalysis.TabIndex = 23;
+            this.tmStatus.Interval = 5000;
+            this.tmStatus.Tick += new System.EventHandler(this.tmStatus_Tick);
+            // 
+            // txtRunCorrId
+            // 
+            this.txtRunCorrId.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtRunCorrId.Location = new System.Drawing.Point(88, 106);
+            this.txtRunCorrId.Name = "txtRunCorrId";
+            this.txtRunCorrId.ReadOnly = true;
+            this.txtRunCorrId.Size = new System.Drawing.Size(333, 20);
+            this.txtRunCorrId.TabIndex = 30;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(12, 109);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(61, 13);
+            this.label11.TabIndex = 29;
+            this.label11.Text = "Run Corr Id";
+            // 
+            // progAnalysis
+            // 
+            this.progAnalysis.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.progAnalysis.Location = new System.Drawing.Point(169, 132);
+            this.progAnalysis.Name = "progAnalysis";
+            this.progAnalysis.Size = new System.Drawing.Size(252, 20);
+            this.progAnalysis.TabIndex = 31;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(12, 135);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(37, 13);
+            this.label12.TabIndex = 32;
+            this.label12.Text = "Status";
+            // 
+            // txtStatus
+            // 
+            this.txtStatus.Location = new System.Drawing.Point(88, 132);
+            this.txtStatus.Name = "txtStatus";
+            this.txtStatus.ReadOnly = true;
+            this.txtStatus.Size = new System.Drawing.Size(75, 20);
+            this.txtStatus.TabIndex = 33;
             // 
             // PAC
             // 
@@ -480,6 +629,7 @@
             this.groupBox2.PerformLayout();
             this.gbRules.ResumeLayout(false);
             this.gbRules.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.picRuleHelp)).EndInit();
             this.gbSolution.ResumeLayout(false);
             this.gbSolution.PerformLayout();
             this.splitContainer1.Panel1.ResumeLayout(false);
@@ -487,6 +637,8 @@
             this.splitContainer1.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
+            this.gbAnalysis.ResumeLayout(false);
+            this.gbAnalysis.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -526,5 +678,18 @@
         private System.Windows.Forms.Button btnUpload;
         private System.Windows.Forms.TextBox txtAnalysis;
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.PictureBox picRuleHelp;
+        private System.Windows.Forms.GroupBox gbAnalysis;
+        private System.Windows.Forms.RadioButton rbScopeRules;
+        private System.Windows.Forms.RadioButton rbScopeRuleset;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.TextBox txtStatusUrl;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Timer tmStatus;
+        private System.Windows.Forms.TextBox txtRunCorrId;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.ProgressBar progAnalysis;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.TextBox txtStatus;
     }
 }

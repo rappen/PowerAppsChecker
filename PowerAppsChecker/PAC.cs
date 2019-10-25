@@ -3,6 +3,7 @@ using Microsoft.Crm.Sdk.Messages;
 using Microsoft.Xrm.Sdk;
 using Rappen.XTB.PAC.Helpers;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
@@ -37,7 +38,17 @@ namespace Rappen.XTB.PAC
         {
             base.UpdateConnection(newService, detail, actionName, parameter);
             cbSolutions.Service = newService;
+            if (SettingsManager.Instance.TryLoad(GetType(), out Settings settings, detail.ConnectionName))
+            {
+                ApplySettingsToUI(settings);
+            }
             Enable(true);
+        }
+
+        public override void ClosingPlugin(PluginCloseInfo info)
+        {
+            SettingsManager.Instance.Save(GetType(), GetSettingsFromUI(), ConnectionDetail?.ConnectionName);
+            base.ClosingPlugin(info);
         }
 
         #endregion Public Methods
@@ -46,7 +57,7 @@ namespace Rappen.XTB.PAC
 
         private void btnAnalyze_Click(object sender, EventArgs e)
         {
-            Analyze(linkBlob.Text);
+            Analyze();
         }
 
         private void btnConnectPAC_Click(object sender, EventArgs e)
@@ -118,12 +129,18 @@ namespace Rappen.XTB.PAC
             {
                 txtRuleDescr.Text = "";
             }
+            Enable(true);
         }
 
         private void PAC_Load(object sender, EventArgs e)
         {
-            //txtTenant_TextChanged(null, null);
+            if (SettingsManager.Instance.TryLoad(GetType(), out Settings settings, ConnectionDetail?.ConnectionName))
+            {
+                ApplySettingsToUI(settings);
+                ConnectPAChecker(true);
+            }
         }
+
         private void rbGroupBy_CheckedChanged(object sender, EventArgs e)
         {
             if (((RadioButton)sender).Checked)
@@ -132,26 +149,34 @@ namespace Rappen.XTB.PAC
             }
         }
 
-        private void txtTenant_TextChanged(object sender, EventArgs e)
+        private void picRuleHelp_Click(object sender, EventArgs e)
         {
-            if (Guid.TryParse(txtTenantId.Text, out Guid t) && Guid.TryParse(txtClientId.Text, out Guid c) && !string.IsNullOrWhiteSpace(txtClientSec.Text))
+            if (lvRules.SelectedItems.Count > 0 && lvRules.SelectedItems[0].Tag is PACRule rule)
             {
-                ConnectPAChecker();
+                Process.Start(rule.GuidanceUrl.Replace("client=PAChecker", "client=Rappen.XTB.PAC"));
             }
+        }
+
+        private void tmStatus_Tick(object sender, EventArgs e)
+        {
+            CheckStatus();
         }
 
         #endregion Private event handlers
 
         #region Private Methods
 
-        private void Analyze(string blobfile)
+        private void Analyze()
         {
             Enable(false);
+            var analysisargs = GetAnalysisArgs();
             WorkAsync(new WorkAsyncInfo
             {
                 Message = "Initiating analysis",
+                AsyncArgument = analysisargs,
                 Work = (worker, args) =>
                 {
+                    args.Result = client.Analyze(args.Argument as PACAnalysisArgs);
                 },
                 PostWorkCallBack = (args) =>
                 {
@@ -159,17 +184,104 @@ namespace Rappen.XTB.PAC
                     {
                         MessageBox.Show(args.Error.Message);
                     }
-                    else //if (args.Result is string bloburl)
+                    else if (args.Result is Uri location)
                     {
-                        txtAnalysis.Text = "\n\n    ....analyzing.....";
+                        txtStatusUrl.Text = location.ToString();
+                        txtAnalysis.Text = "Analysis sent\r\n";
+                        tmStatus.Start();
                     }
                     Enable(true);
                 }
             });
         }
 
-        private void ConnectPAChecker()
+        private void ApplySettingsToUI(Settings settings)
         {
+            if (!settings.TenantId.Equals(Guid.Empty)) txtTenantId.Text = settings.TenantId.ToString();
+            if (!settings.ClientId.Equals(Guid.Empty)) txtClientId.Text = settings.ClientId.ToString();
+            if (!string.IsNullOrEmpty(settings.ClientSecret)) txtClientSec.Text = settings.ClientSecret;
+            txtFilename.Text = settings.SolutionFile;
+        }
+
+        private PACAnalysisArgs GetAnalysisArgs()
+        {
+            var args = new PACAnalysisArgs
+            {
+                CorrId = new Guid(txtCorrId.Text),
+                FileUrl = linkBlob.Text,
+                RuleSets = new List<PACRuleSet>(),
+                Rules = new List<PACRule>(),
+                Exclusions = null
+            };
+            if (rbScopeRuleset.Checked && cbRuleset.SelectedItem is PACRuleSet ruleset)
+            {
+                args.RuleSets.Add(ruleset);
+            }
+            else if (rbScopeRules.Checked)
+            {
+                foreach (ListViewItem item in lvRules.CheckedItems)
+                {
+                    if (item.Tag is PACRule rule)
+                    {
+                        args.Rules.Add(rule);
+                    }
+                }
+            }
+            return args;
+        }
+
+        private void CheckStatus()
+        {
+            tmStatus.Enabled = false;
+            WorkAsync(new WorkAsyncInfo
+            {
+                Message = "Checking analysis status",
+                AsyncArgument = txtStatusUrl.Text,
+                Work = (worker, args) =>
+                {
+                    var status = client.Get(new Uri(args.Argument.ToString()));
+                    var jss = new JavaScriptSerializer();
+                    args.Result = jss.Deserialize<PACStatus>(status);
+                },
+                PostWorkCallBack = (args) =>
+                {
+                    if (args.Error != null)
+                    {
+                        MessageBox.Show(args.Error.Message);
+                    }
+                    else if (args.Result is PACStatus status)
+                    {
+                        txtRunCorrId.Text = status.RunCorrelationId.ToString();
+                        txtStatus.Text = status.Status;
+                        progAnalysis.Value = status.Progress;
+                        if (status.Progress >= 100)
+                        {
+                            if (status.ResultFileUris != null)
+                            {
+                                foreach (var resultfile in status.ResultFileUris)
+                                {
+                                    txtAnalysis.Text += $"Result file: {resultfile}\r\n";
+                                    var result = client.Get(new Uri(resultfile));
+                                    txtAnalysis.Text += result + "\r\n\r\n";
+                                }
+                            }
+                        }
+                        else
+                        {
+                            tmStatus.Start();
+                        }
+                    }
+                    Enable(true);
+                }
+            });
+        }
+
+        private void ConnectPAChecker(bool silent = false)
+        {
+            if (silent && !(Guid.TryParse(txtTenantId.Text, out Guid t) && Guid.TryParse(txtClientId.Text, out Guid c) && !string.IsNullOrWhiteSpace(txtClientSec.Text)))
+            {
+                return;
+            }
             Enable(false);
             if (!Guid.TryParse(txtTenantId.Text, out var tenantId))
             {
@@ -211,11 +323,14 @@ namespace Rappen.XTB.PAC
             Enabled = enable;
             btnConnectPAC.Enabled = enable && Guid.TryParse(txtTenantId.Text, out Guid t) && Guid.TryParse(txtClientId.Text, out Guid c) && !string.IsNullOrWhiteSpace(txtClientSec.Text);
             cbRuleset.Enabled = enable && client != null && cbRuleset.Items.Count > 0;
+            picRuleHelp.Enabled = enable && lvRules.SelectedItems.Count > 0;
             cbSolutions.Enabled = enable && Service != null;
             btnExport.Enabled = enable && cbSolutions.SelectedSolution is Entity solution
                     && (solution["ismanaged"] as bool? == false);
             btnUpload.Enabled = enable && client != null && File.Exists(txtFilename.Text);
-            btnAnalyze.Enabled = enable && client != null && !string.IsNullOrEmpty(linkBlob.Text);
+            btnAnalyze.Enabled = enable && client != null && !string.IsNullOrEmpty(linkBlob.Text) && 
+                ((rbScopeRuleset.Checked && cbRuleset.SelectedItem is PACRuleSet) || (rbScopeRules.Checked && lvRules.CheckedItems.Count > 0));
+            picRuleHelp.Cursor = picRuleHelp.Enabled ? Cursors.Hand : Cursors.No;
         }
 
         private void Export(Entity solution)
@@ -273,6 +388,22 @@ namespace Rappen.XTB.PAC
             ListViewItem[] items = new ListViewItem[lvRules.Items.Count];
             lvRules.Items.CopyTo(items, 0);
             return items.FirstOrDefault(i => i.Tag is PACRule && ((PACRule)i.Tag).Code == rule.Code);
+        }
+
+        private Settings GetSettingsFromUI()
+        {
+            var settings = new Settings();
+            if (Guid.TryParse(txtTenantId.Text, out Guid tid))
+            {
+                settings.TenantId = tid;
+            }
+            if (Guid.TryParse(txtClientId.Text, out Guid cid))
+            {
+                settings.ClientId = cid;
+            }
+            settings.ClientSecret = txtClientSec.Text;
+            settings.SolutionFile = txtFilename.Text;
+            return settings;
         }
 
         private void LoadRules()
@@ -426,5 +557,10 @@ namespace Rappen.XTB.PAC
         }
 
         #endregion Private Methods
+
+        private void rbScope_CheckedChanged(object sender, EventArgs e)
+        {
+            Enable(true);
+        }
     }
 }

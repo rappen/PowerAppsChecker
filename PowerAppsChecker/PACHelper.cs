@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 
 namespace Rappen.XTB.PAC.Helpers
 {
@@ -34,7 +35,11 @@ namespace Rappen.XTB.PAC.Helpers
 
         public static string Get(this HttpClient client, string method)
         {
-            var apiUrl = $"{serviceUrl}/api/{method}";
+            return Get(client, new Uri($"{serviceUrl}/api/{method}"));
+        }
+
+        public static string Get(this HttpClient client, Uri apiUrl)
+        {
             return client.GetAsync(apiUrl).GetAwaiter().GetResult().Content.ReadAsStringAsync().GetAwaiter().GetResult();
         }
 
@@ -50,28 +55,33 @@ namespace Rappen.XTB.PAC.Helpers
             return result.Content.ReadAsStringAsync().GetAwaiter().GetResult().TrimStart('[').TrimEnd(']').Trim('"');
         }
 
-        public static Uri Analyze(this HttpClient client, Guid corrid, string fileurl, PACRuleSet[] rulesets, PACRule[] rules, string[] exclusions)
+        public static Uri Analyze(this HttpClient client, PACAnalysisArgs args)
         {
             var apiUrl = $"{serviceUrl}/api/analyze";
             var values = new Dictionary<string, string>
             {
-                { "sasUriList", $"[\"{fileurl}\"]"},
+                { "sasUriList", $"[\"{args.FileUrl}\"]"},
             };
-            if (rulesets != null)
+            if (args.RuleSets != null)
             {
-                values.Add("ruleSets", $"[{{{string.Join(", ", rulesets.Select(s => $"\"id\": \"{s.Id}\""))}}}");
+                values.Add("ruleSets", $"[{{{string.Join(", ", args.RuleSets.Select(s => $"\"id\": \"{s.Id}\""))}}}]");
             }
-            else if (rules != null)
+            else if (args.Rules != null)
             {
-                values.Add("ruleCodes", $"[{{{string.Join(", ", rules.Select(r => $"\"code\": \"{r.Code}\""))}}}");
+                values.Add("ruleCodes", $"[{{{string.Join(", ", args.Rules.Select(r => $"\"code\": \"{r.Code}\""))}}}]");
             }
-            if (exclusions != null)
+            if (args.Exclusions != null)
             {
-                values.Add("fileExclusions", $"[{string.Join(", ", exclusions.Select(f => $"\"{f}\""))}");
+                values.Add("fileExclusions", $"[{string.Join(", ", args.Exclusions.Select(f => $"\"{f}\""))}]");
             }
-            var body = new FormUrlEncodedContent(values);
-            client.DefaultRequestHeaders.Add("x-ms-correlation-id", corrid.ToString());
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json, application/x-ms-sarif-v2"));
+            //var body = new FormUrlEncodedContent(values);
+            var body = new StringContent(
+                "{" + 
+                    string.Join(",",
+                        values.Select(v => "\"" + v.Key + "\":" + v.Value )) +
+                "}", Encoding.UTF8);
+            client.DefaultRequestHeaders.Add("x-ms-correlation-id", args.CorrId.ToString());
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             var response = client.PostAsync(apiUrl, body).GetAwaiter().GetResult();
             return response.Headers.Location;
         }
@@ -99,8 +109,8 @@ namespace Rappen.XTB.PAC.Helpers
         public string Summary;
         public string Description;
         public int ComponentType;
-        public int PrimaryCategory;
-        public int Severity;
+        public Category PrimaryCategory;
+        public Severity Severity;
         public bool Include;
         public string GuidanceUrl;
         public PACRule() { }
@@ -108,5 +118,66 @@ namespace Rappen.XTB.PAC.Helpers
         {
             return string.IsNullOrWhiteSpace(Summary) ? Code : Summary;
         }
+    }
+
+    public class PACStatus
+    {
+        public string Status;
+        public int Progress;
+        public Guid RunCorrelationId;
+        public string[] ResultFileUris;
+        public PACStatusSummary IssueSummary;
+        public PACStatus() { }
+        public override string ToString()
+        {
+            return $"{Status} / {Progress}";
+        }
+    }
+
+    public class PACStatusSummary
+    {
+        public int CriticalIssueCount;
+        public int HighIssueCount;
+        public int MediumIssueCount;
+        public int LowIssueCount;
+        public int InformationalIssueCount;
+    }
+
+    public class PACAnalysisArgs
+    {
+        public Guid CorrId;
+        public string FileUrl;
+        public List<PACRuleSet> RuleSets;
+        public List<PACRule> Rules;
+        public List<string> Exclusions;
+    }
+
+    public enum Severity
+    {
+        Informational = 1,
+        Low = 2,
+        Medium = 3,
+        High = 4,
+        Critical = 5
+    }
+
+    public enum Category
+    {
+        Performance = 1,
+        UpgradeReadiness = 2,
+        Usage = 3,
+        Security = 4,
+        Design = 5,
+        OnlineMigration = 6,
+        Maintainability = 7,
+        Supportability = 8,
+        Accessibility = 9
+    }
+
+    public enum Component
+    {
+        WebResource = 1,
+        ManagedCode = 2,
+        Configuration = 3
     }
 }
