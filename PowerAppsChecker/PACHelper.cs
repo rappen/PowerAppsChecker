@@ -1,10 +1,15 @@
-﻿using System;
+﻿using Microsoft.CodeAnalysis.Sarif.Readers;
+using Microsoft.CodeAnalysis.Sarif.VersionOne;
+using Microsoft.Xrm.Sdk;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Web.Script.Serialization;
 
 namespace Rappen.XTB.PAC.Helpers
 {
@@ -38,9 +43,21 @@ namespace Rappen.XTB.PAC.Helpers
             return Get(client, new Uri($"{serviceUrl}/api/{method}"));
         }
 
-        public static string Get(this HttpClient client, Uri apiUrl)
+        public static string Get(this HttpClient client, Uri url)
         {
-            return client.GetAsync(apiUrl).GetAwaiter().GetResult().Content.ReadAsStringAsync().GetAwaiter().GetResult();
+            return client.GetAsync(url).GetAwaiter().GetResult().Content.ReadAsStringAsync().GetAwaiter().GetResult();
+        }
+
+        public static SarifLogVersionOne GetResultFile(string fileurl)
+        {
+            var client = new HttpClient();
+            var resultstring = client.GetAsync(fileurl).GetAwaiter().GetResult().Content.ReadAsStringAsync().GetAwaiter().GetResult();
+            var jss = new JavaScriptSerializer();
+            var settings = new JsonSerializerSettings
+            {
+                ContractResolver = SarifContractResolverVersionOne.Instance
+            };
+            return JsonConvert.DeserializeObject<SarifLogVersionOne>(resultstring, settings);
         }
 
         public static string Upload(this HttpClient client, Guid corrid, string filepath)
@@ -55,14 +72,14 @@ namespace Rappen.XTB.PAC.Helpers
             return result.Content.ReadAsStringAsync().GetAwaiter().GetResult().TrimStart('[').TrimEnd(']').Trim('"');
         }
 
-        public static Uri Analyze(this HttpClient client, PACAnalysisArgs args)
+        public static Uri Analyze(this HttpClient client, AnalysisArgs args)
         {
             var apiUrl = $"{serviceUrl}/api/analyze";
             var values = new Dictionary<string, string>
             {
                 { "sasUriList", $"[\"{args.FileUrl}\"]"},
             };
-            if (args.RuleSets != null)
+            if (args.RuleSets != null && args.RuleSets.Count > 0)
             {
                 values.Add("ruleSets", $"[{{{string.Join(", ", args.RuleSets.Select(s => $"\"id\": \"{s.Id}\""))}}}]");
             }
@@ -76,9 +93,9 @@ namespace Rappen.XTB.PAC.Helpers
             }
             //var body = new FormUrlEncodedContent(values);
             var body = new StringContent(
-                "{" + 
+                "{" +
                     string.Join(",",
-                        values.Select(v => "\"" + v.Key + "\":" + v.Value )) +
+                        values.Select(v => "\"" + v.Key + "\":" + v.Value)) +
                 "}", Encoding.UTF8);
             client.DefaultRequestHeaders.Add("x-ms-correlation-id", args.CorrId.ToString());
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -87,11 +104,11 @@ namespace Rappen.XTB.PAC.Helpers
         }
     }
 
-    public class PACRuleSet
+    public class RuleSet
     {
         public Guid Id;
         public string Name;
-        public PACRuleSet() { }
+        public RuleSet() { }
         //public PACRuleSet(string id, string name)
         //{
         //    Id = new Guid(id);
@@ -103,7 +120,7 @@ namespace Rappen.XTB.PAC.Helpers
         }
     }
 
-    public class PACRule
+    public class Rule
     {
         public string Code;
         public string Summary;
@@ -113,28 +130,28 @@ namespace Rappen.XTB.PAC.Helpers
         public Severity Severity;
         public bool Include;
         public string GuidanceUrl;
-        public PACRule() { }
+        public Rule() { }
         public override string ToString()
         {
             return string.IsNullOrWhiteSpace(Summary) ? Code : Summary;
         }
     }
 
-    public class PACStatus
+    public class AnalysisStatus
     {
         public string Status;
         public int Progress;
         public Guid RunCorrelationId;
         public string[] ResultFileUris;
-        public PACStatusSummary IssueSummary;
-        public PACStatus() { }
+        public StatusSummary IssueSummary;
+        public AnalysisStatus() { }
         public override string ToString()
         {
             return $"{Status} / {Progress}";
         }
     }
 
-    public class PACStatusSummary
+    public class StatusSummary
     {
         public int CriticalIssueCount;
         public int HighIssueCount;
@@ -143,12 +160,12 @@ namespace Rappen.XTB.PAC.Helpers
         public int InformationalIssueCount;
     }
 
-    public class PACAnalysisArgs
+    public class AnalysisArgs
     {
         public Guid CorrId;
         public string FileUrl;
-        public List<PACRuleSet> RuleSets;
-        public List<PACRule> Rules;
+        public List<RuleSet> RuleSets;
+        public List<Rule> Rules;
         public List<string> Exclusions;
     }
 
@@ -179,5 +196,19 @@ namespace Rappen.XTB.PAC.Helpers
         WebResource = 1,
         ManagedCode = 2,
         Configuration = 3
+    }
+
+    public class SolutionItem
+    {
+        public Entity Solution;
+        public SolutionItem(Entity solution)
+        {
+            Solution = solution;
+        }
+
+        public override string ToString()
+        {
+            return Solution["friendlyname"].ToString();
+        }
     }
 }
