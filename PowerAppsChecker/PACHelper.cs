@@ -124,7 +124,7 @@ namespace Rappen.XTB.PAC.Helpers
             }
             else if (args.Rules != null)
             {
-                values.Add("ruleCodes", $"[{{{string.Join(", ", args.Rules.Select(r => $"\"code\": \"{r.Code}\""))}}}]");
+                values.Add("ruleCodes", $"[{string.Join(", ", args.Rules.Select(r => $"{{\"code\": \"{r.Code}\", \"include\": \"true\"}}"))}]");
             }
             if (args.Exclusions != null)
             {

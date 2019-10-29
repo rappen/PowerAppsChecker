@@ -609,7 +609,7 @@
             // 
             this.cbSolution.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.cbSolution.DisplayFormat = "{{friendlyname}} ({{uniquename}})";
+            this.cbSolution.DisplayFormat = "{{friendlyname}} ({{uniquename}}) {{version}}";
             this.cbSolution.FormattingEnabled = true;
             this.cbSolution.Location = new System.Drawing.Point(88, 26);
             this.cbSolution.Name = "cbSolution";

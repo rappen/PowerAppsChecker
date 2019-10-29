@@ -517,7 +517,7 @@ namespace Rappen.XTB.PAC
                 Work = (worker, args) =>
                 {
                     var qx = new QueryExpression("solution");
-                    qx.ColumnSet.AddColumns("friendlyname", "solutionid", "uniquename");
+                    qx.ColumnSet.AddColumns("friendlyname", "solutionid", "uniquename", "version");
                     qx.AddOrder("friendlyname", OrderType.Ascending);
                     qx.Criteria.AddCondition("ismanaged", ConditionOperator.Equal, false);
                     qx.Criteria.AddCondition("isvisible", ConditionOperator.Equal, true);
