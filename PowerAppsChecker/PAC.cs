@@ -6,16 +6,13 @@ using Microsoft.Xrm.Sdk.Query;
 using Rappen.XTB.PAC.Helpers;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Web.Script.Serialization;
 using System.Windows.Forms;
 using XrmToolBox.Extensibility;
-using Rule = Rappen.XTB.PAC.Helpers.Rule;
 
 namespace Rappen.XTB.PAC
 {
@@ -40,17 +37,18 @@ namespace Rappen.XTB.PAC
 
         public override void ClosingPlugin(PluginCloseInfo info)
         {
-            SettingsManager.Instance.Save(GetType(), GetSettingsFromUI(), ConnectionDetail?.ConnectionName);
+            SettingsManager.Instance.Save(GetType(), SettingsGetFromUI(), ConnectionDetail?.ConnectionName);
             base.ClosingPlugin(info);
         }
 
         public override void UpdateConnection(IOrganizationService newService, ConnectionDetail detail, string actionName, object parameter)
         {
             base.UpdateConnection(newService, detail, actionName, parameter);
+            cbSolution.OrganizationService = newService;
             LoadSolutions();
             if (SettingsManager.Instance.TryLoad(GetType(), out Settings settings, detail.ConnectionName))
             {
-                ApplySettingsToUI(settings);
+                SettingsApplyToUI(settings);
             }
             Enable(true);
         }
@@ -61,7 +59,7 @@ namespace Rappen.XTB.PAC
 
         private void btnAnalyze_Click(object sender, EventArgs e)
         {
-            Analyze();
+            SendAnalysis();
         }
 
         private void btnConnectPAC_Click(object sender, EventArgs e)
@@ -71,7 +69,7 @@ namespace Rappen.XTB.PAC
 
         private void btnExport_Click(object sender, EventArgs e)
         {
-            Export((cbSolution.SelectedItem as SolutionItem).Solution);
+            ExportSolution(cbSolution.SelectedEntity);
         }
 
         private void btnOpenFile_Click(object sender, EventArgs e)
@@ -95,7 +93,7 @@ namespace Rappen.XTB.PAC
 
         private void btnUpload_Click(object sender, EventArgs e)
         {
-            Upload();
+            UploadSolutionFile();
         }
 
         private void cbRuleset_SelectedIndexChanged(object sender, EventArgs e)
@@ -146,7 +144,7 @@ namespace Rappen.XTB.PAC
         {
             if (SettingsManager.Instance.TryLoad(GetType(), out Settings settings, ConnectionDetail?.ConnectionName))
             {
-                ApplySettingsToUI(settings);
+                SettingsApplyToUI(settings);
                 ConnectPAChecker(true);
             }
         }
@@ -174,68 +172,25 @@ namespace Rappen.XTB.PAC
 
         private void tmStatus_Tick(object sender, EventArgs e)
         {
-            CheckStatus();
+            CheckAnalysisStatus();
         }
 
         #endregion Private event handlers
 
         #region Private Methods
 
-        private void Analyze()
-        {
-            Enable(false);
-            txtRunCorrId.Text = "";
-            txtStatusUrl.Text = "";
-            txtStatus.Text = "";
-            progAnalysis.Value = 0;
-            var analysisargs = GetAnalysisArgs();
-            WorkAsync(new WorkAsyncInfo
-            {
-                Message = "Initiating analysis",
-                AsyncArgument = analysisargs,
-                Work = (worker, args) =>
-                {
-                    args.Result = client.Analyze(args.Argument as AnalysisArgs);
-                },
-                PostWorkCallBack = (args) =>
-                {
-                    if (args.Error != null)
-                    {
-                        MessageBox.Show(args.Error.Message);
-                    }
-                    else if (args.Result is Uri location)
-                    {
-                        txtStatus.Text = "Sent";
-                        progAnalysis.Value = 1;
-                        txtStatusUrl.Text = location.ToString();
-                        txtAnalysis.Text = "Analysis sent\r\n";
-                        tmStatus.Start();
-                    }
-                    Enable(true);
-                }
-            });
-        }
-
-        private void ApplySettingsToUI(Settings settings)
-        {
-            if (!settings.TenantId.Equals(Guid.Empty)) txtTenantId.Text = settings.TenantId.ToString();
-            if (!settings.ClientId.Equals(Guid.Empty)) txtClientId.Text = settings.ClientId.ToString();
-            if (!string.IsNullOrEmpty(settings.ClientSecret)) txtClientSec.Text = settings.ClientSecret;
-            txtFilename.Text = settings.SolutionFile;
-        }
-
-        private void CheckStatus()
+        private void CheckAnalysisStatus()
         {
             tmStatus.Enabled = false;
+            Enable(false);
+            var enabled = true;
             WorkAsync(new WorkAsyncInfo
             {
                 Message = "Checking analysis status",
                 AsyncArgument = txtStatusUrl.Text,
                 Work = (worker, args) =>
                 {
-                    var status = client.Get(new Uri(args.Argument.ToString()));
-                    var jss = new JavaScriptSerializer();
-                    args.Result = jss.Deserialize<AnalysisStatus>(status);
+                    args.Result = client.GetStatus(args.Argument.ToString());
                 },
                 PostWorkCallBack = (args) =>
                 {
@@ -250,14 +205,23 @@ namespace Rappen.XTB.PAC
                         progAnalysis.Value = status.Progress;
                         if (status.Progress >= 100)
                         {
-                            GetResults(status);
+                            WriteToLog($"{status.IssueSummary.CriticalIssueCount} Critical");
+                            WriteToLog($"{status.IssueSummary.HighIssueCount} High");
+                            WriteToLog($"{status.IssueSummary.MediumIssueCount} Medium");
+                            WriteToLog($"{status.IssueSummary.LowIssueCount} Low");
+                            WriteToLog($"{status.IssueSummary.InformationalIssueCount} Informational");
+                            if (status.ResultFileUris != null && status.ResultFileUris.Length > 0)
+                            {
+                                GetResultFile(status);
+                                enabled = false;
+                            }
                         }
                         else
                         {
                             tmStatus.Start();
                         }
                     }
-                    Enable(true);
+                    Enable(enabled);
                 }
             });
         }
@@ -268,7 +232,6 @@ namespace Rappen.XTB.PAC
             {
                 return;
             }
-            Enable(false);
             if (!Guid.TryParse(txtTenantId.Text, out var tenantId))
             {
                 MessageBox.Show("Bad Tenant Guid");
@@ -281,6 +244,8 @@ namespace Rappen.XTB.PAC
             }
             var clientSec = txtClientSec.Text;
 
+            Enable(false);
+            var enable = true;
             WorkAsync(new WorkAsyncInfo()
             {
                 Message = "Connecting PAC",
@@ -298,8 +263,9 @@ namespace Rappen.XTB.PAC
                     {
                         client = pacclient;
                         LoadRuleSets();
+                        enable = false;
                     }
-                    Enable(true);
+                    Enable(enable);
                 }
             });
         }
@@ -311,14 +277,14 @@ namespace Rappen.XTB.PAC
             cbRuleset.Enabled = enable && client != null && cbRuleset.Items.Count > 0;
             picRuleHelp.Enabled = enable && lvRules.SelectedItems.Count > 0;
             cbSolution.Enabled = enable && Service != null;
-            btnExport.Enabled = enable && cbSolution.SelectedItem is SolutionItem;
+            btnExport.Enabled = enable && cbSolution.SelectedEntity != null;
             btnUpload.Enabled = enable && client != null && File.Exists(txtFilename.Text);
             btnAnalyze.Enabled = enable && client != null && !string.IsNullOrEmpty(linkBlob.Text) &&
                 ((rbScopeRuleset.Checked && cbRuleset.SelectedItem is RuleSet) || (rbScopeRules.Checked && lvRules.CheckedItems.Count > 0));
             picRuleHelp.Cursor = picRuleHelp.Enabled ? Cursors.Hand : Cursors.No;
         }
 
-        private void Export(Entity solution)
+        private void ExportSolution(Entity solution)
         {
             Enable(false);
             txtFilename.Text = "";
@@ -388,28 +354,7 @@ namespace Rappen.XTB.PAC
             return args;
         }
 
-        private ListViewGroup GetGroupForRule(Helpers.Rule rule)
-        {
-            var groupby = (rbGroupCategory.Checked ? $"Category: {rule.PrimaryCategory}" : $"Severity: {rule.Severity}");
-            ListViewGroup[] groups = new ListViewGroup[lvRules.Groups.Count];
-            lvRules.Groups.CopyTo(groups, 0);
-            var group = groups.FirstOrDefault(g => g.Header == groupby);
-            if (group == null)
-            {
-                group = lvRules.Groups.Add(groupby, groupby);
-                group.HeaderAlignment = HorizontalAlignment.Center;
-            }
-            return group;
-        }
-
-        private ListViewItem GetListViewItemByRule(Helpers.Rule rule)
-        {
-            ListViewItem[] items = new ListViewItem[lvRules.Items.Count];
-            lvRules.Items.CopyTo(items, 0);
-            return items.FirstOrDefault(i => i.Tag is Helpers.Rule && ((Helpers.Rule)i.Tag).Code == rule.Code);
-        }
-
-        private void GetResults(AnalysisStatus status)
+        private void GetResultFile(AnalysisStatus status)
         {
             if (status.ResultFileUris != null)
             {
@@ -434,38 +379,24 @@ namespace Rappen.XTB.PAC
                         {
                             MessageBox.Show(args.Error.Message);
                         }
-                        else if (args.Result is List<SarifLogVersionOne> results)
+                        else if (args.Result is List<SarifLogVersionOne> results && results.Count > 0)
                         {
                             foreach (var result in results)
                             {
-                                WriteResults(result);
+                                ParseSarifLog(result);
                             }
                         }
+                        Enable(true);
                         progAnalysis.Value = 0;
                     }
                 });
             }
         }
 
-        private Settings GetSettingsFromUI()
-        {
-            var settings = new Settings();
-            if (Guid.TryParse(txtTenantId.Text, out Guid tid))
-            {
-                settings.TenantId = tid;
-            }
-            if (Guid.TryParse(txtClientId.Text, out Guid cid))
-            {
-                settings.ClientId = cid;
-            }
-            settings.ClientSecret = txtClientSec.Text;
-            settings.SolutionFile = txtFilename.Text;
-            return settings;
-        }
-
         private void LoadRules()
         {
             Enable(false);
+            var enabled = true;
             lvRules.Items.Clear();
             lvRules.Groups.Clear();
             WorkAsync(new WorkAsyncInfo()
@@ -473,9 +404,7 @@ namespace Rappen.XTB.PAC
                 Message = "Loading rules",
                 Work = (worker, args) =>
                 {
-                    var rules = client.Get("rule");
-                    var jss = new JavaScriptSerializer();
-                    args.Result = jss.Deserialize<Rule[]>(rules);
+                    args.Result = client.GetRules();
                 },
                 PostWorkCallBack = (args) =>
                 {
@@ -489,9 +418,10 @@ namespace Rappen.XTB.PAC
                         if (cbRuleset.SelectedItem != null)
                         {
                             LoadRuleSetSelections(cbRuleset.SelectedItem as RuleSet);
+                            enabled = false;
                         }
                     }
-                    Enable(true);
+                    Enable(enabled);
                 }
             });
         }
@@ -499,6 +429,7 @@ namespace Rappen.XTB.PAC
         private void LoadRuleSets()
         {
             Enable(false);
+            var enabled = true;
             cbRuleset.Items.Clear();
             cbRuleset.Items.Add("");
             WorkAsync(new WorkAsyncInfo()
@@ -506,9 +437,7 @@ namespace Rappen.XTB.PAC
                 Message = "Loading rulesets",
                 Work = (worker, args) =>
                 {
-                    var rulesets = client.Get("ruleset");
-                    var jss = new JavaScriptSerializer();
-                    args.Result = jss.Deserialize<RuleSet[]>(rulesets);
+                    args.Result = client.GetRuleSets();
                 },
                 PostWorkCallBack = (args) =>
                 {
@@ -520,14 +449,22 @@ namespace Rappen.XTB.PAC
                     {
                         cbRuleset.Items.AddRange(rulesetlist);
                         LoadRules();
+                        enabled = false;
                     }
-                    Enable(true);
+                    Enable(enabled);
                 }
             });
         }
 
         private void LoadRuleSetSelections(RuleSet ruleset)
         {
+            ListViewItem GetListViewItemByRule(Helpers.Rule rule)
+            {
+                ListViewItem[] items = new ListViewItem[lvRules.Items.Count];
+                lvRules.Items.CopyTo(items, 0);
+                return items.FirstOrDefault(i => i.Tag is Helpers.Rule && ((Helpers.Rule)i.Tag).Code == rule.Code);
+            }
+
             if (ruleset == null)
             {
                 return;
@@ -538,9 +475,7 @@ namespace Rappen.XTB.PAC
                 Message = $"Loading rules for {ruleset.Name}",
                 Work = (worker, args) =>
                 {
-                    var rules = client.Get($"rule?ruleset={ruleset.Id}");
-                    var jss = new JavaScriptSerializer();
-                    args.Result = jss.Deserialize<Rule[]>(rules);
+                    args.Result = client.GetRules(ruleset.Id);
                 },
                 PostWorkCallBack = (args) =>
                 {
@@ -571,7 +506,7 @@ namespace Rappen.XTB.PAC
         private void LoadSolutions()
         {
             Enable(false);
-            cbSolution.Items.Clear();
+            cbSolution.DataSource = null;
             if (Service == null)
             {
                 return;
@@ -579,38 +514,74 @@ namespace Rappen.XTB.PAC
             WorkAsync(new WorkAsyncInfo
             {
                 Message = "Loading solutions",
-                Work = LoadSolutionsWork,
-                PostWorkCallBack = LoadSolutionsDone
+                Work = (worker, args) =>
+                {
+                    var qx = new QueryExpression("solution");
+                    qx.ColumnSet.AddColumns("friendlyname", "solutionid", "uniquename");
+                    qx.AddOrder("friendlyname", OrderType.Ascending);
+                    qx.Criteria.AddCondition("ismanaged", ConditionOperator.Equal, false);
+                    qx.Criteria.AddCondition("isvisible", ConditionOperator.Equal, true);
+                    qx.Criteria.AddCondition("uniquename", ConditionOperator.NotEqual, "Default");
+                    args.Result = Service.RetrieveMultiple(qx);
+                },
+                PostWorkCallBack = (args) =>
+                {
+                    if (args.Error != null)
+                    {
+                        MessageBox.Show(args.Error.Message);
+                    }
+                    else if (args.Result is EntityCollection solutions)
+                    {
+                        cbSolution.DataSource = solutions;
+                    }
+                    Enable(true);
+                }
             });
         }
 
-        private void LoadSolutionsDone(RunWorkerCompletedEventArgs args)
+        private void ParseSarifLog(SarifLogVersionOne result)
         {
-            if (args.Error != null)
+            foreach (var run in result.Runs)
             {
-                MessageBox.Show(args.Error.Message);
+                var severity = "";
+                WriteToLog($"Results: {run.Results.Count}");
+                var summary = run.Results.GroupBy(
+                    r => r.GetProperty("severity"),
+                    r => r.RuleId, (sev, values) =>
+                    new
+                    {
+                        Severity = sev,
+                        Count = values.Count()
+                    }).OrderBy(s => s.Severity);
+                foreach (var sum in summary)
+                {
+                    WriteToLog($"{sum.Severity}: {sum.Count}");
+                }
+                foreach (var resultitem in run.Results.OrderBy(r => r.GetProperty("severity")))
+                {
+                    var itemseverity = resultitem.GetProperty("severity");
+                    if (severity != itemseverity)
+                    {
+                        WriteToLog($"-- {itemseverity} --");
+                        severity = itemseverity;
+                    }
+                    WriteToLog(resultitem.Message);
+                    WriteToLog(string.Join("\r\n", resultitem.Locations.Select(l => $"  {l.FullyQualifiedLogicalName}: {l.ResultFile.Uri}")));
+                }
             }
-            else if (args.Result is EntityCollection solutions)
-            {
-                cbSolution.Items.AddRange(solutions.Entities.Select(s => new SolutionItem(s)).ToArray());
-            }
-            Enable(true);
-        }
-
-        private void LoadSolutionsWork(BackgroundWorker worker, DoWorkEventArgs args)
-        {
-            var qx = new QueryExpression("solution");
-            qx.ColumnSet.AddColumns("friendlyname", "solutionid", "uniquename");
-            qx.AddOrder("friendlyname", OrderType.Ascending);
-            qx.Criteria.AddCondition("ismanaged", ConditionOperator.Equal, false);
-            qx.Criteria.AddCondition("isvisible", ConditionOperator.Equal, true);
-            qx.Criteria.AddCondition("uniquename", ConditionOperator.NotEqual, "Default");
-            args.Result = Service.RetrieveMultiple(qx);
         }
 
         private ListViewItem RuleToListItem(Helpers.Rule rule)
         {
-            var group = GetGroupForRule(rule);
+            var groupby = (rbGroupCategory.Checked ? $"Category: {rule.PrimaryCategory}" : $"Severity: {rule.Severity}");
+            var groups = new ListViewGroup[lvRules.Groups.Count];
+            lvRules.Groups.CopyTo(groups, 0);
+            var group = groups.FirstOrDefault(g => g.Header == groupby);
+            if (group == null)
+            {
+                group = lvRules.Groups.Add(groupby, groupby);
+                group.HeaderAlignment = HorizontalAlignment.Center;
+            }
             var item = new ListViewItem(rule.ToString())
             {
                 Tag = rule,
@@ -620,12 +591,71 @@ namespace Rappen.XTB.PAC
             return item;
         }
 
+        private void SendAnalysis()
+        {
+            Enable(false);
+            txtRunCorrId.Text = "";
+            txtStatusUrl.Text = "";
+            txtStatus.Text = "";
+            progAnalysis.Value = 0;
+            var analysisargs = GetAnalysisArgs();
+            WorkAsync(new WorkAsyncInfo
+            {
+                Message = "Initiating analysis",
+                AsyncArgument = analysisargs,
+                Work = (worker, args) =>
+                {
+                    args.Result = client.SendAnalysis(args.Argument as AnalysisArgs);
+                },
+                PostWorkCallBack = (args) =>
+                {
+                    if (args.Error != null)
+                    {
+                        MessageBox.Show(args.Error.Message);
+                    }
+                    else if (args.Result is Uri location)
+                    {
+                        txtStatus.Text = "Sent";
+                        progAnalysis.Value = 1;
+                        txtStatusUrl.Text = location.ToString();
+                        txtAnalysis.Text = "Analysis sent\r\n";
+                        tmStatus.Start();
+                    }
+                    Enable(true);
+                }
+            });
+        }
+
+        private void SettingsApplyToUI(Settings settings)
+        {
+            if (!settings.TenantId.Equals(Guid.Empty)) txtTenantId.Text = settings.TenantId.ToString();
+            if (!settings.ClientId.Equals(Guid.Empty)) txtClientId.Text = settings.ClientId.ToString();
+            if (!string.IsNullOrEmpty(settings.ClientSecret)) txtClientSec.Text = settings.ClientSecret;
+            txtFilename.Text = settings.SolutionFile;
+        }
+
+        private Settings SettingsGetFromUI()
+        {
+            var settings = new Settings();
+            if (Guid.TryParse(txtTenantId.Text, out Guid tid))
+            {
+                settings.TenantId = tid;
+            }
+            if (Guid.TryParse(txtClientId.Text, out Guid cid))
+            {
+                settings.ClientId = cid;
+            }
+            settings.ClientSecret = txtClientSec.Text;
+            settings.SolutionFile = txtFilename.Text;
+            return settings;
+        }
+
         private void UpdateRuleCounts()
         {
             lblRules.Text = $"{lvRules.CheckedItems.Count}  selected of {lvRules.Items.Count} rules.";
         }
 
-        private void Upload()
+        private void UploadSolutionFile()
         {
             Enable(false);
             txtCorrId.Text = "";
@@ -659,41 +689,9 @@ namespace Rappen.XTB.PAC
             });
         }
 
-        private void WriteResult(string text)
+        private void WriteToLog(string text)
         {
             txtAnalysis.Text += $"{text}\r\n";
-        }
-
-        private void WriteResults(SarifLogVersionOne result)
-        {
-            foreach (var run in result.Runs)
-            {
-                var severity = "";
-                WriteResult($"Results: {run.Results.Count}");
-                var summary = run.Results.GroupBy(
-                    r => r.GetProperty("severity"),
-                    r => r.RuleId, (sev, values) =>
-                    new
-                    {
-                        Severity = sev,
-                        Count = values.Count()
-                    }).OrderBy(s => s.Severity);
-                foreach (var sum in summary)
-                {
-                    WriteResult($"{sum.Severity}: {sum.Count}");
-                }
-                foreach (var resultitem in run.Results.OrderBy(r => r.GetProperty("severity")))
-                {
-                    var itemseverity = resultitem.GetProperty("severity");
-                    if (severity != itemseverity)
-                    {
-                        WriteResult($"-- {itemseverity} --");
-                        severity = itemseverity;
-                    }
-                    WriteResult(resultitem.Message);
-                    WriteResult(string.Join("\r\n", resultitem.Locations.Select(l => $"  {l.FullyQualifiedLogicalName}: {l.ResultFile.Uri}")));
-                }
-            }
         }
 
         #endregion Private Methods

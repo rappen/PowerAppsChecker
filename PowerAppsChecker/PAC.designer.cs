@@ -57,7 +57,6 @@
             this.lvRules = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.gbSolution = new System.Windows.Forms.GroupBox();
-            this.cbSolution = new System.Windows.Forms.ComboBox();
             this.btnUpload = new System.Windows.Forms.Button();
             this.btnExport = new System.Windows.Forms.Button();
             this.linkBlob = new System.Windows.Forms.LinkLabel();
@@ -77,6 +76,7 @@
             this.label9 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.tmStatus = new System.Windows.Forms.Timer(this.components);
+            this.cbSolution = new xrmtb.XrmToolBox.Controls.Controls.CDSDataComboBox();
             this.groupBox2.SuspendLayout();
             this.gbRules.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picRuleHelp)).BeginInit();
@@ -397,17 +397,6 @@
             this.gbSolution.TabStop = false;
             this.gbSolution.Text = "Solution";
             // 
-            // cbSolution
-            // 
-            this.cbSolution.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.cbSolution.FormattingEnabled = true;
-            this.cbSolution.Location = new System.Drawing.Point(88, 26);
-            this.cbSolution.Name = "cbSolution";
-            this.cbSolution.Size = new System.Drawing.Size(285, 21);
-            this.cbSolution.TabIndex = 1;
-            this.cbSolution.SelectedIndexChanged += new System.EventHandler(this.cdSolution_SelectedItemChanged);
-            // 
             // btnUpload
             // 
             this.btnUpload.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -616,6 +605,18 @@
             this.tmStatus.Interval = 5000;
             this.tmStatus.Tick += new System.EventHandler(this.tmStatus_Tick);
             // 
+            // cbSolution
+            // 
+            this.cbSolution.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.cbSolution.DisplayFormat = "{{friendlyname}} ({{uniquename}})";
+            this.cbSolution.FormattingEnabled = true;
+            this.cbSolution.Location = new System.Drawing.Point(88, 26);
+            this.cbSolution.Name = "cbSolution";
+            this.cbSolution.Size = new System.Drawing.Size(285, 21);
+            this.cbSolution.TabIndex = 1;
+            this.cbSolution.SelectedIndexChanged += new System.EventHandler(this.cdSolution_SelectedItemChanged);
+            // 
             // PAC
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -690,6 +691,6 @@
         private System.Windows.Forms.ProgressBar progAnalysis;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.TextBox txtStatus;
-        private System.Windows.Forms.ComboBox cbSolution;
+        private xrmtb.XrmToolBox.Controls.Controls.CDSDataComboBox cbSolution;
     }
 }
