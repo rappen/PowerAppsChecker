@@ -12,5 +12,6 @@ namespace Rappen.XTB.PAC
         public Guid ClientId { get; set; }
         public string ClientSecret { get; set; }
         public string SolutionFile { get; set; }
+        public string FileExclusions { get; set; }
     }
 }

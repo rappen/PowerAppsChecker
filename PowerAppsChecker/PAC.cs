@@ -1,5 +1,5 @@
 ﻿using McTools.Xrm.Connection;
-using Microsoft.CodeAnalysis.Sarif.VersionOne;
+using Microsoft.CodeAnalysis.Sarif;
 using Microsoft.Crm.Sdk.Messages;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
@@ -21,6 +21,7 @@ namespace Rappen.XTB.PAC
         #region Private Fields
 
         private HttpClient client;
+        private Dictionary<string, int> groupBoxHeights;
 
         #endregion Private Fields
 
@@ -28,7 +29,20 @@ namespace Rappen.XTB.PAC
 
         public PAC()
         {
+            IEnumerable<Control> GetAll(Control control, Type type)
+            {
+                var controls = control.Controls.Cast<Control>().ToArray();
+                return controls.SelectMany(ctrl => GetAll(ctrl, type))
+                                          .Concat(controls)
+                                          .Where(c => c.GetType() == type);
+            }
+
             InitializeComponent();
+            groupBoxHeights = new Dictionary<string, int>();
+            foreach (var gb in GetAll(this, typeof(GroupBox)))
+            {
+                groupBoxHeights.Add(gb.Name, gb.Height);
+            }
         }
 
         #endregion Public Constructors
@@ -74,21 +88,45 @@ namespace Rappen.XTB.PAC
 
         private void btnOpenFile_Click(object sender, EventArgs e)
         {
-            var od = new OpenFileDialog
+            using (var od = new OpenFileDialog
             {
                 InitialDirectory = Paths.LogsPath
-            };
-            if (od.ShowDialog() == DialogResult.OK)
+            })
             {
-                txtFilename.Text = od.FileName;
-                txtCorrId.Text = "";
-                linkBlob.Text = "";
-                txtRunCorrId.Text = "";
-                txtStatusUrl.Text = "";
-                txtStatus.Text = "";
-                progAnalysis.Value = 0;
+                if (od.ShowDialog() == DialogResult.OK)
+                {
+                    txtFilename.Text = od.FileName;
+                    txtCorrId.Text = "";
+                    linkBlob.Text = "";
+                    txtRunCorrId.Text = "";
+                    txtStatusUrl.Text = "";
+                    txtStatus.Text = "";
+                    progAnalysis.Value = 0;
+                    txtResultFile.Text = "";
+                }
             }
             Enable(true);
+        }
+
+        private void btnSaveSarif_Click(object sender, EventArgs e)
+        {
+            var filename = Path.GetFileNameWithoutExtension(txtResultFile.Text.Split('?')[0]);
+            using (var sd = new SaveFileDialog
+            {
+                CheckPathExists = true,
+                DefaultExt = "sarif",
+                FileName = filename,
+                Filter = "SARIF files|*.sarif|All files|*.*",
+                OverwritePrompt = true,
+                Title = "Save SARIF result file"
+            })
+            {
+                if (sd.ShowDialog() == DialogResult.OK)
+                {
+                    File.WriteAllText(sd.FileName, txtSarif.Text);
+                    MessageBox.Show($"{sd.FileName} saved!");
+                }
+            }
         }
 
         private void btnUpload_Click(object sender, EventArgs e)
@@ -131,7 +169,7 @@ namespace Rappen.XTB.PAC
         {
             if (lvRules.SelectedItems.Count > 0 && lvRules.SelectedItems[0].Tag is Helpers.Rule rule)
             {
-                txtRuleDescr.Text = rule.Description;
+                txtRuleDescr.Text = rule.Summary;
             }
             else
             {
@@ -175,9 +213,50 @@ namespace Rappen.XTB.PAC
             CheckAnalysisStatus();
         }
 
+        private void llGroupBoxExpander_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            GroupBoxToggle(sender as LinkLabel);
+        }
+
         #endregion Private event handlers
 
         #region Private Methods
+
+        private void GroupBoxCollapse(LinkLabel link)
+        {
+            link.Parent.Height = 18;
+            link.Text = "Show";
+        }
+
+        private void GroupBoxExpand(LinkLabel link)
+        {
+            link.Parent.Height = groupBoxHeights[link.Parent.Name];
+            link.Text = "Hide";
+        }
+
+        private void GroupBoxSetState(LinkLabel link, bool expanded)
+        {
+            if (expanded)
+            {
+                GroupBoxExpand(link);
+            }
+            else
+            {
+                GroupBoxCollapse(link);
+            }
+        }
+
+        private void GroupBoxToggle(LinkLabel link)
+        {
+            if (link.Parent.Height > 20)
+            {
+                GroupBoxCollapse(link);
+            }
+            else
+            {
+                GroupBoxExpand(link);
+            }
+        }
 
         private void CheckAnalysisStatus()
         {
@@ -212,6 +291,7 @@ namespace Rappen.XTB.PAC
                             WriteToLog($"{status.IssueSummary.InformationalIssueCount} Informational");
                             if (status.ResultFileUris != null && status.ResultFileUris.Length > 0)
                             {
+                                txtResultFile.Text = status.ResultFileUris[0];
                                 GetResultFile(status);
                                 enabled = false;
                             }
@@ -281,6 +361,7 @@ namespace Rappen.XTB.PAC
             btnUpload.Enabled = enable && client != null && File.Exists(txtFilename.Text);
             btnAnalyze.Enabled = enable && client != null && !string.IsNullOrEmpty(linkBlob.Text) &&
                 ((rbScopeRuleset.Checked && cbRuleset.SelectedItem is RuleSet) || (rbScopeRules.Checked && lvRules.CheckedItems.Count > 0));
+            btnSaveSarif.Enabled = enable && !string.IsNullOrWhiteSpace(txtResultFile.Text);
             picRuleHelp.Cursor = picRuleHelp.Enabled ? Cursors.Hand : Cursors.No;
         }
 
@@ -294,6 +375,7 @@ namespace Rappen.XTB.PAC
             txtStatusUrl.Text = "";
             txtStatus.Text = "";
             progAnalysis.Value = 0;
+            txtResultFile.Text = "";
             var solname = solution["uniquename"].ToString();
             WorkAsync(new WorkAsyncInfo
             {
@@ -335,7 +417,7 @@ namespace Rappen.XTB.PAC
                 FileUrl = linkBlob.Text,
                 RuleSets = new List<RuleSet>(),
                 Rules = new List<Helpers.Rule>(),
-                Exclusions = null
+                Exclusions = txtExclusions.Text.Split(',').Select(e => e.Trim()).Where(e => !string.IsNullOrEmpty(e)).ToList()
             };
             if (rbScopeRuleset.Checked && cbRuleset.SelectedItem is RuleSet ruleset)
             {
@@ -366,7 +448,7 @@ namespace Rappen.XTB.PAC
                     Work = (worker, args) =>
                     {
                         var files = args.Argument as string[];
-                        var results = new List<SarifLogVersionOne>();
+                        var results = new List<string>();
                         foreach (var resultfile in files)
                         {
                             results.Add(PACHelper.GetResultFile(resultfile));
@@ -379,11 +461,13 @@ namespace Rappen.XTB.PAC
                         {
                             MessageBox.Show(args.Error.Message);
                         }
-                        else if (args.Result is List<SarifLogVersionOne> results && results.Count > 0)
+                        else if (args.Result is List<string> results && results.Count > 0)
                         {
+                            txtSarif.Text = results[0];
+                            btnSaveSarif.Enabled = true;
                             foreach (var result in results)
                             {
-                                ParseSarifLog(result);
+                                ParseSarifLog(PACHelper.GetSarifFromString(result));
                             }
                         }
                         Enable(true);
@@ -539,25 +623,31 @@ namespace Rappen.XTB.PAC
             });
         }
 
-        private void ParseSarifLog(SarifLogVersionOne result)
+        private void ParseSarifLog(SarifLog result)
         {
+            var maxcount = 100;
             foreach (var run in result.Runs)
             {
                 var severity = "";
-                WriteToLog($"Results: {run.Results.Count}");
-                var summary = run.Results.GroupBy(
-                    r => r.GetProperty("severity"),
-                    r => r.RuleId, (sev, values) =>
-                    new
-                    {
-                        Severity = sev,
-                        Count = values.Count()
-                    }).OrderBy(s => s.Severity);
-                foreach (var sum in summary)
+                //WriteToLog($"Results: {run.Results.Count}");
+                //var summary = run.Results.GroupBy(
+                //    r => r.GetProperty("severity"),
+                //    r => r.RuleId, (sev, values) =>
+                //    new
+                //    {
+                //        Severity = sev,
+                //        Count = values.Count()
+                //    }).OrderBy(s => s.Severity);
+                //foreach (var sum in summary)
+                //{
+                //    WriteToLog($"{sum.Severity}: {sum.Count}");
+                //}
+                if (run.Results.Count > maxcount)
                 {
-                    WriteToLog($"{sum.Severity}: {sum.Count}");
+                    WriteToLog($"Showing first {maxcount} results of total {run.Results.Count}");
                 }
-                foreach (var resultitem in run.Results.OrderBy(r => r.GetProperty("severity")))
+                txtAnalysis.SuspendLayout();
+                foreach (var resultitem in run.Results.OrderBy(r => r.GetProperty("severity")).Take(maxcount))
                 {
                     var itemseverity = resultitem.GetProperty("severity");
                     if (severity != itemseverity)
@@ -565,9 +655,10 @@ namespace Rappen.XTB.PAC
                         WriteToLog($"-- {itemseverity} --");
                         severity = itemseverity;
                     }
-                    WriteToLog(resultitem.Message);
-                    WriteToLog(string.Join("\r\n", resultitem.Locations.Select(l => $"  {l.FullyQualifiedLogicalName}: {l.ResultFile.Uri}")));
+                    WriteToLog(resultitem.Message.Text);
+                    WriteToLog(string.Join("\r\n", resultitem.Locations.Select(l => $"  {l.LogicalLocation.FullyQualifiedName}: {l.PhysicalLocation.ArtifactLocation.Uri}")));
                 }
+                txtAnalysis.ResumeLayout(true);
             }
         }
 
@@ -598,6 +689,7 @@ namespace Rappen.XTB.PAC
             txtStatusUrl.Text = "";
             txtStatus.Text = "";
             progAnalysis.Value = 0;
+            txtResultFile.Text = "";
             var analysisargs = GetAnalysisArgs();
             WorkAsync(new WorkAsyncInfo
             {
@@ -632,6 +724,7 @@ namespace Rappen.XTB.PAC
             if (!settings.ClientId.Equals(Guid.Empty)) txtClientId.Text = settings.ClientId.ToString();
             if (!string.IsNullOrEmpty(settings.ClientSecret)) txtClientSec.Text = settings.ClientSecret;
             txtFilename.Text = settings.SolutionFile;
+            txtExclusions.Text = settings.FileExclusions;
         }
 
         private Settings SettingsGetFromUI()
@@ -647,6 +740,7 @@ namespace Rappen.XTB.PAC
             }
             settings.ClientSecret = txtClientSec.Text;
             settings.SolutionFile = txtFilename.Text;
+            settings.FileExclusions = txtExclusions.Text;
             return settings;
         }
 
@@ -664,6 +758,7 @@ namespace Rappen.XTB.PAC
             txtStatusUrl.Text = "";
             txtStatus.Text = "";
             progAnalysis.Value = 0;
+            txtResultFile.Text = "";
             var corrid = Guid.NewGuid();
             txtCorrId.Text = corrid.ToString();
             WorkAsync(new WorkAsyncInfo

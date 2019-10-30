@@ -1,10 +1,10 @@
-﻿using Microsoft.CodeAnalysis.Sarif.Readers;
-using Microsoft.CodeAnalysis.Sarif.VersionOne;
+﻿using Microsoft.CodeAnalysis.Sarif;
 using Microsoft.Xrm.Sdk;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -69,20 +69,51 @@ namespace Rappen.XTB.PAC.Helpers
             var token = responseString.Split(new string[] { "\"access_token\":\"" }, StringSplitOptions.RemoveEmptyEntries)[1];
             token = token.Split(new string[] { "\"}" }, StringSplitOptions.RemoveEmptyEntries)[0];
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            client.DefaultRequestHeaders.Add("accept", "application/json,application/x-ms-sarif-v2");
             client.DefaultRequestHeaders.Add("x-ms-tenant-id", tenantId.ToString());
             return client;
         }
 
-        public static SarifLogVersionOne GetResultFile(string fileurl)
+        public static string GetResultFile(string fileurl)
         {
             var client = new HttpClient();
-            var resultstring = client.GetAsync(fileurl).GetAwaiter().GetResult().Content.ReadAsStringAsync().GetAwaiter().GetResult();
-            var jss = new JavaScriptSerializer();
-            var settings = new JsonSerializerSettings
+            client.DefaultRequestHeaders.Add("accept", "application/json,application/x-ms-sarif-v2");
+            var result = client.GetAsync(fileurl).GetAwaiter().GetResult().Content.ReadAsByteArrayAsync().GetAwaiter().GetResult();
+            var unzipped = Unzip(result);
+            return unzipped;
+        }
+
+        public static string Unzip(byte[] zippedBuffer)
+        {
+            using (var zippedStream = new MemoryStream(zippedBuffer))
             {
-                ContractResolver = SarifContractResolverVersionOne.Instance
-            };
-            return JsonConvert.DeserializeObject<SarifLogVersionOne>(resultstring, settings);
+                using (var archive = new ZipArchive(zippedStream))
+                {
+                    var entry = archive.Entries.FirstOrDefault();
+
+                    if (entry != null)
+                    {
+                        using (var unzippedEntryStream = entry.Open())
+                        {
+                            using (var ms = new MemoryStream())
+                            {
+                                unzippedEntryStream.CopyTo(ms);
+                                var unzippedArray = ms.ToArray();
+
+                                return Encoding.Default.GetString(unzippedArray);
+                            }
+                        }
+                    }
+
+                    return null;
+                }
+            }
+        }
+
+        public static SarifLog GetSarifFromString(string resultstring)
+        {
+            var jss = new JavaScriptSerializer();
+            return JsonConvert.DeserializeObject<SarifLog>(resultstring);
         }
 
         public static Rule[] GetRules(this HttpClient client, Guid? rulesetid = null)
@@ -194,6 +225,16 @@ namespace Rappen.XTB.PAC.Helpers
         #endregion Public Methods
     }
 
+    public class Fix
+    {
+        public string Summary;
+        public Fix() { }
+        public override string ToString()
+        {
+            return Summary;
+        }
+    }
+
     public class Rule
     {
         #region Public Fields
@@ -206,6 +247,7 @@ namespace Rappen.XTB.PAC.Helpers
         public Category PrimaryCategory;
         public Severity Severity;
         public string Summary;
+        public Fix HowToFix;
 
         #endregion Public Fields
 
@@ -219,7 +261,7 @@ namespace Rappen.XTB.PAC.Helpers
 
         public override string ToString()
         {
-            return string.IsNullOrWhiteSpace(Summary) ? Code : Summary;
+            return string.IsNullOrWhiteSpace(Description) ? Code : Description;
         }
 
         #endregion Public Methods
@@ -242,11 +284,6 @@ namespace Rappen.XTB.PAC.Helpers
 
         #region Public Methods
 
-        //public PACRuleSet(string id, string name)
-        //{
-        //    Id = new Guid(id);
-        //    Name = name;
-        //}
         public override string ToString()
         {
             return Name;

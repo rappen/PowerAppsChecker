@@ -57,26 +57,40 @@
             this.lvRules = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.gbSolution = new System.Windows.Forms.GroupBox();
+            this.cbSolution = new xrmtb.XrmToolBox.Controls.Controls.CDSDataComboBox();
             this.btnUpload = new System.Windows.Forms.Button();
             this.btnExport = new System.Windows.Forms.Button();
             this.linkBlob = new System.Windows.Forms.LinkLabel();
             this.btnAnalyze = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.txtAnalysis = new System.Windows.Forms.TextBox();
-            this.gbAnalysis = new System.Windows.Forms.GroupBox();
-            this.txtStatus = new System.Windows.Forms.TextBox();
-            this.label12 = new System.Windows.Forms.Label();
-            this.progAnalysis = new System.Windows.Forms.ProgressBar();
-            this.txtRunCorrId = new System.Windows.Forms.TextBox();
-            this.label11 = new System.Windows.Forms.Label();
-            this.txtStatusUrl = new System.Windows.Forms.TextBox();
+            this.tabControlResults = new System.Windows.Forms.TabControl();
+            this.tabResults = new System.Windows.Forms.TabPage();
+            this.tabSarif = new System.Windows.Forms.TabPage();
+            this.txtSarif = new System.Windows.Forms.RichTextBox();
+            this.gbResults = new System.Windows.Forms.GroupBox();
+            this.txtResultFile = new System.Windows.Forms.TextBox();
             this.label10 = new System.Windows.Forms.Label();
+            this.txtStatusUrl = new System.Windows.Forms.TextBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.btnSaveSarif = new System.Windows.Forms.Button();
+            this.txtRunCorrId = new System.Windows.Forms.TextBox();
+            this.txtStatus = new System.Windows.Forms.TextBox();
+            this.progAnalysis = new System.Windows.Forms.ProgressBar();
+            this.label12 = new System.Windows.Forms.Label();
+            this.gbAnalysis = new System.Windows.Forms.GroupBox();
+            this.txtExclusions = new System.Windows.Forms.TextBox();
+            this.label14 = new System.Windows.Forms.Label();
             this.rbScopeRules = new System.Windows.Forms.RadioButton();
             this.rbScopeRuleset = new System.Windows.Forms.RadioButton();
             this.label9 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.tmStatus = new System.Windows.Forms.Timer(this.components);
-            this.cbSolution = new xrmtb.XrmToolBox.Controls.Controls.CDSDataComboBox();
+            this.llFileOptionsExpander = new System.Windows.Forms.LinkLabel();
+            this.linkLabel1 = new System.Windows.Forms.LinkLabel();
+            this.linkLabel2 = new System.Windows.Forms.LinkLabel();
+            this.linkLabel3 = new System.Windows.Forms.LinkLabel();
+            this.txtAnalysis = new System.Windows.Forms.TextBox();
             this.groupBox2.SuspendLayout();
             this.gbRules.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picRuleHelp)).BeginInit();
@@ -85,6 +99,10 @@
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
+            this.tabControlResults.SuspendLayout();
+            this.tabResults.SuspendLayout();
+            this.tabSarif.SuspendLayout();
+            this.gbResults.SuspendLayout();
             this.gbAnalysis.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -150,6 +168,7 @@
             // 
             this.cbRuleset.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.cbRuleset.BackColor = System.Drawing.SystemColors.Window;
             this.cbRuleset.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbRuleset.Enabled = false;
             this.cbRuleset.FormattingEnabled = true;
@@ -170,6 +189,7 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.llFileOptionsExpander);
             this.groupBox2.Controls.Add(this.btnConnectPAC);
             this.groupBox2.Controls.Add(this.label3);
             this.groupBox2.Controls.Add(this.txtClientSec);
@@ -188,12 +208,13 @@
             // btnConnectPAC
             // 
             this.btnConnectPAC.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnConnectPAC.BackColor = System.Drawing.SystemColors.Window;
             this.btnConnectPAC.Location = new System.Drawing.Point(347, 77);
             this.btnConnectPAC.Name = "btnConnectPAC";
             this.btnConnectPAC.Size = new System.Drawing.Size(75, 23);
             this.btnConnectPAC.TabIndex = 11;
             this.btnConnectPAC.Text = "Connect";
-            this.btnConnectPAC.UseVisualStyleBackColor = true;
+            this.btnConnectPAC.UseVisualStyleBackColor = false;
             this.btnConnectPAC.Click += new System.EventHandler(this.btnConnectPAC_Click);
             // 
             // label8
@@ -218,10 +239,11 @@
             // 
             this.txtCorrId.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtCorrId.Location = new System.Drawing.Point(88, 79);
+            this.txtCorrId.BackColor = System.Drawing.SystemColors.Window;
+            this.txtCorrId.Location = new System.Drawing.Point(95, 79);
             this.txtCorrId.Name = "txtCorrId";
             this.txtCorrId.ReadOnly = true;
-            this.txtCorrId.Size = new System.Drawing.Size(366, 20);
+            this.txtCorrId.Size = new System.Drawing.Size(364, 20);
             this.txtCorrId.TabIndex = 6;
             // 
             // label6
@@ -237,10 +259,11 @@
             // 
             this.txtFilename.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtFilename.BackColor = System.Drawing.SystemColors.Window;
             this.txtFilename.Enabled = false;
-            this.txtFilename.Location = new System.Drawing.Point(88, 53);
+            this.txtFilename.Location = new System.Drawing.Point(95, 53);
             this.txtFilename.Name = "txtFilename";
-            this.txtFilename.Size = new System.Drawing.Size(252, 20);
+            this.txtFilename.Size = new System.Drawing.Size(250, 20);
             this.txtFilename.TabIndex = 3;
             // 
             // label7
@@ -255,12 +278,13 @@
             // btnOpenFile
             // 
             this.btnOpenFile.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnOpenFile.Location = new System.Drawing.Point(346, 51);
+            this.btnOpenFile.BackColor = System.Drawing.SystemColors.Window;
+            this.btnOpenFile.Location = new System.Drawing.Point(351, 51);
             this.btnOpenFile.Name = "btnOpenFile";
             this.btnOpenFile.Size = new System.Drawing.Size(27, 23);
             this.btnOpenFile.TabIndex = 4;
             this.btnOpenFile.Text = "...";
-            this.btnOpenFile.UseVisualStyleBackColor = true;
+            this.btnOpenFile.UseVisualStyleBackColor = false;
             this.btnOpenFile.Click += new System.EventHandler(this.btnOpenFile_Click);
             // 
             // gbRules
@@ -378,6 +402,7 @@
             // 
             // gbSolution
             // 
+            this.gbSolution.Controls.Add(this.linkLabel1);
             this.gbSolution.Controls.Add(this.cbSolution);
             this.gbSolution.Controls.Add(this.btnUpload);
             this.gbSolution.Controls.Add(this.btnExport);
@@ -397,48 +422,65 @@
             this.gbSolution.TabStop = false;
             this.gbSolution.Text = "Solution";
             // 
+            // cbSolution
+            // 
+            this.cbSolution.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.cbSolution.BackColor = System.Drawing.SystemColors.Window;
+            this.cbSolution.DisplayFormat = "{{friendlyname}} ({{uniquename}}) {{version}}";
+            this.cbSolution.FormattingEnabled = true;
+            this.cbSolution.Location = new System.Drawing.Point(95, 26);
+            this.cbSolution.Name = "cbSolution";
+            this.cbSolution.Size = new System.Drawing.Size(283, 21);
+            this.cbSolution.TabIndex = 1;
+            this.cbSolution.SelectedIndexChanged += new System.EventHandler(this.cdSolution_SelectedItemChanged);
+            // 
             // btnUpload
             // 
             this.btnUpload.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnUpload.Location = new System.Drawing.Point(379, 51);
+            this.btnUpload.BackColor = System.Drawing.SystemColors.Window;
+            this.btnUpload.Location = new System.Drawing.Point(384, 51);
             this.btnUpload.Name = "btnUpload";
             this.btnUpload.Size = new System.Drawing.Size(75, 23);
             this.btnUpload.TabIndex = 5;
             this.btnUpload.Text = "Upload";
-            this.btnUpload.UseVisualStyleBackColor = true;
+            this.btnUpload.UseVisualStyleBackColor = false;
             this.btnUpload.Click += new System.EventHandler(this.btnUpload_Click);
             // 
             // btnExport
             // 
             this.btnExport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnExport.Location = new System.Drawing.Point(379, 24);
+            this.btnExport.BackColor = System.Drawing.SystemColors.Window;
+            this.btnExport.Location = new System.Drawing.Point(384, 24);
             this.btnExport.Name = "btnExport";
             this.btnExport.Size = new System.Drawing.Size(75, 23);
             this.btnExport.TabIndex = 2;
             this.btnExport.Text = "Export";
-            this.btnExport.UseVisualStyleBackColor = true;
+            this.btnExport.UseVisualStyleBackColor = false;
             this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
             // 
             // linkBlob
             // 
             this.linkBlob.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.linkBlob.BackColor = System.Drawing.SystemColors.Window;
             this.linkBlob.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.linkBlob.Location = new System.Drawing.Point(88, 105);
+            this.linkBlob.Location = new System.Drawing.Point(95, 105);
             this.linkBlob.Name = "linkBlob";
-            this.linkBlob.Size = new System.Drawing.Size(366, 20);
+            this.linkBlob.Size = new System.Drawing.Size(364, 20);
             this.linkBlob.TabIndex = 7;
             this.linkBlob.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
             // 
             // btnAnalyze
             // 
             this.btnAnalyze.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnAnalyze.Location = new System.Drawing.Point(379, 20);
+            this.btnAnalyze.BackColor = System.Drawing.SystemColors.Window;
+            this.btnAnalyze.Location = new System.Drawing.Point(384, 20);
             this.btnAnalyze.Name = "btnAnalyze";
             this.btnAnalyze.Size = new System.Drawing.Size(75, 23);
             this.btnAnalyze.TabIndex = 3;
             this.btnAnalyze.Text = "Analyze";
-            this.btnAnalyze.UseVisualStyleBackColor = true;
+            this.btnAnalyze.UseVisualStyleBackColor = false;
             this.btnAnalyze.Click += new System.EventHandler(this.btnAnalyze_Click);
             // 
             // splitContainer1
@@ -455,7 +497,8 @@
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.txtAnalysis);
+            this.splitContainer1.Panel2.Controls.Add(this.tabControlResults);
+            this.splitContainer1.Panel2.Controls.Add(this.gbResults);
             this.splitContainer1.Panel2.Controls.Add(this.gbAnalysis);
             this.splitContainer1.Panel2.Controls.Add(this.gbSolution);
             this.splitContainer1.Size = new System.Drawing.Size(913, 632);
@@ -463,26 +506,178 @@
             this.splitContainer1.SplitterWidth = 8;
             this.splitContainer1.TabIndex = 23;
             // 
-            // txtAnalysis
+            // tabControlResults
             // 
-            this.txtAnalysis.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtAnalysis.Location = new System.Drawing.Point(0, 272);
-            this.txtAnalysis.Multiline = true;
-            this.txtAnalysis.Name = "txtAnalysis";
-            this.txtAnalysis.ReadOnly = true;
-            this.txtAnalysis.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtAnalysis.Size = new System.Drawing.Size(471, 360);
-            this.txtAnalysis.TabIndex = 8;
+            this.tabControlResults.Controls.Add(this.tabResults);
+            this.tabControlResults.Controls.Add(this.tabSarif);
+            this.tabControlResults.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControlResults.Location = new System.Drawing.Point(0, 356);
+            this.tabControlResults.Name = "tabControlResults";
+            this.tabControlResults.SelectedIndex = 0;
+            this.tabControlResults.Size = new System.Drawing.Size(471, 276);
+            this.tabControlResults.TabIndex = 9;
+            // 
+            // tabResults
+            // 
+            this.tabResults.Controls.Add(this.txtAnalysis);
+            this.tabResults.Location = new System.Drawing.Point(4, 22);
+            this.tabResults.Name = "tabResults";
+            this.tabResults.Padding = new System.Windows.Forms.Padding(3);
+            this.tabResults.Size = new System.Drawing.Size(463, 250);
+            this.tabResults.TabIndex = 0;
+            this.tabResults.Text = "Results";
+            this.tabResults.UseVisualStyleBackColor = true;
+            // 
+            // tabSarif
+            // 
+            this.tabSarif.Controls.Add(this.txtSarif);
+            this.tabSarif.Location = new System.Drawing.Point(4, 22);
+            this.tabSarif.Name = "tabSarif";
+            this.tabSarif.Padding = new System.Windows.Forms.Padding(3);
+            this.tabSarif.Size = new System.Drawing.Size(463, 250);
+            this.tabSarif.TabIndex = 1;
+            this.tabSarif.Text = "SARIF (raw)";
+            this.tabSarif.UseVisualStyleBackColor = true;
+            // 
+            // txtSarif
+            // 
+            this.txtSarif.BackColor = System.Drawing.SystemColors.Window;
+            this.txtSarif.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtSarif.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtSarif.Location = new System.Drawing.Point(3, 3);
+            this.txtSarif.Name = "txtSarif";
+            this.txtSarif.ReadOnly = true;
+            this.txtSarif.Size = new System.Drawing.Size(457, 244);
+            this.txtSarif.TabIndex = 0;
+            this.txtSarif.Text = "";
+            this.txtSarif.WordWrap = false;
+            // 
+            // gbResults
+            // 
+            this.gbResults.Controls.Add(this.linkLabel3);
+            this.gbResults.Controls.Add(this.txtResultFile);
+            this.gbResults.Controls.Add(this.label10);
+            this.gbResults.Controls.Add(this.txtStatusUrl);
+            this.gbResults.Controls.Add(this.label13);
+            this.gbResults.Controls.Add(this.label11);
+            this.gbResults.Controls.Add(this.btnSaveSarif);
+            this.gbResults.Controls.Add(this.txtRunCorrId);
+            this.gbResults.Controls.Add(this.txtStatus);
+            this.gbResults.Controls.Add(this.progAnalysis);
+            this.gbResults.Controls.Add(this.label12);
+            this.gbResults.Dock = System.Windows.Forms.DockStyle.Top;
+            this.gbResults.Location = new System.Drawing.Point(0, 220);
+            this.gbResults.Name = "gbResults";
+            this.gbResults.Size = new System.Drawing.Size(471, 136);
+            this.gbResults.TabIndex = 10;
+            this.gbResults.TabStop = false;
+            this.gbResults.Text = "Results";
+            // 
+            // txtResultFile
+            // 
+            this.txtResultFile.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtResultFile.BackColor = System.Drawing.SystemColors.Window;
+            this.txtResultFile.Location = new System.Drawing.Point(95, 101);
+            this.txtResultFile.Name = "txtResultFile";
+            this.txtResultFile.ReadOnly = true;
+            this.txtResultFile.Size = new System.Drawing.Size(283, 20);
+            this.txtResultFile.TabIndex = 8;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(12, 26);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(53, 13);
+            this.label10.TabIndex = 27;
+            this.label10.Text = "Status Url";
+            // 
+            // txtStatusUrl
+            // 
+            this.txtStatusUrl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtStatusUrl.BackColor = System.Drawing.SystemColors.Window;
+            this.txtStatusUrl.Location = new System.Drawing.Point(95, 23);
+            this.txtStatusUrl.Name = "txtStatusUrl";
+            this.txtStatusUrl.ReadOnly = true;
+            this.txtStatusUrl.Size = new System.Drawing.Size(364, 20);
+            this.txtStatusUrl.TabIndex = 4;
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(12, 104);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(53, 13);
+            this.label13.TabIndex = 35;
+            this.label13.Text = "Result file";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(12, 52);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(61, 13);
+            this.label11.TabIndex = 29;
+            this.label11.Text = "Run Corr Id";
+            // 
+            // btnSaveSarif
+            // 
+            this.btnSaveSarif.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSaveSarif.BackColor = System.Drawing.SystemColors.Window;
+            this.btnSaveSarif.Location = new System.Drawing.Point(384, 99);
+            this.btnSaveSarif.Name = "btnSaveSarif";
+            this.btnSaveSarif.Size = new System.Drawing.Size(75, 23);
+            this.btnSaveSarif.TabIndex = 9;
+            this.btnSaveSarif.Text = "Save SARIF";
+            this.btnSaveSarif.UseVisualStyleBackColor = false;
+            this.btnSaveSarif.Click += new System.EventHandler(this.btnSaveSarif_Click);
+            // 
+            // txtRunCorrId
+            // 
+            this.txtRunCorrId.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtRunCorrId.BackColor = System.Drawing.SystemColors.Window;
+            this.txtRunCorrId.Location = new System.Drawing.Point(95, 49);
+            this.txtRunCorrId.Name = "txtRunCorrId";
+            this.txtRunCorrId.ReadOnly = true;
+            this.txtRunCorrId.Size = new System.Drawing.Size(364, 20);
+            this.txtRunCorrId.TabIndex = 5;
+            // 
+            // txtStatus
+            // 
+            this.txtStatus.BackColor = System.Drawing.SystemColors.Window;
+            this.txtStatus.Location = new System.Drawing.Point(95, 75);
+            this.txtStatus.Name = "txtStatus";
+            this.txtStatus.ReadOnly = true;
+            this.txtStatus.Size = new System.Drawing.Size(97, 20);
+            this.txtStatus.TabIndex = 6;
+            // 
+            // progAnalysis
+            // 
+            this.progAnalysis.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.progAnalysis.BackColor = System.Drawing.SystemColors.Window;
+            this.progAnalysis.Location = new System.Drawing.Point(198, 75);
+            this.progAnalysis.Name = "progAnalysis";
+            this.progAnalysis.Size = new System.Drawing.Size(261, 20);
+            this.progAnalysis.TabIndex = 7;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(12, 78);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(37, 13);
+            this.label12.TabIndex = 32;
+            this.label12.Text = "Status";
             // 
             // gbAnalysis
             // 
-            this.gbAnalysis.Controls.Add(this.txtStatus);
-            this.gbAnalysis.Controls.Add(this.label12);
-            this.gbAnalysis.Controls.Add(this.progAnalysis);
-            this.gbAnalysis.Controls.Add(this.txtRunCorrId);
-            this.gbAnalysis.Controls.Add(this.label11);
-            this.gbAnalysis.Controls.Add(this.txtStatusUrl);
-            this.gbAnalysis.Controls.Add(this.label10);
+            this.gbAnalysis.Controls.Add(this.linkLabel2);
+            this.gbAnalysis.Controls.Add(this.txtExclusions);
+            this.gbAnalysis.Controls.Add(this.label14);
             this.gbAnalysis.Controls.Add(this.btnAnalyze);
             this.gbAnalysis.Controls.Add(this.rbScopeRules);
             this.gbAnalysis.Controls.Add(this.rbScopeRuleset);
@@ -490,79 +685,33 @@
             this.gbAnalysis.Dock = System.Windows.Forms.DockStyle.Top;
             this.gbAnalysis.Location = new System.Drawing.Point(0, 135);
             this.gbAnalysis.Name = "gbAnalysis";
-            this.gbAnalysis.Size = new System.Drawing.Size(471, 137);
+            this.gbAnalysis.Size = new System.Drawing.Size(471, 85);
             this.gbAnalysis.TabIndex = 4;
             this.gbAnalysis.TabStop = false;
             this.gbAnalysis.Text = "Analysis";
             // 
-            // txtStatus
+            // txtExclusions
             // 
-            this.txtStatus.Location = new System.Drawing.Point(88, 105);
-            this.txtStatus.Name = "txtStatus";
-            this.txtStatus.ReadOnly = true;
-            this.txtStatus.Size = new System.Drawing.Size(87, 20);
-            this.txtStatus.TabIndex = 6;
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(12, 108);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(37, 13);
-            this.label12.TabIndex = 32;
-            this.label12.Text = "Status";
-            // 
-            // progAnalysis
-            // 
-            this.progAnalysis.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.txtExclusions.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.progAnalysis.Location = new System.Drawing.Point(181, 105);
-            this.progAnalysis.Name = "progAnalysis";
-            this.progAnalysis.Size = new System.Drawing.Size(273, 20);
-            this.progAnalysis.TabIndex = 7;
+            this.txtExclusions.Location = new System.Drawing.Point(95, 49);
+            this.txtExclusions.Name = "txtExclusions";
+            this.txtExclusions.Size = new System.Drawing.Size(364, 20);
+            this.txtExclusions.TabIndex = 36;
             // 
-            // txtRunCorrId
+            // label14
             // 
-            this.txtRunCorrId.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtRunCorrId.Location = new System.Drawing.Point(88, 79);
-            this.txtRunCorrId.Name = "txtRunCorrId";
-            this.txtRunCorrId.ReadOnly = true;
-            this.txtRunCorrId.Size = new System.Drawing.Size(366, 20);
-            this.txtRunCorrId.TabIndex = 5;
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(12, 82);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(61, 13);
-            this.label11.TabIndex = 29;
-            this.label11.Text = "Run Corr Id";
-            // 
-            // txtStatusUrl
-            // 
-            this.txtStatusUrl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtStatusUrl.Location = new System.Drawing.Point(88, 53);
-            this.txtStatusUrl.Name = "txtStatusUrl";
-            this.txtStatusUrl.ReadOnly = true;
-            this.txtStatusUrl.Size = new System.Drawing.Size(366, 20);
-            this.txtStatusUrl.TabIndex = 4;
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(12, 56);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(53, 13);
-            this.label10.TabIndex = 27;
-            this.label10.Text = "Status Url";
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(12, 52);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(76, 13);
+            this.label14.TabIndex = 37;
+            this.label14.Text = "File Exclusions";
             // 
             // rbScopeRules
             // 
             this.rbScopeRules.AutoSize = true;
-            this.rbScopeRules.Location = new System.Drawing.Point(243, 23);
+            this.rbScopeRules.Location = new System.Drawing.Point(207, 23);
             this.rbScopeRules.Name = "rbScopeRules";
             this.rbScopeRules.Size = new System.Drawing.Size(97, 17);
             this.rbScopeRules.TabIndex = 2;
@@ -574,7 +723,7 @@
             // 
             this.rbScopeRuleset.AutoSize = true;
             this.rbScopeRuleset.Checked = true;
-            this.rbScopeRuleset.Location = new System.Drawing.Point(88, 23);
+            this.rbScopeRuleset.Location = new System.Drawing.Point(95, 23);
             this.rbScopeRuleset.Name = "rbScopeRuleset";
             this.rbScopeRuleset.Size = new System.Drawing.Size(106, 17);
             this.rbScopeRuleset.TabIndex = 1;
@@ -605,22 +754,71 @@
             this.tmStatus.Interval = 5000;
             this.tmStatus.Tick += new System.EventHandler(this.tmStatus_Tick);
             // 
-            // cbSolution
+            // llFileOptionsExpander
             // 
-            this.cbSolution.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.cbSolution.DisplayFormat = "{{friendlyname}} ({{uniquename}}) {{version}}";
-            this.cbSolution.FormattingEnabled = true;
-            this.cbSolution.Location = new System.Drawing.Point(88, 26);
-            this.cbSolution.Name = "cbSolution";
-            this.cbSolution.Size = new System.Drawing.Size(285, 21);
-            this.cbSolution.TabIndex = 1;
-            this.cbSolution.SelectedIndexChanged += new System.EventHandler(this.cdSolution_SelectedItemChanged);
+            this.llFileOptionsExpander.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.llFileOptionsExpander.AutoSize = true;
+            this.llFileOptionsExpander.Location = new System.Drawing.Point(399, 0);
+            this.llFileOptionsExpander.Name = "llFileOptionsExpander";
+            this.llFileOptionsExpander.Size = new System.Drawing.Size(29, 13);
+            this.llFileOptionsExpander.TabIndex = 14;
+            this.llFileOptionsExpander.TabStop = true;
+            this.llFileOptionsExpander.Text = "Hide";
+            this.llFileOptionsExpander.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.llGroupBoxExpander_LinkClicked);
+            // 
+            // linkLabel1
+            // 
+            this.linkLabel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.linkLabel1.AutoSize = true;
+            this.linkLabel1.Location = new System.Drawing.Point(436, 0);
+            this.linkLabel1.Name = "linkLabel1";
+            this.linkLabel1.Size = new System.Drawing.Size(29, 13);
+            this.linkLabel1.TabIndex = 23;
+            this.linkLabel1.TabStop = true;
+            this.linkLabel1.Text = "Hide";
+            this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.llGroupBoxExpander_LinkClicked);
+            // 
+            // linkLabel2
+            // 
+            this.linkLabel2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.linkLabel2.AutoSize = true;
+            this.linkLabel2.Location = new System.Drawing.Point(436, 0);
+            this.linkLabel2.Name = "linkLabel2";
+            this.linkLabel2.Size = new System.Drawing.Size(29, 13);
+            this.linkLabel2.TabIndex = 38;
+            this.linkLabel2.TabStop = true;
+            this.linkLabel2.Text = "Hide";
+            this.linkLabel2.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.llGroupBoxExpander_LinkClicked);
+            // 
+            // linkLabel3
+            // 
+            this.linkLabel3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.linkLabel3.AutoSize = true;
+            this.linkLabel3.Location = new System.Drawing.Point(436, 0);
+            this.linkLabel3.Name = "linkLabel3";
+            this.linkLabel3.Size = new System.Drawing.Size(29, 13);
+            this.linkLabel3.TabIndex = 39;
+            this.linkLabel3.TabStop = true;
+            this.linkLabel3.Text = "Hide";
+            this.linkLabel3.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.llGroupBoxExpander_LinkClicked);
+            // 
+            // txtAnalysis
+            // 
+            this.txtAnalysis.BackColor = System.Drawing.SystemColors.Window;
+            this.txtAnalysis.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtAnalysis.Location = new System.Drawing.Point(3, 3);
+            this.txtAnalysis.Multiline = true;
+            this.txtAnalysis.Name = "txtAnalysis";
+            this.txtAnalysis.ReadOnly = true;
+            this.txtAnalysis.Size = new System.Drawing.Size(457, 244);
+            this.txtAnalysis.TabIndex = 0;
+            this.txtAnalysis.WordWrap = false;
             // 
             // PAC
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.Window;
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.panel1);
             this.Name = "PAC";
@@ -635,9 +833,14 @@
             this.gbSolution.PerformLayout();
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
-            this.splitContainer1.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
+            this.tabControlResults.ResumeLayout(false);
+            this.tabResults.ResumeLayout(false);
+            this.tabResults.PerformLayout();
+            this.tabSarif.ResumeLayout(false);
+            this.gbResults.ResumeLayout(false);
+            this.gbResults.PerformLayout();
             this.gbAnalysis.ResumeLayout(false);
             this.gbAnalysis.PerformLayout();
             this.ResumeLayout(false);
@@ -676,7 +879,6 @@
         private System.Windows.Forms.Button btnExport;
         private System.Windows.Forms.Button btnAnalyze;
         private System.Windows.Forms.Button btnUpload;
-        private System.Windows.Forms.TextBox txtAnalysis;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.PictureBox picRuleHelp;
         private System.Windows.Forms.GroupBox gbAnalysis;
@@ -692,5 +894,20 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.TextBox txtStatus;
         private xrmtb.XrmToolBox.Controls.Controls.CDSDataComboBox cbSolution;
+        private System.Windows.Forms.Button btnSaveSarif;
+        private System.Windows.Forms.TextBox txtResultFile;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.TabControl tabControlResults;
+        private System.Windows.Forms.TabPage tabResults;
+        private System.Windows.Forms.TabPage tabSarif;
+        private System.Windows.Forms.RichTextBox txtSarif;
+        private System.Windows.Forms.GroupBox gbResults;
+        private System.Windows.Forms.TextBox txtExclusions;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.LinkLabel llFileOptionsExpander;
+        private System.Windows.Forms.LinkLabel linkLabel1;
+        private System.Windows.Forms.LinkLabel linkLabel3;
+        private System.Windows.Forms.LinkLabel linkLabel2;
+        private System.Windows.Forms.TextBox txtAnalysis;
     }
 }
