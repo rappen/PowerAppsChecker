@@ -97,7 +97,7 @@ namespace Rappen.XTB.PAC
                 {
                     txtFilename.Text = od.FileName;
                     txtCorrId.Text = "";
-                    linkBlob.Text = "";
+                    linkUploaded.Text = "";
                     txtRunCorrId.Text = "";
                     txtStatusUrl.Text = "";
                     txtStatus.Text = "";
@@ -155,9 +155,9 @@ namespace Rappen.XTB.PAC
             }
         }
 
-        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        private void linkUploaded_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Process.Start(linkBlob.Text);
+            Process.Start(linkUploaded.Text);
         }
 
         private void lvRules_ItemChecked(object sender, ItemCheckedEventArgs e)
@@ -256,6 +256,7 @@ namespace Rappen.XTB.PAC
             {
                 GroupBoxExpand(link);
             }
+            splitContainer2.Height = Math.Max(gbSolution.Height, gbAnalysis.Height + gbResults.Height) + 3;
         }
 
         private void CheckAnalysisStatus()
@@ -359,7 +360,7 @@ namespace Rappen.XTB.PAC
             cbSolution.Enabled = enable && Service != null;
             btnExport.Enabled = enable && cbSolution.SelectedEntity != null;
             btnUpload.Enabled = enable && client != null && File.Exists(txtFilename.Text);
-            btnAnalyze.Enabled = enable && client != null && !string.IsNullOrEmpty(linkBlob.Text) &&
+            btnAnalyze.Enabled = enable && client != null && !string.IsNullOrEmpty(linkUploaded.Text) &&
                 ((rbScopeRuleset.Checked && cbRuleset.SelectedItem is RuleSet) || (rbScopeRules.Checked && lvRules.CheckedItems.Count > 0));
             btnSaveSarif.Enabled = enable && !string.IsNullOrWhiteSpace(txtResultFile.Text);
             picRuleHelp.Cursor = picRuleHelp.Enabled ? Cursors.Hand : Cursors.No;
@@ -370,7 +371,7 @@ namespace Rappen.XTB.PAC
             Enable(false);
             txtFilename.Text = "";
             txtCorrId.Text = "";
-            linkBlob.Text = "";
+            linkUploaded.Text = "";
             txtRunCorrId.Text = "";
             txtStatusUrl.Text = "";
             txtStatus.Text = "";
@@ -414,7 +415,7 @@ namespace Rappen.XTB.PAC
             var args = new AnalysisArgs
             {
                 CorrId = new Guid(txtCorrId.Text),
-                FileUrl = linkBlob.Text,
+                FileUrl = linkUploaded.Text,
                 RuleSets = new List<RuleSet>(),
                 Rules = new List<Helpers.Rule>(),
                 Exclusions = txtExclusions.Text.Split(',').Select(e => e.Trim()).Where(e => !string.IsNullOrEmpty(e)).ToList()
@@ -646,20 +647,49 @@ namespace Rappen.XTB.PAC
                 {
                     WriteToLog($"Showing first {maxcount} results of total {run.Results.Count}");
                 }
-                txtAnalysis.SuspendLayout();
-                foreach (var resultitem in run.Results.OrderBy(r => r.GetProperty("severity")).Take(maxcount))
-                {
-                    var itemseverity = resultitem.GetProperty("severity");
-                    if (severity != itemseverity)
-                    {
-                        WriteToLog($"-- {itemseverity} --");
-                        severity = itemseverity;
-                    }
-                    WriteToLog(resultitem.Message.Text);
-                    WriteToLog(string.Join("\r\n", resultitem.Locations.Select(l => $"  {l.LogicalLocation.FullyQualifiedName}: {l.PhysicalLocation.ArtifactLocation.Uri}")));
-                }
-                txtAnalysis.ResumeLayout(true);
+                dataGridView1.DataSource = FlattenedResult.GetFlattenedResults(run);
             }
+        }
+
+        private DataSet GetResultDataset(Run run)
+        {
+            var severity = new DataTable();
+            severity.Columns.Add("Severity", typeof(string));
+            severity.Columns.Add("Count", typeof(int));
+
+            var result = new DataTable();
+            result.Columns.Add("Severity", typeof(string));
+            result.Columns.Add("Rule", typeof(string));
+            result.Columns.Add("Message", typeof(string));
+            result.Columns.Add("Location", typeof(string));
+
+            var dataset = new DataSet();
+            dataset.Tables.Add(severity);
+            dataset.Tables.Add(result);
+            dataset.Relations.Add("Results by Severity", severity.Columns["Severity"], result.Columns["Severity"]);
+
+            var summary = run.Results.GroupBy(
+                r => r.GetProperty("severity"),
+                r => r.RuleId, (sev, values) =>
+                new
+                {
+                    Severity = sev,
+                    Count = values.Count()
+                }).OrderBy(s => s.Severity);
+            foreach (var sum in summary)
+            {
+                severity.Rows.Add(sum.Severity, sum.Count);
+            }
+
+            foreach (var resultitem in run.Results.OrderBy(r => r.GetProperty("severity")))
+            {
+                result.Rows.Add(
+                    resultitem.GetProperty("severity"),
+                    resultitem.RuleId,
+                    resultitem.Message?.Text,
+                    string.Join("\r\n", resultitem.Locations.Select(l => l.PhysicalLocation?.ArtifactLocation?.Uri)));
+            }
+            return dataset;
         }
 
         private ListViewItem RuleToListItem(Helpers.Rule rule)
@@ -724,6 +754,8 @@ namespace Rappen.XTB.PAC
             if (!settings.ClientId.Equals(Guid.Empty)) txtClientId.Text = settings.ClientId.ToString();
             if (!string.IsNullOrEmpty(settings.ClientSecret)) txtClientSec.Text = settings.ClientSecret;
             txtFilename.Text = settings.SolutionFile;
+            txtCorrId.Text = settings.CorrelationId.ToString();
+            linkUploaded.Text = settings.UploadedFile;
             txtExclusions.Text = settings.FileExclusions;
         }
 
@@ -740,6 +772,11 @@ namespace Rappen.XTB.PAC
             }
             settings.ClientSecret = txtClientSec.Text;
             settings.SolutionFile = txtFilename.Text;
+            if (Guid.TryParse(txtCorrId.Text, out Guid coid))
+            {
+                settings.CorrelationId = coid;
+            }
+            settings.UploadedFile = linkUploaded.Text;
             settings.FileExclusions = txtExclusions.Text;
             return settings;
         }
@@ -753,7 +790,7 @@ namespace Rappen.XTB.PAC
         {
             Enable(false);
             txtCorrId.Text = "";
-            linkBlob.Text = "";
+            linkUploaded.Text = "";
             txtRunCorrId.Text = "";
             txtStatusUrl.Text = "";
             txtStatus.Text = "";
@@ -777,7 +814,7 @@ namespace Rappen.XTB.PAC
                     }
                     else if (args.Result is string bloburl)
                     {
-                        linkBlob.Text = bloburl;
+                        linkUploaded.Text = bloburl;
                     }
                     Enable(true);
                 }

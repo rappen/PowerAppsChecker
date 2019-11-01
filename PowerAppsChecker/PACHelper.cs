@@ -83,39 +83,6 @@ namespace Rappen.XTB.PAC.Helpers
             return unzipped;
         }
 
-        public static string Unzip(byte[] zippedBuffer)
-        {
-            using (var zippedStream = new MemoryStream(zippedBuffer))
-            {
-                using (var archive = new ZipArchive(zippedStream))
-                {
-                    var entry = archive.Entries.FirstOrDefault();
-
-                    if (entry != null)
-                    {
-                        using (var unzippedEntryStream = entry.Open())
-                        {
-                            using (var ms = new MemoryStream())
-                            {
-                                unzippedEntryStream.CopyTo(ms);
-                                var unzippedArray = ms.ToArray();
-
-                                return Encoding.Default.GetString(unzippedArray);
-                            }
-                        }
-                    }
-
-                    return null;
-                }
-            }
-        }
-
-        public static SarifLog GetSarifFromString(string resultstring)
-        {
-            var jss = new JavaScriptSerializer();
-            return JsonConvert.DeserializeObject<SarifLog>(resultstring);
-        }
-
         public static Rule[] GetRules(this HttpClient client, Guid? rulesetid = null)
         {
             var url = $"{serviceUrl}/api/rule";
@@ -133,6 +100,12 @@ namespace Rappen.XTB.PAC.Helpers
             var rulesets = client.GetAsync($"{serviceUrl}/api/ruleset").GetAwaiter().GetResult().Content.ReadAsStringAsync().GetAwaiter().GetResult();
             var jss = new JavaScriptSerializer();
             return jss.Deserialize<RuleSet[]>(rulesets);
+        }
+
+        public static SarifLog GetSarifFromString(string resultstring)
+        {
+            var jss = new JavaScriptSerializer();
+            return JsonConvert.DeserializeObject<SarifLog>(resultstring);
         }
 
         public static AnalysisStatus GetStatus(this HttpClient client, string statusurl)
@@ -169,6 +142,32 @@ namespace Rappen.XTB.PAC.Helpers
             return response.Headers.Location;
         }
 
+        public static string Unzip(byte[] zippedBuffer)
+        {
+            using (var zippedStream = new MemoryStream(zippedBuffer))
+            {
+                using (var archive = new ZipArchive(zippedStream))
+                {
+                    var entry = archive.Entries.FirstOrDefault();
+
+                    if (entry != null)
+                    {
+                        using (var unzippedEntryStream = entry.Open())
+                        {
+                            using (var ms = new MemoryStream())
+                            {
+                                unzippedEntryStream.CopyTo(ms);
+                                var unzippedArray = ms.ToArray();
+
+                                return Encoding.Default.GetString(unzippedArray);
+                            }
+                        }
+                    }
+
+                    return null;
+                }
+            }
+        }
         public static string Upload(this HttpClient client, Guid corrid, string filepath)
         {
             var apiUrl = $"{serviceUrl}/api/upload";
@@ -227,12 +226,26 @@ namespace Rappen.XTB.PAC.Helpers
 
     public class Fix
     {
+        #region Public Fields
+
         public string Summary;
+
+        #endregion Public Fields
+
+        #region Public Constructors
+
         public Fix() { }
+
+        #endregion Public Constructors
+
+        #region Public Methods
+
         public override string ToString()
         {
             return Summary;
         }
+
+        #endregion Public Methods
     }
 
     public class Rule
@@ -243,12 +256,11 @@ namespace Rappen.XTB.PAC.Helpers
         public int ComponentType;
         public string Description;
         public string GuidanceUrl;
+        public Fix HowToFix;
         public bool Include;
         public Category PrimaryCategory;
         public Severity Severity;
         public string Summary;
-        public Fix HowToFix;
-
         #endregion Public Fields
 
         #region Public Constructors
@@ -330,5 +342,35 @@ namespace Rappen.XTB.PAC.Helpers
         public int MediumIssueCount;
 
         #endregion Public Fields
+    }
+
+    public class FlattenedResult
+    {
+        public string RuleId { get; set; }
+        public string Message { get; set; }
+        public string Severity { get; set; }
+        public Uri FilePath { get; set; }
+        public int? StartLine { get; set; }
+        public int? EndLine { get; set; }
+        public string Snippet { get; set; }
+        public string Module { get; set; }
+
+        public static List<FlattenedResult> GetFlattenedResults(Run run)
+        {
+            var query =
+                run.Results
+                .SelectMany(r => r.Locations, (result, location) => new FlattenedResult
+                {
+                    RuleId = result.RuleId,
+                    Message = result.Message?.Text,
+                    FilePath = location.PhysicalLocation?.ArtifactLocation?.Uri,
+                    StartLine = location.PhysicalLocation?.Region?.StartLine,
+                    Snippet = location.PhysicalLocation?.Region?.Snippet?.Text,
+                    EndLine = location.PhysicalLocation?.Region?.EndLine,
+                    Module = location.PropertyNames.Contains("module") ? location.GetProperty("module") : null,
+                    Severity = result.PropertyNames.Contains("severity") ? result.GetProperty("severity") : null
+                });
+            return query.ToList();
+        }
     }
 }
