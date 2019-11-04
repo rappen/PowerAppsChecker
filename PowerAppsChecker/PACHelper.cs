@@ -115,7 +115,7 @@ namespace Rappen.XTB.PAC.Helpers
             return jss.Deserialize<AnalysisStatus>(status);
         }
 
-        public static Uri SendAnalysis(this HttpClient client, AnalysisArgs args)
+        public static HttpResponseMessage SendAnalysis(this HttpClient client, AnalysisArgs args)
         {
             var apiUrl = $"{serviceUrl}/api/analyze";
             var values = new Dictionary<string, string>
@@ -138,8 +138,7 @@ namespace Rappen.XTB.PAC.Helpers
             var body = new StringContent(bodystr, Encoding.UTF8);
             client.DefaultRequestHeaders.Add("x-ms-correlation-id", args.CorrId.ToString());
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            var response = client.PostAsync(apiUrl, body).GetAwaiter().GetResult();
-            return response.Headers.Location;
+            return client.PostAsync(apiUrl, body).GetAwaiter().GetResult();
         }
 
         public static string Unzip(byte[] zippedBuffer)

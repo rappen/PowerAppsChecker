@@ -30,6 +30,7 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PAC));
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.label1 = new System.Windows.Forms.Label();
             this.txtTenantId = new System.Windows.Forms.TextBox();
             this.txtClientId = new System.Windows.Forms.TextBox();
@@ -67,6 +68,13 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.tabControlResults = new System.Windows.Forms.TabControl();
             this.tabResults = new System.Windows.Forms.TabPage();
+            this.dgResults = new System.Windows.Forms.DataGridView();
+            this.Severity = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.RuleId = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Message = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Snippet = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.FilePath = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.StartLine = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.txtAnalysis = new System.Windows.Forms.TextBox();
             this.tabSarif = new System.Windows.Forms.TabPage();
             this.txtSarif = new System.Windows.Forms.RichTextBox();
@@ -92,12 +100,8 @@
             this.label9 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.tmStatus = new System.Windows.Forms.Timer(this.components);
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.RuleId = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Message = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Snippet = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.FilePath = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.StartLine = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dgGrouper = new Subro.Controls.DataGridViewGrouper(this.components);
+            this.btnOpenSarif = new System.Windows.Forms.Button();
             this.gbAPI.SuspendLayout();
             this.gbRules.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picRuleHelp)).BeginInit();
@@ -108,6 +112,7 @@
             this.splitContainer1.SuspendLayout();
             this.tabControlResults.SuspendLayout();
             this.tabResults.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgResults)).BeginInit();
             this.tabSarif.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
             this.splitContainer2.Panel1.SuspendLayout();
@@ -115,7 +120,6 @@
             this.splitContainer2.SuspendLayout();
             this.gbResults.SuspendLayout();
             this.gbAnalysis.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -215,7 +219,7 @@
             this.gbAPI.Size = new System.Drawing.Size(434, 110);
             this.gbAPI.TabIndex = 1;
             this.gbAPI.TabStop = false;
-            this.gbAPI.Text = "PowerApps Checker API";
+            this.gbAPI.Text = "Power Apps Checker API";
             // 
             // llFileOptionsExpander
             // 
@@ -267,7 +271,7 @@
             this.txtCorrId.Location = new System.Drawing.Point(95, 79);
             this.txtCorrId.Name = "txtCorrId";
             this.txtCorrId.ReadOnly = true;
-            this.txtCorrId.Size = new System.Drawing.Size(244, 20);
+            this.txtCorrId.Size = new System.Drawing.Size(356, 20);
             this.txtCorrId.TabIndex = 6;
             // 
             // label6
@@ -287,7 +291,7 @@
             this.txtFilename.Enabled = false;
             this.txtFilename.Location = new System.Drawing.Point(95, 53);
             this.txtFilename.Name = "txtFilename";
-            this.txtFilename.Size = new System.Drawing.Size(130, 20);
+            this.txtFilename.Size = new System.Drawing.Size(242, 20);
             this.txtFilename.TabIndex = 3;
             // 
             // label7
@@ -303,7 +307,7 @@
             // 
             this.btnOpenFile.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnOpenFile.BackColor = System.Drawing.SystemColors.Window;
-            this.btnOpenFile.Location = new System.Drawing.Point(231, 51);
+            this.btnOpenFile.Location = new System.Drawing.Point(343, 51);
             this.btnOpenFile.Name = "btnOpenFile";
             this.btnOpenFile.Size = new System.Drawing.Size(27, 23);
             this.btnOpenFile.TabIndex = 4;
@@ -442,7 +446,7 @@
             this.gbSolution.Dock = System.Windows.Forms.DockStyle.Top;
             this.gbSolution.Location = new System.Drawing.Point(0, 0);
             this.gbSolution.Name = "gbSolution";
-            this.gbSolution.Size = new System.Drawing.Size(351, 135);
+            this.gbSolution.Size = new System.Drawing.Size(463, 135);
             this.gbSolution.TabIndex = 3;
             this.gbSolution.TabStop = false;
             this.gbSolution.Text = "Solution";
@@ -451,7 +455,7 @@
             // 
             this.linkLabel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.linkLabel1.AutoSize = true;
-            this.linkLabel1.Location = new System.Drawing.Point(316, 0);
+            this.linkLabel1.Location = new System.Drawing.Point(428, 0);
             this.linkLabel1.Name = "linkLabel1";
             this.linkLabel1.Size = new System.Drawing.Size(29, 13);
             this.linkLabel1.TabIndex = 23;
@@ -468,7 +472,7 @@
             this.cbSolution.FormattingEnabled = true;
             this.cbSolution.Location = new System.Drawing.Point(95, 26);
             this.cbSolution.Name = "cbSolution";
-            this.cbSolution.Size = new System.Drawing.Size(163, 21);
+            this.cbSolution.Size = new System.Drawing.Size(275, 21);
             this.cbSolution.TabIndex = 1;
             this.cbSolution.SelectedIndexChanged += new System.EventHandler(this.cdSolution_SelectedItemChanged);
             // 
@@ -476,7 +480,7 @@
             // 
             this.btnUpload.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnUpload.BackColor = System.Drawing.SystemColors.Window;
-            this.btnUpload.Location = new System.Drawing.Point(264, 51);
+            this.btnUpload.Location = new System.Drawing.Point(376, 51);
             this.btnUpload.Name = "btnUpload";
             this.btnUpload.Size = new System.Drawing.Size(75, 23);
             this.btnUpload.TabIndex = 5;
@@ -488,7 +492,7 @@
             // 
             this.btnExport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnExport.BackColor = System.Drawing.SystemColors.Window;
-            this.btnExport.Location = new System.Drawing.Point(264, 24);
+            this.btnExport.Location = new System.Drawing.Point(376, 24);
             this.btnExport.Name = "btnExport";
             this.btnExport.Size = new System.Drawing.Size(75, 23);
             this.btnExport.TabIndex = 2;
@@ -504,7 +508,7 @@
             this.linkUploaded.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.linkUploaded.Location = new System.Drawing.Point(95, 105);
             this.linkUploaded.Name = "linkUploaded";
-            this.linkUploaded.Size = new System.Drawing.Size(244, 20);
+            this.linkUploaded.Size = new System.Drawing.Size(356, 20);
             this.linkUploaded.TabIndex = 7;
             this.linkUploaded.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkUploaded_LinkClicked);
             // 
@@ -512,7 +516,7 @@
             // 
             this.btnAnalyze.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnAnalyze.BackColor = System.Drawing.SystemColors.Window;
-            this.btnAnalyze.Location = new System.Drawing.Point(234, 20);
+            this.btnAnalyze.Location = new System.Drawing.Point(340, 20);
             this.btnAnalyze.Name = "btnAnalyze";
             this.btnAnalyze.Size = new System.Drawing.Size(75, 23);
             this.btnAnalyze.TabIndex = 3;
@@ -536,7 +540,7 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.tabControlResults);
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Size = new System.Drawing.Size(1122, 632);
+            this.splitContainer1.Size = new System.Drawing.Size(1340, 632);
             this.splitContainer1.SplitterDistance = 434;
             this.splitContainer1.SplitterWidth = 8;
             this.splitContainer1.TabIndex = 23;
@@ -549,20 +553,96 @@
             this.tabControlResults.Location = new System.Drawing.Point(0, 218);
             this.tabControlResults.Name = "tabControlResults";
             this.tabControlResults.SelectedIndex = 0;
-            this.tabControlResults.Size = new System.Drawing.Size(680, 414);
+            this.tabControlResults.Size = new System.Drawing.Size(898, 414);
             this.tabControlResults.TabIndex = 9;
             // 
             // tabResults
             // 
-            this.tabResults.Controls.Add(this.dataGridView1);
+            this.tabResults.Controls.Add(this.dgResults);
             this.tabResults.Controls.Add(this.txtAnalysis);
             this.tabResults.Location = new System.Drawing.Point(4, 22);
             this.tabResults.Name = "tabResults";
             this.tabResults.Padding = new System.Windows.Forms.Padding(3);
-            this.tabResults.Size = new System.Drawing.Size(672, 388);
+            this.tabResults.Size = new System.Drawing.Size(890, 388);
             this.tabResults.TabIndex = 0;
             this.tabResults.Text = "Results";
             this.tabResults.UseVisualStyleBackColor = true;
+            // 
+            // dgResults
+            // 
+            this.dgResults.AllowUserToAddRows = false;
+            this.dgResults.AllowUserToDeleteRows = false;
+            this.dgResults.AllowUserToResizeRows = false;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.dgResults.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            this.dgResults.BackgroundColor = System.Drawing.SystemColors.Window;
+            this.dgResults.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgResults.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Severity,
+            this.RuleId,
+            this.Message,
+            this.Snippet,
+            this.FilePath,
+            this.StartLine});
+            this.dgResults.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgResults.Location = new System.Drawing.Point(3, 62);
+            this.dgResults.Name = "dgResults";
+            this.dgResults.ReadOnly = true;
+            this.dgResults.RowHeadersVisible = false;
+            this.dgResults.Size = new System.Drawing.Size(884, 323);
+            this.dgResults.TabIndex = 1;
+            this.dgResults.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellDoubleClick);
+            this.dgResults.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgResults_ColumnHeaderMouseClick);
+            // 
+            // Severity
+            // 
+            this.Severity.DataPropertyName = "Severity";
+            this.Severity.FillWeight = 70F;
+            this.Severity.HeaderText = "Severity";
+            this.Severity.Name = "Severity";
+            this.Severity.ReadOnly = true;
+            // 
+            // RuleId
+            // 
+            this.RuleId.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.RuleId.DataPropertyName = "RuleId";
+            this.RuleId.HeaderText = "Rule";
+            this.RuleId.Name = "RuleId";
+            this.RuleId.ReadOnly = true;
+            this.RuleId.Width = 54;
+            // 
+            // Message
+            // 
+            this.Message.DataPropertyName = "Message";
+            this.Message.HeaderText = "Message";
+            this.Message.Name = "Message";
+            this.Message.ReadOnly = true;
+            this.Message.Width = 200;
+            // 
+            // Snippet
+            // 
+            this.Snippet.DataPropertyName = "Snippet";
+            this.Snippet.HeaderText = "Snippet";
+            this.Snippet.Name = "Snippet";
+            this.Snippet.ReadOnly = true;
+            this.Snippet.Width = 200;
+            // 
+            // FilePath
+            // 
+            this.FilePath.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells;
+            this.FilePath.DataPropertyName = "FilePath";
+            this.FilePath.HeaderText = "File";
+            this.FilePath.Name = "FilePath";
+            this.FilePath.ReadOnly = true;
+            this.FilePath.Width = 48;
+            // 
+            // StartLine
+            // 
+            this.StartLine.DataPropertyName = "StartLine";
+            this.StartLine.HeaderText = "Start Line";
+            this.StartLine.Name = "StartLine";
+            this.StartLine.ReadOnly = true;
+            this.StartLine.Width = 70;
             // 
             // txtAnalysis
             // 
@@ -572,7 +652,7 @@
             this.txtAnalysis.Multiline = true;
             this.txtAnalysis.Name = "txtAnalysis";
             this.txtAnalysis.ReadOnly = true;
-            this.txtAnalysis.Size = new System.Drawing.Size(666, 59);
+            this.txtAnalysis.Size = new System.Drawing.Size(884, 59);
             this.txtAnalysis.TabIndex = 0;
             this.txtAnalysis.WordWrap = false;
             // 
@@ -608,14 +688,15 @@
             // 
             // splitContainer2.Panel1
             // 
+            this.splitContainer2.Panel1.Controls.Add(this.btnOpenSarif);
             this.splitContainer2.Panel1.Controls.Add(this.gbSolution);
             // 
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.gbResults);
             this.splitContainer2.Panel2.Controls.Add(this.gbAnalysis);
-            this.splitContainer2.Size = new System.Drawing.Size(680, 218);
-            this.splitContainer2.SplitterDistance = 351;
+            this.splitContainer2.Size = new System.Drawing.Size(898, 218);
+            this.splitContainer2.SplitterDistance = 463;
             this.splitContainer2.SplitterWidth = 8;
             this.splitContainer2.TabIndex = 11;
             // 
@@ -635,7 +716,7 @@
             this.gbResults.Dock = System.Windows.Forms.DockStyle.Top;
             this.gbResults.Location = new System.Drawing.Point(0, 85);
             this.gbResults.Name = "gbResults";
-            this.gbResults.Size = new System.Drawing.Size(321, 130);
+            this.gbResults.Size = new System.Drawing.Size(427, 130);
             this.gbResults.TabIndex = 10;
             this.gbResults.TabStop = false;
             this.gbResults.Text = "Results";
@@ -644,7 +725,7 @@
             // 
             this.linkLabel3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.linkLabel3.AutoSize = true;
-            this.linkLabel3.Location = new System.Drawing.Point(286, 0);
+            this.linkLabel3.Location = new System.Drawing.Point(392, 0);
             this.linkLabel3.Name = "linkLabel3";
             this.linkLabel3.Size = new System.Drawing.Size(29, 13);
             this.linkLabel3.TabIndex = 39;
@@ -660,7 +741,7 @@
             this.txtResultFile.Location = new System.Drawing.Point(95, 101);
             this.txtResultFile.Name = "txtResultFile";
             this.txtResultFile.ReadOnly = true;
-            this.txtResultFile.Size = new System.Drawing.Size(133, 20);
+            this.txtResultFile.Size = new System.Drawing.Size(239, 20);
             this.txtResultFile.TabIndex = 8;
             // 
             // label10
@@ -680,7 +761,7 @@
             this.txtStatusUrl.Location = new System.Drawing.Point(95, 23);
             this.txtStatusUrl.Name = "txtStatusUrl";
             this.txtStatusUrl.ReadOnly = true;
-            this.txtStatusUrl.Size = new System.Drawing.Size(214, 20);
+            this.txtStatusUrl.Size = new System.Drawing.Size(320, 20);
             this.txtStatusUrl.TabIndex = 4;
             // 
             // label13
@@ -705,7 +786,7 @@
             // 
             this.btnSaveSarif.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnSaveSarif.BackColor = System.Drawing.SystemColors.Window;
-            this.btnSaveSarif.Location = new System.Drawing.Point(234, 99);
+            this.btnSaveSarif.Location = new System.Drawing.Point(340, 99);
             this.btnSaveSarif.Name = "btnSaveSarif";
             this.btnSaveSarif.Size = new System.Drawing.Size(75, 23);
             this.btnSaveSarif.TabIndex = 9;
@@ -721,7 +802,7 @@
             this.txtRunCorrId.Location = new System.Drawing.Point(95, 49);
             this.txtRunCorrId.Name = "txtRunCorrId";
             this.txtRunCorrId.ReadOnly = true;
-            this.txtRunCorrId.Size = new System.Drawing.Size(214, 20);
+            this.txtRunCorrId.Size = new System.Drawing.Size(320, 20);
             this.txtRunCorrId.TabIndex = 5;
             // 
             // txtStatus
@@ -740,7 +821,7 @@
             this.progAnalysis.BackColor = System.Drawing.SystemColors.Window;
             this.progAnalysis.Location = new System.Drawing.Point(198, 75);
             this.progAnalysis.Name = "progAnalysis";
-            this.progAnalysis.Size = new System.Drawing.Size(111, 20);
+            this.progAnalysis.Size = new System.Drawing.Size(217, 20);
             this.progAnalysis.TabIndex = 7;
             // 
             // label12
@@ -764,7 +845,7 @@
             this.gbAnalysis.Dock = System.Windows.Forms.DockStyle.Top;
             this.gbAnalysis.Location = new System.Drawing.Point(0, 0);
             this.gbAnalysis.Name = "gbAnalysis";
-            this.gbAnalysis.Size = new System.Drawing.Size(321, 85);
+            this.gbAnalysis.Size = new System.Drawing.Size(427, 85);
             this.gbAnalysis.TabIndex = 4;
             this.gbAnalysis.TabStop = false;
             this.gbAnalysis.Text = "Analysis";
@@ -773,7 +854,7 @@
             // 
             this.linkLabel2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.linkLabel2.AutoSize = true;
-            this.linkLabel2.Location = new System.Drawing.Point(286, 0);
+            this.linkLabel2.Location = new System.Drawing.Point(392, 0);
             this.linkLabel2.Name = "linkLabel2";
             this.linkLabel2.Size = new System.Drawing.Size(29, 13);
             this.linkLabel2.TabIndex = 38;
@@ -787,7 +868,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtExclusions.Location = new System.Drawing.Point(95, 49);
             this.txtExclusions.Name = "txtExclusions";
-            this.txtExclusions.Size = new System.Drawing.Size(214, 20);
+            this.txtExclusions.Size = new System.Drawing.Size(320, 20);
             this.txtExclusions.TabIndex = 36;
             // 
             // label14
@@ -837,7 +918,7 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1122, 10);
+            this.panel1.Size = new System.Drawing.Size(1340, 10);
             this.panel1.TabIndex = 24;
             // 
             // tmStatus
@@ -845,63 +926,20 @@
             this.tmStatus.Interval = 5000;
             this.tmStatus.Tick += new System.EventHandler(this.tmStatus_Tick);
             // 
-            // dataGridView1
+            // dgGrouper
             // 
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.RuleId,
-            this.Message,
-            this.Snippet,
-            this.FilePath,
-            this.StartLine});
-            this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGridView1.Location = new System.Drawing.Point(3, 62);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.ReadOnly = true;
-            this.dataGridView1.Size = new System.Drawing.Size(666, 323);
-            this.dataGridView1.TabIndex = 1;
+            this.dgGrouper.DataGridView = this.dgResults;
+            this.dgGrouper.Options = ((Subro.Controls.GroupingOptions)(resources.GetObject("dgGrouper.Options")));
             // 
-            // RuleId
+            // btnOpenSarif
             // 
-            this.RuleId.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.RuleId.DataPropertyName = "RuleId";
-            this.RuleId.HeaderText = "Rule";
-            this.RuleId.Name = "RuleId";
-            this.RuleId.ReadOnly = true;
-            this.RuleId.Width = 54;
-            // 
-            // Message
-            // 
-            this.Message.DataPropertyName = "Message";
-            this.Message.HeaderText = "Message";
-            this.Message.Name = "Message";
-            this.Message.ReadOnly = true;
-            this.Message.Width = 200;
-            // 
-            // Snippet
-            // 
-            this.Snippet.DataPropertyName = "Snippet";
-            this.Snippet.HeaderText = "Snippet";
-            this.Snippet.Name = "Snippet";
-            this.Snippet.ReadOnly = true;
-            this.Snippet.Width = 200;
-            // 
-            // FilePath
-            // 
-            this.FilePath.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells;
-            this.FilePath.DataPropertyName = "FilePath";
-            this.FilePath.HeaderText = "File";
-            this.FilePath.Name = "FilePath";
-            this.FilePath.ReadOnly = true;
-            this.FilePath.Width = 48;
-            // 
-            // StartLine
-            // 
-            this.StartLine.DataPropertyName = "StartLine";
-            this.StartLine.HeaderText = "Start Line";
-            this.StartLine.Name = "StartLine";
-            this.StartLine.ReadOnly = true;
-            this.StartLine.Width = 70;
+            this.btnOpenSarif.Location = new System.Drawing.Point(132, 155);
+            this.btnOpenSarif.Name = "btnOpenSarif";
+            this.btnOpenSarif.Size = new System.Drawing.Size(75, 23);
+            this.btnOpenSarif.TabIndex = 4;
+            this.btnOpenSarif.Text = "Open SARIF";
+            this.btnOpenSarif.UseVisualStyleBackColor = true;
+            this.btnOpenSarif.Click += new System.EventHandler(this.btnOpenSarif_Click);
             // 
             // PAC
             // 
@@ -911,7 +949,7 @@
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.panel1);
             this.Name = "PAC";
-            this.Size = new System.Drawing.Size(1122, 642);
+            this.Size = new System.Drawing.Size(1340, 642);
             this.Load += new System.EventHandler(this.PAC_Load);
             this.gbAPI.ResumeLayout(false);
             this.gbAPI.PerformLayout();
@@ -927,6 +965,7 @@
             this.tabControlResults.ResumeLayout(false);
             this.tabResults.ResumeLayout(false);
             this.tabResults.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgResults)).EndInit();
             this.tabSarif.ResumeLayout(false);
             this.splitContainer2.Panel1.ResumeLayout(false);
             this.splitContainer2.Panel2.ResumeLayout(false);
@@ -936,7 +975,6 @@
             this.gbResults.PerformLayout();
             this.gbAnalysis.ResumeLayout(false);
             this.gbAnalysis.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -1004,11 +1042,14 @@
         private System.Windows.Forms.LinkLabel linkLabel2;
         private System.Windows.Forms.TextBox txtAnalysis;
         private System.Windows.Forms.SplitContainer splitContainer2;
-        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.DataGridView dgResults;
+        private Subro.Controls.DataGridViewGrouper dgGrouper;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Severity;
         private System.Windows.Forms.DataGridViewTextBoxColumn RuleId;
         private System.Windows.Forms.DataGridViewTextBoxColumn Message;
         private System.Windows.Forms.DataGridViewTextBoxColumn Snippet;
         private System.Windows.Forms.DataGridViewTextBoxColumn FilePath;
         private System.Windows.Forms.DataGridViewTextBoxColumn StartLine;
+        private System.Windows.Forms.Button btnOpenSarif;
     }
 }

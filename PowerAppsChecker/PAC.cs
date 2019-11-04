@@ -108,6 +108,24 @@ namespace Rappen.XTB.PAC
             Enable(true);
         }
 
+        private void btnOpenSarif_Click(object sender, EventArgs e)
+        {
+            using (var od = new OpenFileDialog
+            {
+                CheckPathExists = true,
+                DefaultExt = "sarif",
+                Filter = "SARIF files|*.sarif|All files|*.*",
+                Title = "Open SARIF result file"
+            })
+            {
+                if (od.ShowDialog() == DialogResult.OK)
+                {
+                    var sarif = File.ReadAllText(od.FileName);
+                    ParseSarifLog(PACHelper.GetSarifFromString(sarif));
+                }
+            }
+        }
+
         private void btnSaveSarif_Click(object sender, EventArgs e)
         {
             var filename = Path.GetFileNameWithoutExtension(txtResultFile.Text.Split('?')[0]);
@@ -155,9 +173,45 @@ namespace Rappen.XTB.PAC
             }
         }
 
+        private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (dgResults.Columns[e.ColumnIndex].Name == FilePath.Name && ConnectionDetail != null)
+            {
+                var file = dgResults[e.ColumnIndex, e.RowIndex].Value.ToString();
+                var url = ConnectionDetail.WebApplicationUrl + file;
+                Process.Start(url);
+            }
+        }
+
+        private void dgResults_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            var col = dgResults.Columns[e.ColumnIndex];
+            dgGrouper.Options.StartCollapsed = true;
+            dgGrouper.SetGroupOn(col);
+        }
+
         private void linkUploaded_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             Process.Start(linkUploaded.Text);
+        }
+
+        private void llGroupBoxExpander_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            GroupBoxToggle(sender as LinkLabel);
+        }
+
+        private void llGroupBy_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            var ll = sender as LinkLabel;
+            if (ll.Tag == null)
+            {
+                dgGrouper.RemoveGrouping();
+            }
+            else
+            {
+                dgGrouper.Options.StartCollapsed = true;
+                dgGrouper.SetGroupOn(ll.Tag.ToString());
+            }
         }
 
         private void lvRules_ItemChecked(object sender, ItemCheckedEventArgs e)
@@ -213,51 +267,9 @@ namespace Rappen.XTB.PAC
             CheckAnalysisStatus();
         }
 
-        private void llGroupBoxExpander_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            GroupBoxToggle(sender as LinkLabel);
-        }
-
         #endregion Private event handlers
 
         #region Private Methods
-
-        private void GroupBoxCollapse(LinkLabel link)
-        {
-            link.Parent.Height = 18;
-            link.Text = "Show";
-        }
-
-        private void GroupBoxExpand(LinkLabel link)
-        {
-            link.Parent.Height = groupBoxHeights[link.Parent.Name];
-            link.Text = "Hide";
-        }
-
-        private void GroupBoxSetState(LinkLabel link, bool expanded)
-        {
-            if (expanded)
-            {
-                GroupBoxExpand(link);
-            }
-            else
-            {
-                GroupBoxCollapse(link);
-            }
-        }
-
-        private void GroupBoxToggle(LinkLabel link)
-        {
-            if (link.Parent.Height > 20)
-            {
-                GroupBoxCollapse(link);
-            }
-            else
-            {
-                GroupBoxExpand(link);
-            }
-            splitContainer2.Height = Math.Max(gbSolution.Height, gbAnalysis.Height + gbResults.Height) + 3;
-        }
 
         private void CheckAnalysisStatus()
         {
@@ -478,6 +490,43 @@ namespace Rappen.XTB.PAC
             }
         }
 
+        private void GroupBoxCollapse(LinkLabel link)
+        {
+            link.Parent.Height = 18;
+            link.Text = "Show";
+        }
+
+        private void GroupBoxExpand(LinkLabel link)
+        {
+            link.Parent.Height = groupBoxHeights[link.Parent.Name];
+            link.Text = "Hide";
+        }
+
+        private void GroupBoxSetState(LinkLabel link, bool expanded)
+        {
+            if (expanded)
+            {
+                GroupBoxExpand(link);
+            }
+            else
+            {
+                GroupBoxCollapse(link);
+            }
+        }
+
+        private void GroupBoxToggle(LinkLabel link)
+        {
+            if (link.Parent.Height > 20)
+            {
+                GroupBoxCollapse(link);
+            }
+            else
+            {
+                GroupBoxExpand(link);
+            }
+            splitContainer2.Height = Math.Max(gbSolution.Height, gbAnalysis.Height + gbResults.Height) + 3;
+        }
+
         private void LoadRules()
         {
             Enable(false);
@@ -647,49 +696,8 @@ namespace Rappen.XTB.PAC
                 {
                     WriteToLog($"Showing first {maxcount} results of total {run.Results.Count}");
                 }
-                dataGridView1.DataSource = FlattenedResult.GetFlattenedResults(run);
+                dgResults.DataSource = FlattenedResult.GetFlattenedResults(run);
             }
-        }
-
-        private DataSet GetResultDataset(Run run)
-        {
-            var severity = new DataTable();
-            severity.Columns.Add("Severity", typeof(string));
-            severity.Columns.Add("Count", typeof(int));
-
-            var result = new DataTable();
-            result.Columns.Add("Severity", typeof(string));
-            result.Columns.Add("Rule", typeof(string));
-            result.Columns.Add("Message", typeof(string));
-            result.Columns.Add("Location", typeof(string));
-
-            var dataset = new DataSet();
-            dataset.Tables.Add(severity);
-            dataset.Tables.Add(result);
-            dataset.Relations.Add("Results by Severity", severity.Columns["Severity"], result.Columns["Severity"]);
-
-            var summary = run.Results.GroupBy(
-                r => r.GetProperty("severity"),
-                r => r.RuleId, (sev, values) =>
-                new
-                {
-                    Severity = sev,
-                    Count = values.Count()
-                }).OrderBy(s => s.Severity);
-            foreach (var sum in summary)
-            {
-                severity.Rows.Add(sum.Severity, sum.Count);
-            }
-
-            foreach (var resultitem in run.Results.OrderBy(r => r.GetProperty("severity")))
-            {
-                result.Rows.Add(
-                    resultitem.GetProperty("severity"),
-                    resultitem.RuleId,
-                    resultitem.Message?.Text,
-                    string.Join("\r\n", resultitem.Locations.Select(l => l.PhysicalLocation?.ArtifactLocation?.Uri)));
-            }
-            return dataset;
         }
 
         private ListViewItem RuleToListItem(Helpers.Rule rule)
@@ -735,13 +743,21 @@ namespace Rappen.XTB.PAC
                     {
                         MessageBox.Show(args.Error.Message);
                     }
-                    else if (args.Result is Uri location)
+                    else if (args.Result is HttpResponseMessage response)
                     {
-                        txtStatus.Text = "Sent";
-                        progAnalysis.Value = 1;
-                        txtStatusUrl.Text = location.ToString();
-                        txtAnalysis.Text = "Analysis sent\r\n";
-                        tmStatus.Start();
+                        if (response.StatusCode != System.Net.HttpStatusCode.Accepted)
+                        {
+                            LogError("SendAnalysis:\r\n{0}", response);
+                            MessageBox.Show($"Status: {response.StatusCode}\r\n{response.ReasonPhrase}\r\nSee XrmToolBox log for details.", "Send for Analysis", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                        else
+                        {
+                            txtStatus.Text = "Sent";
+                            progAnalysis.Value = 1;
+                            txtStatusUrl.Text = response.Headers.Location.ToString();
+                            txtAnalysis.Text = "Analysis sent\r\n";
+                            tmStatus.Start();
+                        }
                     }
                     Enable(true);
                 }
