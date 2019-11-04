@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis.Sarif;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Xrm.Sdk;
 using Newtonsoft.Json;
 using System;
@@ -54,24 +55,49 @@ namespace Rappen.XTB.PAC.Helpers
 
         public static HttpClient GetClient(Guid tenantId, Guid clientId, string clientSec)
         {
+            Uri queryUri = new Uri($"{serviceUrl}/api/status/4799049A-E623-4B2A-818A-3A674E106DE5");
+            AuthenticationParameters authParams = null;
+
             var client = new HttpClient();
-            var values = new Dictionary<string, string>
+            var request = new HttpRequestMessage(HttpMethod.Get, queryUri);
+            request.Headers.Add("x-ms-tenant-id", tenantId.ToString());
+
+            // NOTE - It is highly recommended to use async/await
+            using (var response = client.SendAsync(request).GetAwaiter().GetResult())
             {
-                { "grant_type", "client_credentials"},
-                { "client_id", clientId.ToString() },
-                { "client_secret", clientSec},
-                { "resource", serviceUrl}
-            };
-            var body = new FormUrlEncodedContent(values);
-            var authUrl = $"https://login.microsoftonline.com/{tenantId}/oauth2/token";
-            var response = client.PostAsync(authUrl, body).GetAwaiter().GetResult();
-            var responseString = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-            var token = responseString.Split(new string[] { "\"access_token\":\"" }, StringSplitOptions.RemoveEmptyEntries)[1];
-            token = token.Split(new string[] { "\"}" }, StringSplitOptions.RemoveEmptyEntries)[0];
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            client.DefaultRequestHeaders.Add("accept", "application/json,application/x-ms-sarif-v2");
-            client.DefaultRequestHeaders.Add("x-ms-tenant-id", tenantId.ToString());
+                if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    // NOTE - It is highly recommended to use async/await
+                    authParams = AuthenticationParameters.CreateFromUnauthorizedResponseAsync(response).GetAwaiter().GetResult();
+                    var authContext = new AuthenticationContext(authParams.Authority, false);
+                    var authResult = authContext.AcquireTokenAsync(queryUri.ToString(), clientId.ToString(), new UserCredential("jonas@jonasr.app"));
+                    var authHeader = new AuthenticationHeaderValue("Bearer", authResult.GetAwaiter().GetResult().AccessToken);
+                }
+                else
+                {
+                    throw new Exception($"Unable to connect to the service for authorization information. {response.ReasonPhrase}");
+                }
+            }
             return client;
+
+            //var client = new HttpClient();
+            //var values = new Dictionary<string, string>
+            //{
+            //    { "grant_type", "client_credentials"},
+            //    { "client_id", clientId.ToString() },
+            //    { "client_secret", clientSec},
+            //    { "resource", serviceUrl}
+            //};
+            //var body = new FormUrlEncodedContent(values);
+            //var authUrl = $"https://login.microsoftonline.com/{tenantId}/oauth2/token";
+            //var response = client.PostAsync(authUrl, body).GetAwaiter().GetResult();
+            //var responseString = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+            //var token = responseString.Split(new string[] { "\"access_token\":\"" }, StringSplitOptions.RemoveEmptyEntries)[1];
+            //token = token.Split(new string[] { "\"}" }, StringSplitOptions.RemoveEmptyEntries)[0];
+            //client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            //client.DefaultRequestHeaders.Add("accept", "application/json,application/x-ms-sarif-v2");
+            //client.DefaultRequestHeaders.Add("x-ms-tenant-id", tenantId.ToString());
+            //return client;
         }
 
         public static string GetResultFile(string fileurl)
