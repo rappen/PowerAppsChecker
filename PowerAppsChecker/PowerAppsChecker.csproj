@@ -149,6 +149,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="PACHelper.cs" />
+    <Compile Include="PACHelperTypes.cs" />
     <Compile Include="PACPlugin.cs" />
     <Compile Include="PAC.cs">
       <SubType>UserControl</SubType>

@@ -282,7 +282,7 @@ namespace Rappen.XTB.PAC
                 AsyncArgument = txtStatusUrl.Text,
                 Work = (worker, args) =>
                 {
-                    args.Result = client.GetStatus(args.Argument.ToString());
+                    args.Result = client.GetAnalysisStatus(args.Argument.ToString());
                 },
                 PostWorkCallBack = (args) =>
                 {
@@ -538,7 +538,7 @@ namespace Rappen.XTB.PAC
                 Message = "Loading rules",
                 Work = (worker, args) =>
                 {
-                    args.Result = client.GetRules();
+                    args.Result = PACHelper.GetRules();
                 },
                 PostWorkCallBack = (args) =>
                 {
@@ -571,7 +571,7 @@ namespace Rappen.XTB.PAC
                 Message = "Loading rulesets",
                 Work = (worker, args) =>
                 {
-                    args.Result = client.GetRuleSets();
+                    args.Result = PACHelper.GetRuleSets();
                 },
                 PostWorkCallBack = (args) =>
                 {
@@ -609,7 +609,7 @@ namespace Rappen.XTB.PAC
                 Message = $"Loading rules for {ruleset.Name}",
                 Work = (worker, args) =>
                 {
-                    args.Result = client.GetRules(ruleset.Id);
+                    args.Result = PACHelper.GetRules(ruleset.Id);
                 },
                 PostWorkCallBack = (args) =>
                 {
@@ -678,7 +678,7 @@ namespace Rappen.XTB.PAC
             var maxcount = 100;
             foreach (var run in result.Runs)
             {
-                var severity = "";
+                //var severity = "";
                 //WriteToLog($"Results: {run.Results.Count}");
                 //var summary = run.Results.GroupBy(
                 //    r => r.GetProperty("severity"),
@@ -820,7 +820,7 @@ namespace Rappen.XTB.PAC
                 AsyncArgument = corrid,
                 Work = (worker, args) =>
                 {
-                    args.Result = client.Upload(corrid, txtFilename.Text);
+                    args.Result = client.UploadSolution(corrid, txtFilename.Text);
                 },
                 PostWorkCallBack = (args) =>
                 {
