@@ -148,6 +148,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DockControls\ScopeControl.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DockControls\ScopeControl.Designer.cs">
+      <DependentUpon>ScopeControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DockControls\SarifControl.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DockControls\SarifControl.Designer.cs">
+      <DependentUpon>SarifControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="PACHelper.cs" />
     <Compile Include="PACHelperTypes.cs" />
     <Compile Include="PACPlugin.cs" />
@@ -170,6 +182,12 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="DockControls\ScopeControl.resx">
+      <DependentUpon>ScopeControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DockControls\SarifControl.resx">
+      <DependentUpon>SarifControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="PAC.resx">
       <DependentUpon>PAC.cs</DependentUpon>
     </EmbeddedResource>

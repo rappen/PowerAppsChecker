@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.Sarif;
 using Microsoft.Crm.Sdk.Messages;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
+using Rappen.XTB.PAC.DockControls;
 using Rappen.XTB.PAC.Helpers;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,9 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Windows.Forms;
+using WeifenLuo.WinFormsUI.Docking;
 using XrmToolBox.Extensibility;
+using static System.Windows.Forms.ListView;
 
 namespace Rappen.XTB.PAC
 {
@@ -20,7 +23,9 @@ namespace Rappen.XTB.PAC
     {
         #region Private Fields
 
-        private HttpClient client;
+        internal HttpClient client;
+        private readonly SarifControl sarifControl;
+        private readonly ScopeControl scopeControl;
         private Dictionary<string, int> groupBoxHeights;
 
         #endregion Private Fields
@@ -38,6 +43,10 @@ namespace Rappen.XTB.PAC
             }
 
             InitializeComponent();
+            var theme = new VS2015LightTheme();
+            dockContainer.Theme = theme;
+            scopeControl = new ScopeControl(this);
+            sarifControl = new SarifControl(this);
             groupBoxHeights = new Dictionary<string, int>();
             foreach (var gb in GetAll(this, typeof(GroupBox)))
             {
@@ -52,6 +61,7 @@ namespace Rappen.XTB.PAC
         public override void ClosingPlugin(PluginCloseInfo info)
         {
             SettingsManager.Instance.Save(GetType(), SettingsGetFromUI(), ConnectionDetail?.ConnectionName);
+            SaveDockPanels();
             base.ClosingPlugin(info);
         }
 
@@ -98,53 +108,15 @@ namespace Rappen.XTB.PAC
                     txtFilename.Text = od.FileName;
                     txtCorrId.Text = "";
                     linkUploaded.Text = "";
-                    txtRunCorrId.Text = "";
-                    txtStatusUrl.Text = "";
-                    txtStatus.Text = "";
-                    progAnalysis.Value = 0;
-                    txtResultFile.Text = "";
+                    sarifControl.Reset();
                 }
             }
             Enable(true);
         }
 
-        private void btnOpenSarif_Click(object sender, EventArgs e)
+        private void btnResetWindows_Click(object sender, EventArgs e)
         {
-            using (var od = new OpenFileDialog
-            {
-                CheckPathExists = true,
-                DefaultExt = "sarif",
-                Filter = "SARIF files|*.sarif|All files|*.*",
-                Title = "Open SARIF result file"
-            })
-            {
-                if (od.ShowDialog() == DialogResult.OK)
-                {
-                    var sarif = File.ReadAllText(od.FileName);
-                    ParseSarifLog(PACHelper.GetSarifFromString(sarif));
-                }
-            }
-        }
-
-        private void btnSaveSarif_Click(object sender, EventArgs e)
-        {
-            var filename = Path.GetFileNameWithoutExtension(txtResultFile.Text.Split('?')[0]);
-            using (var sd = new SaveFileDialog
-            {
-                CheckPathExists = true,
-                DefaultExt = "sarif",
-                FileName = filename,
-                Filter = "SARIF files|*.sarif|All files|*.*",
-                OverwritePrompt = true,
-                Title = "Save SARIF result file"
-            })
-            {
-                if (sd.ShowDialog() == DialogResult.OK)
-                {
-                    File.WriteAllText(sd.FileName, txtSarif.Text);
-                    MessageBox.Show($"{sd.FileName} saved!");
-                }
-            }
+            ResetDockLayout();
         }
 
         private void btnUpload_Click(object sender, EventArgs e)
@@ -152,42 +124,9 @@ namespace Rappen.XTB.PAC
             UploadSolutionFile();
         }
 
-        private void cbRuleset_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (cbRuleset.SelectedItem != null)
-            {
-                LoadRuleSetSelections(cbRuleset.SelectedItem as RuleSet);
-            }
-        }
-
         private void cdSolution_SelectedItemChanged(object sender, EventArgs e)
         {
             Enable(true);
-        }
-
-        private void chkAllRules_CheckedChanged(object sender, EventArgs e)
-        {
-            foreach (ListViewItem item in lvRules.Items)
-            {
-                item.Checked = chkAllRules.Checked;
-            }
-        }
-
-        private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (dgResults.Columns[e.ColumnIndex].Name == FilePath.Name && ConnectionDetail != null)
-            {
-                var file = dgResults[e.ColumnIndex, e.RowIndex].Value.ToString();
-                var url = ConnectionDetail.WebApplicationUrl + file;
-                Process.Start(url);
-            }
-        }
-
-        private void dgResults_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
-        {
-            var col = dgResults.Columns[e.ColumnIndex];
-            dgGrouper.Options.StartCollapsed = true;
-            dgGrouper.SetGroupOn(col);
         }
 
         private void linkUploaded_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -200,89 +139,99 @@ namespace Rappen.XTB.PAC
             GroupBoxToggle(sender as LinkLabel);
         }
 
-        private void llGroupBy_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            var ll = sender as LinkLabel;
-            if (ll.Tag == null)
-            {
-                dgGrouper.RemoveGrouping();
-            }
-            else
-            {
-                dgGrouper.Options.StartCollapsed = true;
-                dgGrouper.SetGroupOn(ll.Tag.ToString());
-            }
-        }
-
-        private void lvRules_ItemChecked(object sender, ItemCheckedEventArgs e)
-        {
-            UpdateRuleCounts();
-        }
-
-        private void lvRules_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (lvRules.SelectedItems.Count > 0 && lvRules.SelectedItems[0].Tag is Helpers.Rule rule)
-            {
-                txtRuleDescr.Text = rule.Summary;
-            }
-            else
-            {
-                txtRuleDescr.Text = "";
-            }
-            Enable(true);
-        }
-
         private void PAC_Load(object sender, EventArgs e)
         {
             if (SettingsManager.Instance.TryLoad(GetType(), out Settings settings, ConnectionDetail?.ConnectionName))
             {
                 SettingsApplyToUI(settings);
-                ConnectPAChecker(true);
             }
+            SetupDockControls();
+            LoadRuleSets();
         }
 
-        private void picRuleHelp_Click(object sender, EventArgs e)
+        private void tsbCloseThisTab_Click(object sender, EventArgs e)
         {
-            if (lvRules.SelectedItems.Count > 0 && lvRules.SelectedItems[0].Tag is Helpers.Rule rule)
-            {
-                Process.Start(rule.GuidanceUrl.Replace("client=PAChecker", "client=Rappen.XTB.PAC"));
-            }
-        }
-
-        private void rbGroupBy_CheckedChanged(object sender, EventArgs e)
-        {
-            if (((RadioButton)sender).Checked)
-            {
-                LoadRules();
-            }
-        }
-
-        private void rbScope_CheckedChanged(object sender, EventArgs e)
-        {
-            Enable(true);
-        }
-
-        private void tmStatus_Tick(object sender, EventArgs e)
-        {
-            CheckAnalysisStatus();
+            CloseTool();
         }
 
         #endregion Private event handlers
 
+        #region Dock methods
+
+        private static string GetDockFileName()
+        {
+            return Path.Combine(Paths.SettingsPath, "Rappen.XTB.PAC_DockPanels.xml");
+        }
+
+        private IDockContent dockDeSerialization(string persistString)
+        {
+            switch (persistString)
+            {
+                case "Rappen.XTB.PAC.DockControls.RuleControl":
+                    return scopeControl;
+                case "Rappen.XTB.PAC.DockControls.SarifControl":
+                    return sarifControl;
+                default:
+                    return null;
+            }
+        }
+
+        private void ResetDockLayout()
+        {
+            scopeControl.Show(dockContainer, DockState.DockLeft);
+            sarifControl.Show(dockContainer, DockState.Document);
+        }
+
+        private void SaveDockPanels()
+        {
+            var dockFile = GetDockFileName();
+            dockContainer.SaveAsXml(dockFile);
+        }
+
+        private void SetupDockControls()
+        {
+            string dockFile = GetDockFileName();
+            if (File.Exists(dockFile))
+            {
+                try
+                {
+                    dockContainer.LoadFromXml(dockFile, dockDeSerialization);
+                    return;
+                }
+                catch (InvalidOperationException)
+                {
+                    // Restore from file failed
+                }
+            }
+            ResetDockLayout();
+        }
+
+        #endregion Dock methods
+
         #region Private Methods
 
-        private void CheckAnalysisStatus()
+        internal void Enable(bool enable)
         {
-            tmStatus.Enabled = false;
+            Enabled = enable;
+            btnConnectPAC.Enabled = enable && Guid.TryParse(txtTenantId.Text, out Guid t) && Guid.TryParse(txtClientId.Text, out Guid c) && !string.IsNullOrWhiteSpace(txtClientSec.Text);
+            cbSolution.Enabled = enable && Service != null;
+            btnExport.Enabled = enable && cbSolution.SelectedEntity != null;
+            btnUpload.Enabled = enable && client != null && File.Exists(txtFilename.Text);
+            btnAnalyze.Enabled = enable && client != null && !string.IsNullOrEmpty(linkUploaded.Text) && scopeControl.EnableAnalysis();
+            scopeControl.Enable(enable);
+            sarifControl.Enable(enable);
+        }
+
+        internal void LoadRules()
+        {
             Enable(false);
             var enabled = true;
-            WorkAsync(new WorkAsyncInfo
+            WorkAsync(new WorkAsyncInfo()
             {
-                Message = "Checking analysis status",
-                AsyncArgument = txtStatusUrl.Text,
+                Message = "Loading rules",
                 Work = (worker, args) =>
                 {
-                    args.Result = client.GetAnalysisStatus(args.Argument.ToString());
+                    args.Result = PACHelper.GetRules();
                 },
                 PostWorkCallBack = (args) =>
                 {
@@ -290,31 +239,82 @@ namespace Rappen.XTB.PAC
                     {
                         MessageBox.Show(args.Error.Message);
                     }
-                    else if (args.Result is AnalysisStatus status)
+                    else if (args.Result is Helpers.Rule[] rulelist)
                     {
-                        txtRunCorrId.Text = status.RunCorrelationId.ToString();
-                        txtStatus.Text = status.Status;
-                        progAnalysis.Value = status.Progress;
-                        if (status.Progress >= 100)
+                        if (scopeControl.AddRules(rulelist))
                         {
-                            WriteToLog($"{status.IssueSummary.CriticalIssueCount} Critical");
-                            WriteToLog($"{status.IssueSummary.HighIssueCount} High");
-                            WriteToLog($"{status.IssueSummary.MediumIssueCount} Medium");
-                            WriteToLog($"{status.IssueSummary.LowIssueCount} Low");
-                            WriteToLog($"{status.IssueSummary.InformationalIssueCount} Informational");
-                            if (status.ResultFileUris != null && status.ResultFileUris.Length > 0)
-                            {
-                                txtResultFile.Text = status.ResultFileUris[0];
-                                GetResultFile(status);
-                                enabled = false;
-                            }
-                        }
-                        else
-                        {
-                            tmStatus.Start();
+                            enabled = false;
                         }
                     }
                     Enable(enabled);
+                }
+            });
+        }
+
+        internal void LoadRuleSets()
+        {
+            Enable(false);
+            var enabled = true;
+            WorkAsync(new WorkAsyncInfo()
+            {
+                Message = "Loading rulesets",
+                Work = (worker, args) =>
+                {
+                    args.Result = PACHelper.GetRuleSets();
+                },
+                PostWorkCallBack = (args) =>
+                {
+                    if (args.Error != null)
+                    {
+                        MessageBox.Show(args.Error.Message);
+                    }
+                    else if (args.Result is RuleSet[] rulesetlist)
+                    {
+                        scopeControl.AddRuleSets(rulesetlist);
+                        LoadRules();
+                        enabled = false;
+                    }
+                    Enable(enabled);
+                }
+            });
+        }
+
+        internal void LoadRuleSetSelections(RuleSet ruleset, List<ListViewItem> rules)
+        {
+            if (ruleset == null)
+            {
+                return;
+            }
+            Enable(false);
+            WorkAsync(new WorkAsyncInfo()
+            {
+                Message = $"Loading rules for {ruleset.Name}",
+                Work = (worker, args) =>
+                {
+                    args.Result = PACHelper.GetRules(ruleset.Id);
+                },
+                PostWorkCallBack = (args) =>
+                {
+                    if (args.Error != null)
+                    {
+                        MessageBox.Show(args.Error.Message);
+                    }
+                    else if (args.Result is Helpers.Rule[] rulelist)
+                    {
+                        foreach (ListViewItem item in rules)
+                        {
+                            item.Checked = false;
+                        }
+                        foreach (var rule in rulelist)
+                        {
+                            var item = rules.FirstOrDefault(i => i.Tag is Helpers.Rule && ((Helpers.Rule)i.Tag).Code == rule.Code);
+                            if (item != null)
+                            {
+                                item.Checked = true;
+                            }
+                        }
+                    }
+                    Enable(true);
                 }
             });
         }
@@ -338,7 +338,6 @@ namespace Rappen.XTB.PAC
             var clientSec = txtClientSec.Text;
 
             Enable(false);
-            var enable = true;
             WorkAsync(new WorkAsyncInfo()
             {
                 Message = "Connecting PAC",
@@ -355,27 +354,10 @@ namespace Rappen.XTB.PAC
                     else if (args.Result is HttpClient pacclient)
                     {
                         client = pacclient;
-                        LoadRuleSets();
-                        enable = false;
                     }
-                    Enable(enable);
+                    Enable(true);
                 }
             });
-        }
-
-        private void Enable(bool enable)
-        {
-            Enabled = enable;
-            btnConnectPAC.Enabled = enable && Guid.TryParse(txtTenantId.Text, out Guid t) && Guid.TryParse(txtClientId.Text, out Guid c) && !string.IsNullOrWhiteSpace(txtClientSec.Text);
-            cbRuleset.Enabled = enable && client != null && cbRuleset.Items.Count > 0;
-            picRuleHelp.Enabled = enable && lvRules.SelectedItems.Count > 0;
-            cbSolution.Enabled = enable && Service != null;
-            btnExport.Enabled = enable && cbSolution.SelectedEntity != null;
-            btnUpload.Enabled = enable && client != null && File.Exists(txtFilename.Text);
-            btnAnalyze.Enabled = enable && client != null && !string.IsNullOrEmpty(linkUploaded.Text) &&
-                ((rbScopeRuleset.Checked && cbRuleset.SelectedItem is RuleSet) || (rbScopeRules.Checked && lvRules.CheckedItems.Count > 0));
-            btnSaveSarif.Enabled = enable && !string.IsNullOrWhiteSpace(txtResultFile.Text);
-            picRuleHelp.Cursor = picRuleHelp.Enabled ? Cursors.Hand : Cursors.No;
         }
 
         private void ExportSolution(Entity solution)
@@ -384,11 +366,7 @@ namespace Rappen.XTB.PAC
             txtFilename.Text = "";
             txtCorrId.Text = "";
             linkUploaded.Text = "";
-            txtRunCorrId.Text = "";
-            txtStatusUrl.Text = "";
-            txtStatus.Text = "";
-            progAnalysis.Value = 0;
-            txtResultFile.Text = "";
+            sarifControl.Reset();
             var solname = solution["uniquename"].ToString();
             WorkAsync(new WorkAsyncInfo
             {
@@ -422,74 +400,6 @@ namespace Rappen.XTB.PAC
             });
         }
 
-        private AnalysisArgs GetAnalysisArgs()
-        {
-            var args = new AnalysisArgs
-            {
-                CorrId = new Guid(txtCorrId.Text),
-                FileUrl = linkUploaded.Text,
-                RuleSets = new List<RuleSet>(),
-                Rules = new List<Helpers.Rule>(),
-                Exclusions = txtExclusions.Text.Split(',').Select(e => e.Trim()).Where(e => !string.IsNullOrEmpty(e)).ToList()
-            };
-            if (rbScopeRuleset.Checked && cbRuleset.SelectedItem is RuleSet ruleset)
-            {
-                args.RuleSets.Add(ruleset);
-            }
-            else if (rbScopeRules.Checked)
-            {
-                foreach (ListViewItem item in lvRules.CheckedItems)
-                {
-                    if (item.Tag is Helpers.Rule rule)
-                    {
-                        args.Rules.Add(rule);
-                    }
-                }
-            }
-            return args;
-        }
-
-        private void GetResultFile(AnalysisStatus status)
-        {
-            if (status.ResultFileUris != null)
-            {
-                Enable(false);
-                WorkAsync(new WorkAsyncInfo
-                {
-                    Message = "Getting result file",
-                    AsyncArgument = status.ResultFileUris,
-                    Work = (worker, args) =>
-                    {
-                        var files = args.Argument as string[];
-                        var results = new List<string>();
-                        foreach (var resultfile in files)
-                        {
-                            results.Add(PACHelper.GetResultFile(resultfile));
-                        }
-                        args.Result = results;
-                    },
-                    PostWorkCallBack = (args) =>
-                    {
-                        if (args.Error != null)
-                        {
-                            MessageBox.Show(args.Error.Message);
-                        }
-                        else if (args.Result is List<string> results && results.Count > 0)
-                        {
-                            txtSarif.Text = results[0];
-                            btnSaveSarif.Enabled = true;
-                            foreach (var result in results)
-                            {
-                                ParseSarifLog(PACHelper.GetSarifFromString(result));
-                            }
-                        }
-                        Enable(true);
-                        progAnalysis.Value = 0;
-                    }
-                });
-            }
-        }
-
         private void GroupBoxCollapse(LinkLabel link)
         {
             link.Parent.Height = 18;
@@ -502,18 +412,6 @@ namespace Rappen.XTB.PAC
             link.Text = "Hide";
         }
 
-        private void GroupBoxSetState(LinkLabel link, bool expanded)
-        {
-            if (expanded)
-            {
-                GroupBoxExpand(link);
-            }
-            else
-            {
-                GroupBoxCollapse(link);
-            }
-        }
-
         private void GroupBoxToggle(LinkLabel link)
         {
             if (link.Parent.Height > 20)
@@ -524,117 +422,6 @@ namespace Rappen.XTB.PAC
             {
                 GroupBoxExpand(link);
             }
-            splitContainer2.Height = Math.Max(gbSolution.Height, gbAnalysis.Height + gbResults.Height) + 3;
-        }
-
-        private void LoadRules()
-        {
-            Enable(false);
-            var enabled = true;
-            lvRules.Items.Clear();
-            lvRules.Groups.Clear();
-            WorkAsync(new WorkAsyncInfo()
-            {
-                Message = "Loading rules",
-                Work = (worker, args) =>
-                {
-                    args.Result = PACHelper.GetRules();
-                },
-                PostWorkCallBack = (args) =>
-                {
-                    if (args.Error != null)
-                    {
-                        MessageBox.Show(args.Error.Message);
-                    }
-                    else if (args.Result is Helpers.Rule[] rulelist)
-                    {
-                        lvRules.Items.AddRange(rulelist.Select(r => RuleToListItem(r)).ToArray());
-                        if (cbRuleset.SelectedItem != null)
-                        {
-                            LoadRuleSetSelections(cbRuleset.SelectedItem as RuleSet);
-                            enabled = false;
-                        }
-                    }
-                    Enable(enabled);
-                }
-            });
-        }
-
-        private void LoadRuleSets()
-        {
-            Enable(false);
-            var enabled = true;
-            cbRuleset.Items.Clear();
-            cbRuleset.Items.Add("");
-            WorkAsync(new WorkAsyncInfo()
-            {
-                Message = "Loading rulesets",
-                Work = (worker, args) =>
-                {
-                    args.Result = PACHelper.GetRuleSets();
-                },
-                PostWorkCallBack = (args) =>
-                {
-                    if (args.Error != null)
-                    {
-                        MessageBox.Show(args.Error.Message);
-                    }
-                    else if (args.Result is RuleSet[] rulesetlist)
-                    {
-                        cbRuleset.Items.AddRange(rulesetlist);
-                        LoadRules();
-                        enabled = false;
-                    }
-                    Enable(enabled);
-                }
-            });
-        }
-
-        private void LoadRuleSetSelections(RuleSet ruleset)
-        {
-            ListViewItem GetListViewItemByRule(Helpers.Rule rule)
-            {
-                ListViewItem[] items = new ListViewItem[lvRules.Items.Count];
-                lvRules.Items.CopyTo(items, 0);
-                return items.FirstOrDefault(i => i.Tag is Helpers.Rule && ((Helpers.Rule)i.Tag).Code == rule.Code);
-            }
-
-            if (ruleset == null)
-            {
-                return;
-            }
-            Enable(false);
-            WorkAsync(new WorkAsyncInfo()
-            {
-                Message = $"Loading rules for {ruleset.Name}",
-                Work = (worker, args) =>
-                {
-                    args.Result = PACHelper.GetRules(ruleset.Id);
-                },
-                PostWorkCallBack = (args) =>
-                {
-                    if (args.Error != null)
-                    {
-                        MessageBox.Show(args.Error.Message);
-                    }
-                    else if (args.Result is Helpers.Rule[] rulelist)
-                    {
-                        foreach (ListViewItem item in lvRules.Items)
-                        {
-                            item.Checked = false;
-                        }
-                        foreach (var rule in rulelist)
-                        {
-                            var item = GetListViewItemByRule(rule);
-                            if (item != null)
-                            {
-                                item.Checked = true;
-                            }
-                        }
-                    }
-                    Enable(true);
-                }
-            });
         }
 
         private void LoadSolutions()
@@ -673,62 +460,11 @@ namespace Rappen.XTB.PAC
             });
         }
 
-        private void ParseSarifLog(SarifLog result)
-        {
-            var maxcount = 100;
-            foreach (var run in result.Runs)
-            {
-                //var severity = "";
-                //WriteToLog($"Results: {run.Results.Count}");
-                //var summary = run.Results.GroupBy(
-                //    r => r.GetProperty("severity"),
-                //    r => r.RuleId, (sev, values) =>
-                //    new
-                //    {
-                //        Severity = sev,
-                //        Count = values.Count()
-                //    }).OrderBy(s => s.Severity);
-                //foreach (var sum in summary)
-                //{
-                //    WriteToLog($"{sum.Severity}: {sum.Count}");
-                //}
-                if (run.Results.Count > maxcount)
-                {
-                    WriteToLog($"Showing first {maxcount} results of total {run.Results.Count}");
-                }
-                dgResults.DataSource = FlattenedResult.GetFlattenedResults(run);
-            }
-        }
-
-        private ListViewItem RuleToListItem(Helpers.Rule rule)
-        {
-            var groupby = (rbGroupCategory.Checked ? $"Category: {rule.PrimaryCategory}" : $"Severity: {rule.Severity}");
-            var groups = new ListViewGroup[lvRules.Groups.Count];
-            lvRules.Groups.CopyTo(groups, 0);
-            var group = groups.FirstOrDefault(g => g.Header == groupby);
-            if (group == null)
-            {
-                group = lvRules.Groups.Add(groupby, groupby);
-                group.HeaderAlignment = HorizontalAlignment.Center;
-            }
-            var item = new ListViewItem(rule.ToString())
-            {
-                Tag = rule,
-                Checked = rule.Include,
-                Group = group
-            };
-            return item;
-        }
-
         private void SendAnalysis()
         {
             Enable(false);
-            txtRunCorrId.Text = "";
-            txtStatusUrl.Text = "";
-            txtStatus.Text = "";
-            progAnalysis.Value = 0;
-            txtResultFile.Text = "";
-            var analysisargs = GetAnalysisArgs();
+            sarifControl.Reset();
+            var analysisargs = scopeControl.GetAnalysisArgs(new Guid(txtCorrId.Text), linkUploaded.Text);
             WorkAsync(new WorkAsyncInfo
             {
                 Message = "Initiating analysis",
@@ -752,11 +488,7 @@ namespace Rappen.XTB.PAC
                         }
                         else
                         {
-                            txtStatus.Text = "Sent";
-                            progAnalysis.Value = 1;
-                            txtStatusUrl.Text = response.Headers.Location.ToString();
-                            txtAnalysis.Text = "Analysis sent\r\n";
-                            tmStatus.Start();
+                            sarifControl.StartStatusCheck(response.Headers.Location.ToString());
                         }
                     }
                     Enable(true);
@@ -772,7 +504,7 @@ namespace Rappen.XTB.PAC
             txtFilename.Text = settings.SolutionFile;
             txtCorrId.Text = settings.CorrelationId.ToString();
             linkUploaded.Text = settings.UploadedFile;
-            txtExclusions.Text = settings.FileExclusions;
+            scopeControl.txtExclusions.Text = settings.FileExclusions;
         }
 
         private Settings SettingsGetFromUI()
@@ -793,13 +525,8 @@ namespace Rappen.XTB.PAC
                 settings.CorrelationId = coid;
             }
             settings.UploadedFile = linkUploaded.Text;
-            settings.FileExclusions = txtExclusions.Text;
+            settings.FileExclusions = scopeControl.txtExclusions.Text;
             return settings;
-        }
-
-        private void UpdateRuleCounts()
-        {
-            lblRules.Text = $"{lvRules.CheckedItems.Count}  selected of {lvRules.Items.Count} rules.";
         }
 
         private void UploadSolutionFile()
@@ -807,11 +534,7 @@ namespace Rappen.XTB.PAC
             Enable(false);
             txtCorrId.Text = "";
             linkUploaded.Text = "";
-            txtRunCorrId.Text = "";
-            txtStatusUrl.Text = "";
-            txtStatus.Text = "";
-            progAnalysis.Value = 0;
-            txtResultFile.Text = "";
+            sarifControl.Reset();
             var corrid = Guid.NewGuid();
             txtCorrId.Text = corrid.ToString();
             WorkAsync(new WorkAsyncInfo
@@ -835,11 +558,6 @@ namespace Rappen.XTB.PAC
                     Enable(true);
                 }
             });
-        }
-
-        private void WriteToLog(string text)
-        {
-            txtAnalysis.Text += $"{text}\r\n";
         }
 
         #endregion Private Methods
