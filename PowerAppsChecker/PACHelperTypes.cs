@@ -8,6 +8,7 @@ namespace Rappen.XTB.PAC.Helpers
 {
     public enum Category
     {
+        Unknown = 0,
         Performance = 1,
         UpgradeReadiness = 2,
         Usage = 3,
@@ -21,6 +22,7 @@ namespace Rappen.XTB.PAC.Helpers
 
     public enum Component
     {
+        Unknown = 0,
         WebResource = 1,
         ManagedCode = 2,
         Configuration = 3
@@ -34,6 +36,7 @@ namespace Rappen.XTB.PAC.Helpers
         High = 4,
         Critical = 5
     }
+
     public class AnalysisArgs
     {
         #region Public Fields
@@ -99,28 +102,36 @@ namespace Rappen.XTB.PAC.Helpers
         #endregion Public Methods
     }
 
-    public class FlattenedResult
+    public class FlattenedSarifResult
     {
+        #region Public Fields
+
+        public int? EndLine;
+        public string Message;
+        public string Snippet;
+
+        #endregion Public Fields
+
         #region Public Properties
 
-        public int? EndLine { get; set; }
-        public Uri FilePath { get; set; }
-        public string Message { get; set; }
-        public string Module { get; set; }
+        public Category Category { get; set; }
         public string RuleId { get; set; }
+        public Component ComponentType { get; set; }
+        public Uri FilePath { get; set; }
+        public string Module { get; set; }
         public string Severity { get; set; }
-        public string Snippet { get; set; }
         public int? StartLine { get; set; }
 
         #endregion Public Properties
 
+
         #region Public Methods
 
-        public static List<FlattenedResult> GetFlattenedResults(Run run)
+        public static List<FlattenedSarifResult> GetFlattenedResults(Run run, List<Rule> rules)
         {
             var query =
                 run.Results
-                .SelectMany(r => r.Locations, (result, location) => new FlattenedResult
+                .SelectMany(r => r.Locations, (result, location) => new FlattenedSarifResult
                 {
                     RuleId = result.RuleId,
                     Message = result.Message?.Text,
@@ -129,7 +140,9 @@ namespace Rappen.XTB.PAC.Helpers
                     Snippet = location.PhysicalLocation?.Region?.Snippet?.Text,
                     EndLine = location.PhysicalLocation?.Region?.EndLine,
                     Module = location.PropertyNames.Contains("module") ? location.GetProperty("module") : null,
-                    Severity = result.PropertyNames.Contains("severity") ? result.GetProperty("severity") : null
+                    Severity = result.PropertyNames.Contains("severity") ? result.GetProperty("severity") : null,
+                    ComponentType = (Component)rules.FirstOrDefault(r => r.Code == result.RuleId).ComponentType,
+                    Category = rules.FirstOrDefault(r => r.Code == result.RuleId).PrimaryCategory
                 });
             return query.ToList();
         }
@@ -150,6 +163,7 @@ namespace Rappen.XTB.PAC.Helpers
         public Category PrimaryCategory;
         public Severity Severity;
         public string Summary;
+
         #endregion Public Fields
 
         #region Public Constructors

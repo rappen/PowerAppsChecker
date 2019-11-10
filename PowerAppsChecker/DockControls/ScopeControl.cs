@@ -4,6 +4,8 @@ using System.Windows.Forms;
 using Rappen.XTB.PAC.Helpers;
 using System.Diagnostics;
 using System.Collections.Generic;
+using System.Drawing;
+using XrmToolBox.Extensibility;
 
 namespace Rappen.XTB.PAC.DockControls
 {
@@ -15,31 +17,25 @@ namespace Rappen.XTB.PAC.DockControls
 
         #endregion Private Fields
 
+        #region Internal Fields
+
+        internal Size originalSize;
+        internal List<Rule> Rules => lvRules.Items.Cast<ListViewItem>().Where(i => i.Tag is Rule).Select(i => i.Tag as Rule).ToList();
+
+        #endregion Internal Fields
+
         #region Public Constructors
 
         public ScopeControl(PAC pac)
         {
             this.pac = pac;
             InitializeComponent();
+            originalSize = Size;
         }
 
         #endregion Public Constructors
 
         #region Internal Methods
-
-        internal bool AddRules(Rule[] rules)
-        {
-            lvRules.Items.Clear();
-            lvRules.Items.AddRange(rules.Select(r => RuleToListItem(r)).ToArray());
-            return UpdateRuleSelections();
-        }
-
-        internal void AddRuleSets(RuleSet[] rulesets)
-        {
-            cbRuleset.Items.Clear();
-            cbRuleset.Items.Add("");
-            cbRuleset.Items.AddRange(rulesets);
-        }
 
         internal void Enable(bool enable)
         {
@@ -54,12 +50,10 @@ namespace Rappen.XTB.PAC.DockControls
             return (rbScopeRules.Checked && lvRules.CheckedItems.Count > 0) || (rbScopeRuleset.Checked && cbRuleset.SelectedItem is RuleSet);
         }
 
-        internal AnalysisArgs GetAnalysisArgs(Guid corrid, string fileurl)
+        internal AnalysisArgs GetAnalysisScopeArgs()
         {
             var args = new AnalysisArgs
             {
-                CorrId = corrid,
-                FileUrl = fileurl,
                 RuleSets = new List<RuleSet>(),
                 Rules = new List<Rule>(),
                 Exclusions = txtExclusions.Text.Split(',').Select(e => e.Trim()).Where(e => !string.IsNullOrEmpty(e)).ToList()
@@ -72,7 +66,7 @@ namespace Rappen.XTB.PAC.DockControls
             {
                 foreach (ListViewItem item in lvRules.CheckedItems)
                 {
-                    if (item.Tag is Helpers.Rule rule)
+                    if (item.Tag is Rule rule)
                     {
                         args.Rules.Add(rule);
                     }
@@ -81,9 +75,51 @@ namespace Rappen.XTB.PAC.DockControls
             return args;
         }
 
+        internal void LoadRuleSets()
+        {
+            pac.Enable(false);
+            var enabled = true;
+            pac.WorkAsync(new WorkAsyncInfo()
+            {
+                Message = "Loading rulesets",
+                Work = (worker, args) =>
+                {
+                    args.Result = PACHelper.GetRuleSets();
+                },
+                PostWorkCallBack = (args) =>
+                {
+                    if (args.Error != null)
+                    {
+                        MessageBox.Show(args.Error.Message);
+                    }
+                    else if (args.Result is RuleSet[] rulesetlist)
+                    {
+                        AddRuleSets(rulesetlist);
+                        LoadRules();
+                        enabled = false;
+                    }
+                    pac.Enable(enabled);
+                }
+            });
+        }
+
         #endregion Internal Methods
 
         #region Private Methods
+
+        private bool AddRules(Rule[] rules)
+        {
+            lvRules.Items.Clear();
+            lvRules.Items.AddRange(rules.Select(r => RuleToListItem(r)).ToArray());
+            return UpdateRuleSelections();
+        }
+
+        private void AddRuleSets(RuleSet[] rulesets)
+        {
+            cbRuleset.Items.Clear();
+            cbRuleset.Items.Add("");
+            cbRuleset.Items.AddRange(rulesets);
+        }
 
         private void cbRuleset_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -96,6 +132,76 @@ namespace Rappen.XTB.PAC.DockControls
             {
                 item.Checked = chkAllRules.Checked;
             }
+        }
+
+        private void LoadRules()
+        {
+            pac.Enable(false);
+            var enabled = true;
+            pac.WorkAsync(new WorkAsyncInfo()
+            {
+                Message = "Loading rules",
+                Work = (worker, args) =>
+                {
+                    args.Result = PACHelper.GetRules();
+                },
+                PostWorkCallBack = (args) =>
+                {
+                    if (args.Error != null)
+                    {
+                        MessageBox.Show(args.Error.Message);
+                    }
+                    else if (args.Result is Helpers.Rule[] rulelist)
+                    {
+                        if (AddRules(rulelist))
+                        {
+                            enabled = false;
+                        }
+                    }
+                    pac.Enable(enabled);
+                }
+            });
+        }
+
+        private void LoadRuleSetSelections(RuleSet ruleset)
+        {
+            if (ruleset == null)
+            {
+                return;
+            }
+            pac.Enable(false);
+            pac.WorkAsync(new WorkAsyncInfo()
+            {
+                Message = $"Loading rules for {ruleset.Name}",
+                Work = (worker, args) =>
+                {
+                    args.Result = PACHelper.GetRules(ruleset.Id);
+                },
+                PostWorkCallBack = (args) =>
+                {
+                    if (args.Error != null)
+                    {
+                        MessageBox.Show(args.Error.Message);
+                    }
+                    else if (args.Result is Helpers.Rule[] rulelist)
+                    {
+                        var rules = lvRules.Items.Cast<ListViewItem>();
+                        foreach (ListViewItem item in rules)
+                        {
+                            item.Checked = false;
+                        }
+                        foreach (var rule in rulelist)
+                        {
+                            var item = rules.FirstOrDefault(i => i.Tag is Helpers.Rule && ((Helpers.Rule)i.Tag).Code == rule.Code);
+                            if (item != null)
+                            {
+                                item.Checked = true;
+                            }
+                        }
+                    }
+                    pac.Enable(true);
+                }
+            });
         }
 
         private void lvRules_ItemChecked(object sender, ItemCheckedEventArgs e)
@@ -128,7 +234,7 @@ namespace Rappen.XTB.PAC.DockControls
         {
             if (((RadioButton)sender).Checked)
             {
-                pac.LoadRules();
+                LoadRules();
             }
         }
 
@@ -140,9 +246,7 @@ namespace Rappen.XTB.PAC.DockControls
         private ListViewItem RuleToListItem(Helpers.Rule rule)
         {
             var groupby = (rbGroupCategory.Checked ? $"Category: {rule.PrimaryCategory}" : $"Severity: {rule.Severity}");
-            var groups = new ListViewGroup[lvRules.Groups.Count];
-            lvRules.Groups.CopyTo(groups, 0);
-            var group = groups.FirstOrDefault(g => g.Header == groupby);
+            var group = lvRules.Groups.Cast<ListViewGroup>().FirstOrDefault(g => g.Header == groupby);
             if (group == null)
             {
                 group = lvRules.Groups.Add(groupby, groupby);
@@ -168,9 +272,7 @@ namespace Rappen.XTB.PAC.DockControls
             {
                 return false;
             }
-            ListViewItem[] items = new ListViewItem[lvRules.Items.Count];
-            lvRules.Items.CopyTo(items, 0);
-            pac.LoadRuleSetSelections(cbRuleset.SelectedItem as RuleSet, items.ToList());
+            LoadRuleSetSelections(cbRuleset.SelectedItem as RuleSet);
             return true;
         }
 

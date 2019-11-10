@@ -31,15 +31,10 @@
             this.components = new System.ComponentModel.Container();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SarifControl));
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.tabControlResults = new System.Windows.Forms.TabControl();
             this.tabResults = new System.Windows.Forms.TabPage();
             this.dgResults = new System.Windows.Forms.DataGridView();
-            this.Severity = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.RuleId = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Message = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Snippet = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.FilePath = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.StartLine = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panTop = new System.Windows.Forms.Panel();
             this.panTopStatus = new System.Windows.Forms.Panel();
             this.btnOpenSarif = new System.Windows.Forms.Button();
@@ -68,6 +63,17 @@
             this.txtSarif = new System.Windows.Forms.RichTextBox();
             this.dgGrouper = new Subro.Controls.DataGridViewGrouper(this.components);
             this.tmStatus = new System.Windows.Forms.Timer(this.components);
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.label6 = new System.Windows.Forms.Label();
+            this.txtMessage = new System.Windows.Forms.TextBox();
+            this.txtSnippet = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.colSeverity = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colCategory = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colRule = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colModule = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colFile = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colStartLine = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabControlResults.SuspendLayout();
             this.tabResults.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgResults)).BeginInit();
@@ -75,6 +81,10 @@
             this.panTopStatus.SuspendLayout();
             this.panTopCounts.SuspendLayout();
             this.tabSarif.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControlResults
@@ -90,7 +100,7 @@
             // 
             // tabResults
             // 
-            this.tabResults.Controls.Add(this.dgResults);
+            this.tabResults.Controls.Add(this.splitContainer1);
             this.tabResults.Controls.Add(this.panTop);
             this.tabResults.Location = new System.Drawing.Point(4, 22);
             this.tabResults.Name = "tabResults";
@@ -110,71 +120,22 @@
             this.dgResults.BackgroundColor = System.Drawing.SystemColors.Window;
             this.dgResults.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgResults.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Severity,
-            this.RuleId,
-            this.Message,
-            this.Snippet,
-            this.FilePath,
-            this.StartLine});
+            this.colSeverity,
+            this.colCategory,
+            this.colRule,
+            this.colModule,
+            this.colFile,
+            this.colStartLine});
             this.dgResults.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgResults.Location = new System.Drawing.Point(3, 125);
+            this.dgResults.Location = new System.Drawing.Point(0, 0);
             this.dgResults.Name = "dgResults";
             this.dgResults.ReadOnly = true;
             this.dgResults.RowHeadersVisible = false;
-            this.dgResults.Size = new System.Drawing.Size(948, 515);
+            this.dgResults.Size = new System.Drawing.Size(948, 421);
             this.dgResults.TabIndex = 1;
-            this.dgResults.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellDoubleClick);
+            this.dgResults.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgResults_CellDoubleClick);
+            this.dgResults.CellEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgResults_CellEnter);
             this.dgResults.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgResults_ColumnHeaderMouseClick);
-            // 
-            // Severity
-            // 
-            this.Severity.DataPropertyName = "Severity";
-            this.Severity.FillWeight = 70F;
-            this.Severity.HeaderText = "Severity";
-            this.Severity.Name = "Severity";
-            this.Severity.ReadOnly = true;
-            // 
-            // RuleId
-            // 
-            this.RuleId.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.RuleId.DataPropertyName = "RuleId";
-            this.RuleId.HeaderText = "Rule";
-            this.RuleId.Name = "RuleId";
-            this.RuleId.ReadOnly = true;
-            this.RuleId.Width = 54;
-            // 
-            // Message
-            // 
-            this.Message.DataPropertyName = "Message";
-            this.Message.HeaderText = "Message";
-            this.Message.Name = "Message";
-            this.Message.ReadOnly = true;
-            this.Message.Width = 200;
-            // 
-            // Snippet
-            // 
-            this.Snippet.DataPropertyName = "Snippet";
-            this.Snippet.HeaderText = "Snippet";
-            this.Snippet.Name = "Snippet";
-            this.Snippet.ReadOnly = true;
-            this.Snippet.Width = 200;
-            // 
-            // FilePath
-            // 
-            this.FilePath.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells;
-            this.FilePath.DataPropertyName = "FilePath";
-            this.FilePath.HeaderText = "File";
-            this.FilePath.Name = "FilePath";
-            this.FilePath.ReadOnly = true;
-            this.FilePath.Width = 48;
-            // 
-            // StartLine
-            // 
-            this.StartLine.DataPropertyName = "StartLine";
-            this.StartLine.HeaderText = "Start Line";
-            this.StartLine.Name = "StartLine";
-            this.StartLine.ReadOnly = true;
-            this.StartLine.Width = 70;
             // 
             // panTop
             // 
@@ -459,13 +420,128 @@
             this.tmStatus.Interval = 5000;
             this.tmStatus.Tick += new System.EventHandler(this.tmStatus_Tick);
             // 
+            // splitContainer1
+            // 
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
+            this.splitContainer1.Location = new System.Drawing.Point(3, 125);
+            this.splitContainer1.Name = "splitContainer1";
+            this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.dgResults);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.txtSnippet);
+            this.splitContainer1.Panel2.Controls.Add(this.label7);
+            this.splitContainer1.Panel2.Controls.Add(this.txtMessage);
+            this.splitContainer1.Panel2.Controls.Add(this.label6);
+            this.splitContainer1.Size = new System.Drawing.Size(948, 515);
+            this.splitContainer1.SplitterDistance = 421;
+            this.splitContainer1.SplitterWidth = 8;
+            this.splitContainer1.TabIndex = 3;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(14, 8);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(50, 13);
+            this.label6.TabIndex = 0;
+            this.label6.Text = "Message";
+            // 
+            // txtMessage
+            // 
+            this.txtMessage.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtMessage.BackColor = System.Drawing.SystemColors.Window;
+            this.txtMessage.Location = new System.Drawing.Point(95, 5);
+            this.txtMessage.Name = "txtMessage";
+            this.txtMessage.ReadOnly = true;
+            this.txtMessage.Size = new System.Drawing.Size(844, 20);
+            this.txtMessage.TabIndex = 1;
+            // 
+            // txtSnippet
+            // 
+            this.txtSnippet.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtSnippet.BackColor = System.Drawing.SystemColors.Window;
+            this.txtSnippet.Location = new System.Drawing.Point(95, 31);
+            this.txtSnippet.Name = "txtSnippet";
+            this.txtSnippet.ReadOnly = true;
+            this.txtSnippet.Size = new System.Drawing.Size(844, 20);
+            this.txtSnippet.TabIndex = 3;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(14, 34);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(43, 13);
+            this.label7.TabIndex = 2;
+            this.label7.Text = "Snippet";
+            // 
+            // colSeverity
+            // 
+            this.colSeverity.DataPropertyName = "Severity";
+            this.colSeverity.HeaderText = "Severity";
+            this.colSeverity.Name = "colSeverity";
+            this.colSeverity.ReadOnly = true;
+            this.colSeverity.Width = 80;
+            // 
+            // colCategory
+            // 
+            this.colCategory.DataPropertyName = "Category";
+            this.colCategory.HeaderText = "Category";
+            this.colCategory.Name = "colCategory";
+            this.colCategory.ReadOnly = true;
+            // 
+            // colRule
+            // 
+            this.colRule.DataPropertyName = "RuleId";
+            this.colRule.HeaderText = "Rule";
+            this.colRule.Name = "colRule";
+            this.colRule.ReadOnly = true;
+            this.colRule.Width = 150;
+            // 
+            // colModule
+            // 
+            this.colModule.DataPropertyName = "Module";
+            this.colModule.HeaderText = "Module";
+            this.colModule.Name = "colModule";
+            this.colModule.ReadOnly = true;
+            this.colModule.Width = 200;
+            // 
+            // colFile
+            // 
+            this.colFile.DataPropertyName = "FilePath";
+            this.colFile.HeaderText = "File";
+            this.colFile.Name = "colFile";
+            this.colFile.ReadOnly = true;
+            this.colFile.Width = 200;
+            // 
+            // colStartLine
+            // 
+            this.colStartLine.DataPropertyName = "StartLine";
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.colStartLine.DefaultCellStyle = dataGridViewCellStyle2;
+            this.colStartLine.HeaderText = "Line";
+            this.colStartLine.Name = "colStartLine";
+            this.colStartLine.ReadOnly = true;
+            this.colStartLine.Width = 50;
+            // 
             // SarifControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(962, 669);
             this.Controls.Add(this.tabControlResults);
+            this.HideOnClose = true;
             this.Name = "SarifControl";
+            this.TabText = "SARIF analyzer";
+            this.Text = "SARIF analyzer";
             this.tabControlResults.ResumeLayout(false);
             this.tabResults.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgResults)).EndInit();
@@ -475,6 +551,11 @@
             this.panTopCounts.ResumeLayout(false);
             this.panTopCounts.PerformLayout();
             this.tabSarif.ResumeLayout(false);
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            this.splitContainer1.Panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+            this.splitContainer1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -483,12 +564,6 @@
 
         private System.Windows.Forms.TabControl tabControlResults;
         private System.Windows.Forms.TabPage tabResults;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Severity;
-        private System.Windows.Forms.DataGridViewTextBoxColumn RuleId;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Message;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Snippet;
-        private System.Windows.Forms.DataGridViewTextBoxColumn FilePath;
-        private System.Windows.Forms.DataGridViewTextBoxColumn StartLine;
         private System.Windows.Forms.TabPage tabSarif;
         private System.Windows.Forms.RichTextBox txtSarif;
         private Subro.Controls.DataGridViewGrouper dgGrouper;
@@ -518,5 +593,16 @@
         private System.Windows.Forms.Timer tmStatus;
         private System.Windows.Forms.DataGridView dgResults;
         private System.Windows.Forms.Button btnOpenSarif;
+        private System.Windows.Forms.SplitContainer splitContainer1;
+        private System.Windows.Forms.TextBox txtMessage;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox txtSnippet;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colSeverity;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colCategory;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colRule;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colModule;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colFile;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colStartLine;
     }
 }

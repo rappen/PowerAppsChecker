@@ -56,7 +56,7 @@
             this.picRuleHelp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.picRuleHelp.Cursor = System.Windows.Forms.Cursors.No;
             this.picRuleHelp.Image = ((System.Drawing.Image)(resources.GetObject("picRuleHelp.Image")));
-            this.picRuleHelp.Location = new System.Drawing.Point(362, 295);
+            this.picRuleHelp.Location = new System.Drawing.Point(376, 295);
             this.picRuleHelp.Name = "picRuleHelp";
             this.picRuleHelp.Size = new System.Drawing.Size(24, 24);
             this.picRuleHelp.TabIndex = 27;
@@ -67,7 +67,7 @@
             // 
             this.rbGroupCategory.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.rbGroupCategory.AutoSize = true;
-            this.rbGroupCategory.Location = new System.Drawing.Point(313, 46);
+            this.rbGroupCategory.Location = new System.Drawing.Point(327, 46);
             this.rbGroupCategory.Name = "rbGroupCategory";
             this.rbGroupCategory.Size = new System.Drawing.Size(67, 17);
             this.rbGroupCategory.TabIndex = 22;
@@ -80,7 +80,7 @@
             this.rbGroupSeverity.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.rbGroupSeverity.AutoSize = true;
             this.rbGroupSeverity.Checked = true;
-            this.rbGroupSeverity.Location = new System.Drawing.Point(244, 46);
+            this.rbGroupSeverity.Location = new System.Drawing.Point(258, 46);
             this.rbGroupSeverity.Name = "rbGroupSeverity";
             this.rbGroupSeverity.Size = new System.Drawing.Size(63, 17);
             this.rbGroupSeverity.TabIndex = 21;
@@ -120,7 +120,7 @@
             this.cbRuleset.FormattingEnabled = true;
             this.cbRuleset.Location = new System.Drawing.Point(95, 10);
             this.cbRuleset.Name = "cbRuleset";
-            this.cbRuleset.Size = new System.Drawing.Size(290, 21);
+            this.cbRuleset.Size = new System.Drawing.Size(304, 21);
             this.cbRuleset.TabIndex = 19;
             this.cbRuleset.SelectedIndexChanged += new System.EventHandler(this.cbRuleset_SelectedIndexChanged);
             // 
@@ -143,7 +143,7 @@
             this.txtRuleDescr.Multiline = true;
             this.txtRuleDescr.Name = "txtRuleDescr";
             this.txtRuleDescr.ReadOnly = true;
-            this.txtRuleDescr.Size = new System.Drawing.Size(341, 53);
+            this.txtRuleDescr.Size = new System.Drawing.Size(355, 53);
             this.txtRuleDescr.TabIndex = 24;
             this.txtRuleDescr.Text = "No rule selected";
             // 
@@ -158,7 +158,7 @@
             this.lvRules.HideSelection = false;
             this.lvRules.Location = new System.Drawing.Point(15, 66);
             this.lvRules.Name = "lvRules";
-            this.lvRules.Size = new System.Drawing.Size(370, 201);
+            this.lvRules.Size = new System.Drawing.Size(384, 201);
             this.lvRules.TabIndex = 23;
             this.lvRules.UseCompatibleStateImageBehavior = false;
             this.lvRules.View = System.Windows.Forms.View.Details;
@@ -176,7 +176,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtExclusions.Location = new System.Drawing.Point(94, 11);
             this.txtExclusions.Name = "txtExclusions";
-            this.txtExclusions.Size = new System.Drawing.Size(291, 20);
+            this.txtExclusions.Size = new System.Drawing.Size(305, 20);
             this.txtExclusions.TabIndex = 38;
             // 
             // label14
@@ -231,7 +231,7 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(395, 67);
+            this.panel1.Size = new System.Drawing.Size(409, 67);
             this.panel1.TabIndex = 43;
             // 
             // panel2
@@ -248,7 +248,7 @@
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(0, 67);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(395, 362);
+            this.panel2.Size = new System.Drawing.Size(409, 362);
             this.panel2.TabIndex = 44;
             // 
             // ScopeControl
@@ -256,11 +256,13 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Window;
-            this.ClientSize = new System.Drawing.Size(395, 429);
+            this.ClientSize = new System.Drawing.Size(409, 429);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
+            this.HideOnClose = true;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
+            this.MinimumSize = new System.Drawing.Size(400, 0);
             this.Name = "ScopeControl";
             this.TabText = "Analysis Scope";
             this.Text = "Analysis Scope";

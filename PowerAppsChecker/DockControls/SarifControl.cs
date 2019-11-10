@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Net.Http;
 using System.Windows.Forms;
 using XrmToolBox.Extensibility;
 
@@ -43,25 +44,6 @@ namespace Rappen.XTB.PAC.DockControls
             txtResultFile.Text = "";
         }
 
-        internal void SaveSarifToFile(string filename)
-        {
-            File.WriteAllText(filename, txtSarif.Text);
-        }
-
-        internal void SetSarif(string sarif)
-        {
-            txtSarif.Text = sarif;
-        }
-
-        internal void SetStatus(AnalysisStatus status)
-        {
-            txtResultCountCritical.Text = status.IssueSummary.CriticalIssueCount.ToString();
-            txtResultCountHigh.Text = status.IssueSummary.HighIssueCount.ToString();
-            txtResultCountMedium.Text = status.IssueSummary.MediumIssueCount.ToString();
-            txtResultCountLow.Text = status.IssueSummary.LowIssueCount.ToString();
-            txtResultCountInfo.Text = status.IssueSummary.InformationalIssueCount.ToString();
-        }
-
         internal void StartStatusCheck(string statusurl)
         {
             txtStatus.Text = "Sent";
@@ -87,6 +69,7 @@ namespace Rappen.XTB.PAC.DockControls
                 if (od.ShowDialog() == DialogResult.OK)
                 {
                     var sarif = File.ReadAllText(od.FileName);
+                    txtSarif.Text = sarif;
                     ParseSarifLog(PACHelper.GetSarifFromString(sarif));
                 }
             }
@@ -116,15 +99,18 @@ namespace Rappen.XTB.PAC.DockControls
         private void CheckAnalysisStatus()
         {
             tmStatus.Enabled = false;
-            Enable(false);
+            pac.Enable(false);
             var enabled = true;
             pac.WorkAsync(new WorkAsyncInfo
             {
                 Message = "Checking analysis status",
-                AsyncArgument = txtStatusUrl.Text,
+                AsyncArgument = new { client = pac.PACClient, url = txtStatusUrl.Text },
                 Work = (worker, args) =>
                 {
-                    args.Result = pac.client.GetAnalysisStatus(args.Argument.ToString());
+                    var a = args.Argument as dynamic;
+                    var client = a.client as HttpClient;
+                    var url = a.url as string;
+                    args.Result = client.GetAnalysisStatus(url);
                 },
                 PostWorkCallBack = (args) =>
                 {
@@ -152,14 +138,14 @@ namespace Rappen.XTB.PAC.DockControls
                             tmStatus.Start();
                         }
                     }
-                    Enable(enabled);
+                    pac.Enable(enabled);
                 }
             });
         }
 
-        private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        private void dgResults_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (dgResults.Columns[e.ColumnIndex].Name == FilePath.Name && pac.ConnectionDetail != null)
+            if (dgResults.Columns[e.ColumnIndex].Name == colFile.Name && pac.ConnectionDetail != null)
             {
                 var file = dgResults[e.ColumnIndex, e.RowIndex].Value.ToString();
                 var url = pac.ConnectionDetail.WebApplicationUrl + file;
@@ -178,7 +164,7 @@ namespace Rappen.XTB.PAC.DockControls
         {
             if (status.ResultFileUris != null)
             {
-                Enable(false);
+                pac.Enable(false);
                 pac.WorkAsync(new WorkAsyncInfo
                 {
                     Message = "Getting result file",
@@ -208,7 +194,7 @@ namespace Rappen.XTB.PAC.DockControls
                                 ParseSarifLog(PACHelper.GetSarifFromString(result));
                             }
                         }
-                        Enable(true);
+                        pac.Enable(true);
                         progAnalysis.Value = 0;
                     }
                 });
@@ -217,29 +203,30 @@ namespace Rappen.XTB.PAC.DockControls
 
         private void ParseSarifLog(SarifLog result)
         {
-            //var maxcount = 100;
-            foreach (var run in result.Runs)
+            if (result.Runs.Count == 0)
             {
-                //var severity = "";
-                //WriteToLog($"Results: {run.Results.Count}");
-                //var summary = run.Results.GroupBy(
-                //    r => r.GetProperty("severity"),
-                //    r => r.RuleId, (sev, values) =>
-                //    new
-                //    {
-                //        Severity = sev,
-                //        Count = values.Count()
-                //    }).OrderBy(s => s.Severity);
-                //foreach (var sum in summary)
-                //{
-                //    WriteToLog($"{sum.Severity}: {sum.Count}");
-                //}
-                //if (run.Results.Count > maxcount)
-                //{
-                //    sarifControl.WriteToLog($"Showing first {maxcount} results of total {run.Results.Count}");
-                //}
-                dgResults.DataSource = FlattenedResult.GetFlattenedResults(run);
+                return;
             }
+            dgResults.DataSource = FlattenedSarifResult.GetFlattenedResults(result.Runs[0], pac.scopeControl.Rules);
+        }
+
+        private void SaveSarifToFile(string filename)
+        {
+            File.WriteAllText(filename, txtSarif.Text);
+        }
+
+        private void SetSarif(string sarif)
+        {
+            txtSarif.Text = sarif;
+        }
+
+        private void SetStatus(AnalysisStatus status)
+        {
+            txtResultCountCritical.Text = status.IssueSummary.CriticalIssueCount.ToString();
+            txtResultCountHigh.Text = status.IssueSummary.HighIssueCount.ToString();
+            txtResultCountMedium.Text = status.IssueSummary.MediumIssueCount.ToString();
+            txtResultCountLow.Text = status.IssueSummary.LowIssueCount.ToString();
+            txtResultCountInfo.Text = status.IssueSummary.InformationalIssueCount.ToString();
         }
 
         private void tmStatus_Tick(object sender, EventArgs e)
@@ -248,5 +235,13 @@ namespace Rappen.XTB.PAC.DockControls
         }
 
         #endregion Private Methods
+
+        private void dgResults_CellEnter(object sender, DataGridViewCellEventArgs e)
+        {
+            if ( dgResults.Rows[e.RowIndex].DataBoundItem is FlattenedSarifResult result)
+            {
+                txtMessage.Text = result.Message;
+            }
+        }
     }
 }

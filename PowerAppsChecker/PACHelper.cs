@@ -90,6 +90,7 @@ namespace Rappen.XTB.PAC.Helpers
             var jss = new JavaScriptSerializer();
             return JsonConvert.DeserializeObject<SarifLog>(resultstring);
         }
+
         public static HttpResponseMessage SendAnalysis(this HttpClient client, AnalysisArgs args)
         {
             var apiUrl = $"{serviceUrl}/api/analyze";
