@@ -190,6 +190,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PACHelperTypes.cs" />
     <Compile Include="PACHelper.cs" />
     <Compile Include="PACPlugin.cs" />
     <Compile Include="PAC.cs">
