@@ -18,6 +18,7 @@ namespace Rappen.XTB.PAC.Helpers
         #region Private Fields
 
         private const string serviceUrl = "https://api.advisor.powerapps.com";
+        private const string redirectUrl = "urn:ietf:wg:oauth:2.0:oob";
 
         #endregion Private Fields
 
@@ -46,8 +47,8 @@ namespace Rappen.XTB.PAC.Helpers
                     var authContext = new AuthenticationContext(authParams.Authority);
                     var authResult = authContext.AcquireTokenAsync(
                         clientId.ToString(),
-                        "774beb47-454d-450c-980e-07bad5477469",
-                        new Uri("urn:ietf:wg:oauth:2.0:oob"),
+                        clientId.ToString(),
+                        new Uri(redirectUrl),
                         new PlatformParameters(PromptBehavior.Auto)).GetAwaiter().GetResult();
                     token = authResult.AccessToken;
                 }
