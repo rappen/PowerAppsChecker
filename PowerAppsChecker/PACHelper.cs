@@ -25,11 +25,12 @@ namespace Rappen.XTB.PAC.Helpers
 
         public static HttpClient GetClient(Guid tenantId, Guid clientId, string clientSec)
         {
-            Uri queryUri = new Uri($"{serviceUrl}/api/status/4799049A-E623-4B2A-818A-3A674E106DE5");
+            var query = $"{serviceUrl}/api/status/4799049A-E623-4B2A-818A-3A674E106DE5";
             AuthenticationParameters authParams = null;
 
+            var token = string.Empty;
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Get, queryUri);
+            var request = new HttpRequestMessage(HttpMethod.Get, new Uri(query));
             request.Headers.Add("x-ms-tenant-id", tenantId.ToString());
 
             // NOTE - It is highly recommended to use async/await
@@ -39,16 +40,22 @@ namespace Rappen.XTB.PAC.Helpers
                 {
                     // NOTE - It is highly recommended to use async/await
                     authParams = AuthenticationParameters.CreateFromUnauthorizedResponseAsync(response).GetAwaiter().GetResult();
-                    var authContext = new AuthenticationContext(authParams.Authority, false);
-                    var authResult = authContext.AcquireTokenAsync(queryUri.ToString(), clientId.ToString(), new UserCredential("jonas@jonasr.app"));
-                    var authHeader = new AuthenticationHeaderValue("Bearer", authResult.GetAwaiter().GetResult().AccessToken);
+
+                    // Found here: https://github.com/AzureAD/azure-activedirectory-library-for-dotnet/wiki/Acquiring-tokens-interactively---Public-client-application-flows
+       
+                    var authContext = new AuthenticationContext(authParams.Authority);
+                    var authResult = authContext.AcquireTokenAsync(
+                        clientId.ToString(),
+                        "774beb47-454d-450c-980e-07bad5477469",
+                        new Uri("urn:ietf:wg:oauth:2.0:oob"),
+                        new PlatformParameters(PromptBehavior.Auto)).GetAwaiter().GetResult();
+                    token = authResult.AccessToken;
                 }
                 else
                 {
                     throw new Exception($"Unable to connect to the service for authorization information. {response.ReasonPhrase}");
                 }
             }
-            return client;
 
             //var client = new HttpClient();
             //var values = new Dictionary<string, string>
@@ -64,10 +71,10 @@ namespace Rappen.XTB.PAC.Helpers
             //var responseString = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
             //var token = responseString.Split(new string[] { "\"access_token\":\"" }, StringSplitOptions.RemoveEmptyEntries)[1];
             //token = token.Split(new string[] { "\"}" }, StringSplitOptions.RemoveEmptyEntries)[0];
-            //client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            //client.DefaultRequestHeaders.Add("accept", "application/json,application/x-ms-sarif-v2");
-            //client.DefaultRequestHeaders.Add("x-ms-tenant-id", tenantId.ToString());
-            //return client;
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            client.DefaultRequestHeaders.Add("accept", "application/json,application/x-ms-sarif-v2");
+            client.DefaultRequestHeaders.Add("x-ms-tenant-id", tenantId.ToString());
+            return client;
         }
 
         public static string GetResultFile(string fileurl)
