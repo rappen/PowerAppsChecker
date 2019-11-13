@@ -84,7 +84,7 @@ namespace Rappen.XTB.PAC.DockControls
                 Message = "Loading rulesets",
                 Work = (worker, args) =>
                 {
-                    args.Result = PACHelper.GetRuleSets();
+                    args.Result = PACHelper.GetRuleSets(pac.PACRegion);
                 },
                 PostWorkCallBack = (args) =>
                 {
@@ -143,7 +143,7 @@ namespace Rappen.XTB.PAC.DockControls
                 Message = "Loading rules",
                 Work = (worker, args) =>
                 {
-                    args.Result = PACHelper.GetRules();
+                    args.Result = PACHelper.GetRules(pac.PACRegion);
                 },
                 PostWorkCallBack = (args) =>
                 {
@@ -175,7 +175,7 @@ namespace Rappen.XTB.PAC.DockControls
                 Message = $"Loading rules for {ruleset.Name}",
                 Work = (worker, args) =>
                 {
-                    args.Result = PACHelper.GetRules(ruleset.Id);
+                    args.Result = PACHelper.GetRules(pac.PACRegion, ruleset.Id);
                 },
                 PostWorkCallBack = (args) =>
                 {

@@ -222,7 +222,7 @@ namespace Rappen.XTB.PAC.DockControls
                     var client = a.client as HttpClient;
                     var corr = a.corr as Guid?;
                     var file = a.file as string;
-                    args.Result = client.UploadSolution((Guid)corr, file);
+                    args.Result = client.UploadSolution(pac.PACRegion, (Guid)corr, file);
                 },
                 PostWorkCallBack = (args) =>
                 {

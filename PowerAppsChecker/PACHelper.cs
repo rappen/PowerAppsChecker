@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis.Sarif;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,8 @@ namespace Rappen.XTB.PAC.Helpers
     {
         #region Private Fields
 
-        private const string serviceUrl = "https://api.advisor.powerapps.com";
+        private const string serviceUrl = "https://{0}api.advisor.powerapps.com";
+        private const string redirectUrl = "urn:ietf:wg:oauth:2.0:oob";
 
         #endregion Private Fields
 
@@ -29,15 +31,16 @@ namespace Rappen.XTB.PAC.Helpers
             return jss.Deserialize<AnalysisStatus>(status);
         }
 
-        public static HttpClient GetClient(Guid tenantId, Guid clientId, string clientSec)
+        public static HttpClient GetClient(string region, Guid tenantId, Guid clientId, string clientSec)
         {
+            var resource = string.Format(serviceUrl, region);
             var client = new HttpClient();
             var values = new Dictionary<string, string>
             {
                 { "grant_type", "client_credentials"},
                 { "client_id", clientId.ToString() },
                 { "client_secret", clientSec},
-                { "resource", serviceUrl}
+                { "resource", resource}
             };
             var body = new FormUrlEncodedContent(values);
             var authUrl = $"https://login.microsoftonline.com/{tenantId}/oauth2/token";
@@ -51,6 +54,45 @@ namespace Rappen.XTB.PAC.Helpers
             return client;
         }
 
+        public static HttpClient GetClient(string region, Guid tenantId, Guid clientId)
+        {
+            var resource = string.Format(serviceUrl, region);
+            var query = $"{resource}/api/status/4799049A-E623-4B2A-818A-3A674E106DE5";
+            AuthenticationParameters authParams = null; 
+            var token = string.Empty;
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Get, new Uri(query));
+            request.Headers.Add("x-ms-tenant-id", tenantId.ToString());
+
+            // NOTE - It is highly recommended to use async/await
+            using (var response = client.SendAsync(request).GetAwaiter().GetResult())
+            {
+                if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    // NOTE - It is highly recommended to use async/await
+                    authParams = AuthenticationParameters.CreateFromUnauthorizedResponseAsync(response).GetAwaiter().GetResult();
+
+                    // Found here: https://github.com/AzureAD/azure-activedirectory-library-for-dotnet/wiki/Acquiring-tokens-interactively---Public-client-application-flows
+
+                    var authContext = new AuthenticationContext(authParams.Authority);
+                    var authResult = authContext.AcquireTokenAsync(
+                        resource,
+                        clientId.ToString(),
+                        new Uri(redirectUrl),
+                        new PlatformParameters(PromptBehavior.Auto)).GetAwaiter().GetResult();
+                    token = authResult.AccessToken;
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    client.DefaultRequestHeaders.Add("accept", "application/json,application/x-ms-sarif-v2");
+                    client.DefaultRequestHeaders.Add("x-ms-tenant-id", tenantId.ToString());
+                    return client;
+                }
+                else
+                {
+                    throw new Exception($"Unable to connect to the service for authorization information. {response.ReasonPhrase}");
+                }
+            }
+        }
+
         public static string GetResultFile(string fileurl)
         {
             var client = new HttpClient();
@@ -60,11 +102,11 @@ namespace Rappen.XTB.PAC.Helpers
             return unzipped;
         }
 
-        public static Rule[] GetRules(Guid? rulesetid = null)
+        public static Rule[] GetRules(string region, Guid? rulesetid = null)
         {
             using (var client = new HttpClient())
             {
-                var url = $"{serviceUrl}/api/rule";
+                var url = $"{string.Format(serviceUrl, region)}/api/rule";
                 if (rulesetid != null)
                 {
                     url += $"?ruleset={rulesetid}";
@@ -75,11 +117,11 @@ namespace Rappen.XTB.PAC.Helpers
             }
         }
 
-        public static RuleSet[] GetRuleSets()
+        public static RuleSet[] GetRuleSets(string region)
         {
             using (var client = new HttpClient())
             {
-                var rulesets = client.GetAsync($"{serviceUrl}/api/ruleset").GetAwaiter().GetResult().Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                var rulesets = client.GetAsync($"{string.Format(serviceUrl, region)}/api/ruleset").GetAwaiter().GetResult().Content.ReadAsStringAsync().GetAwaiter().GetResult();
                 var jss = new JavaScriptSerializer();
                 return jss.Deserialize<RuleSet[]>(rulesets);
             }
@@ -91,9 +133,9 @@ namespace Rappen.XTB.PAC.Helpers
             return JsonConvert.DeserializeObject<SarifLog>(resultstring);
         }
 
-        public static HttpResponseMessage SendAnalysis(this HttpClient client, AnalysisArgs args)
+        public static HttpResponseMessage SendAnalysis(this HttpClient client, string region, AnalysisArgs args)
         {
-            var apiUrl = $"{serviceUrl}/api/analyze";
+            var apiUrl = $"{string.Format(serviceUrl, region)}/api/analyze";
             var values = new Dictionary<string, string>
             {
                 { "sasUriList", $"[\"{args.FileUrl}\"]"},
@@ -141,9 +183,9 @@ namespace Rappen.XTB.PAC.Helpers
             }
         }
 
-        public static string UploadSolution(this HttpClient client, Guid corrid, string filepath)
+        public static string UploadSolution(this HttpClient client, string region, Guid corrid, string filepath)
         {
-            var apiUrl = $"{serviceUrl}/api/upload";
+            var apiUrl = $"{string.Format(serviceUrl, region)}/api/upload";
             var file = File.ReadAllBytes(filepath);
             var filename = Path.GetFileName(filepath);
             client.DefaultRequestHeaders.Add("x-ms-correlation-id", corrid.ToString());

@@ -28,6 +28,7 @@ namespace Rappen.XTB.PAC
         internal readonly ScopeControl scopeControl;
         private readonly SolutionControl solutionControl;
         private HttpClient pacclient;
+        private string pacregion;
 
         #endregion Private Fields
 
@@ -39,11 +40,18 @@ namespace Rappen.XTB.PAC
             {
                 if (pacclient == null)
                 {
-                    pacclient = azureLogin.GetPACClient(this);
+                    var clientregion = azureLogin.GetPACClient(this);
+                    if (clientregion != null)
+                    {
+                        pacclient = clientregion.Item1;
+                        pacregion = clientregion.Item2;
+                    }
                 }
                 return pacclient;
             }
         }
+
+        internal string PACRegion { get => pacregion; }
 
         #endregion Internal Properties
 
@@ -201,7 +209,7 @@ namespace Rappen.XTB.PAC
                     var a = args.Argument as dynamic;
                     var client = a.client as HttpClient;
                     var aa = a.analysisargs as AnalysisArgs;
-                    args.Result = client.SendAnalysis(aa);
+                    args.Result = client.SendAnalysis(pacregion, aa);
                 },
                 PostWorkCallBack = (args) =>
                 {
@@ -243,5 +251,11 @@ namespace Rappen.XTB.PAC
         }
 
         #endregion Private Methods
+
+        private void btnConnectPAC_Click(object sender, EventArgs e)
+        {
+            pacclient = null;
+            var a = PACClient;
+        }
     }
 }

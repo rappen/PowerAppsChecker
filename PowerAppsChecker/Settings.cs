@@ -11,6 +11,7 @@ namespace Rappen.XTB.PAC
         public Guid TenantId { get; set; }
         public Guid ClientId { get; set; }
         public string ClientSecret { get; set; }
+        public string Region { get; set; }
         public string SolutionFile { get; set; }
         public Guid CorrelationId { get; set; }
         public string UploadedFile { get; set; }

@@ -34,6 +34,7 @@
             this.tsbCloseThisTab = new System.Windows.Forms.ToolStripButton();
             this.btnResetWindows = new System.Windows.Forms.ToolStripButton();
             this.btnAnalyze = new System.Windows.Forms.ToolStripButton();
+            this.btnConnectPAC = new System.Windows.Forms.ToolStripButton();
             this.toolStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -54,7 +55,8 @@
             this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsbCloseThisTab,
             this.btnResetWindows,
-            this.btnAnalyze});
+            this.btnAnalyze,
+            this.btnConnectPAC});
             this.toolStrip.Location = new System.Drawing.Point(0, 0);
             this.toolStrip.Name = "toolStrip";
             this.toolStrip.Size = new System.Drawing.Size(747, 31);
@@ -88,6 +90,15 @@
             this.btnAnalyze.Text = "Analyze";
             this.btnAnalyze.Click += new System.EventHandler(this.btnAnalyze_Click);
             // 
+            // btnConnectPAC
+            // 
+            this.btnConnectPAC.Image = ((System.Drawing.Image)(resources.GetObject("btnConnectPAC.Image")));
+            this.btnConnectPAC.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnConnectPAC.Name = "btnConnectPAC";
+            this.btnConnectPAC.Size = new System.Drawing.Size(105, 28);
+            this.btnConnectPAC.Text = "Connect PAC";
+            this.btnConnectPAC.Click += new System.EventHandler(this.btnConnectPAC_Click);
+            // 
             // PAC
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -111,5 +122,6 @@
         private System.Windows.Forms.ToolStripButton tsbCloseThisTab;
         private System.Windows.Forms.ToolStripButton btnResetWindows;
         private System.Windows.Forms.ToolStripButton btnAnalyze;
+        private System.Windows.Forms.ToolStripButton btnConnectPAC;
     }
 }
