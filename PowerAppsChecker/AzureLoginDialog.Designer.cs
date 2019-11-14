@@ -45,10 +45,10 @@
             this.picClient = new System.Windows.Forms.PictureBox();
             this.picTenant = new System.Windows.Forms.PictureBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             this.picRegion = new System.Windows.Forms.PictureBox();
             this.cbRegion = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
             this.panClientSecret.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picSecret)).BeginInit();
@@ -74,7 +74,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(11, 9);
+            this.label3.Location = new System.Drawing.Point(11, 34);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(67, 13);
             this.label3.TabIndex = 10;
@@ -82,7 +82,7 @@
             // 
             // txtClientSec
             // 
-            this.txtClientSec.Location = new System.Drawing.Point(94, 6);
+            this.txtClientSec.Location = new System.Drawing.Point(94, 31);
             this.txtClientSec.Name = "txtClientSec";
             this.txtClientSec.PasswordChar = '*';
             this.txtClientSec.Size = new System.Drawing.Size(255, 20);
@@ -110,7 +110,7 @@
             // 
             // txtTenantId
             // 
-            this.txtTenantId.Location = new System.Drawing.Point(108, 26);
+            this.txtTenantId.Location = new System.Drawing.Point(94, 5);
             this.txtTenantId.Name = "txtTenantId";
             this.txtTenantId.Size = new System.Drawing.Size(255, 20);
             this.txtTenantId.TabIndex = 6;
@@ -120,7 +120,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(25, 29);
+            this.label1.Location = new System.Drawing.Point(11, 8);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(53, 13);
             this.label1.TabIndex = 5;
@@ -129,11 +129,14 @@
             // panClientSecret
             // 
             this.panClientSecret.Controls.Add(this.picSecret);
+            this.panClientSecret.Controls.Add(this.picTenant);
+            this.panClientSecret.Controls.Add(this.label1);
             this.panClientSecret.Controls.Add(this.txtClientSec);
             this.panClientSecret.Controls.Add(this.label3);
-            this.panClientSecret.Location = new System.Drawing.Point(14, 101);
+            this.panClientSecret.Controls.Add(this.txtTenantId);
+            this.panClientSecret.Location = new System.Drawing.Point(14, 74);
             this.panClientSecret.Name = "panClientSecret";
-            this.panClientSecret.Size = new System.Drawing.Size(399, 31);
+            this.panClientSecret.Size = new System.Drawing.Size(399, 60);
             this.panClientSecret.TabIndex = 12;
             this.panClientSecret.Visible = false;
             // 
@@ -141,7 +144,7 @@
             // 
             this.picSecret.Cursor = System.Windows.Forms.Cursors.Hand;
             this.picSecret.Image = ((System.Drawing.Image)(resources.GetObject("picSecret.Image")));
-            this.picSecret.Location = new System.Drawing.Point(355, 2);
+            this.picSecret.Location = new System.Drawing.Point(355, 27);
             this.picSecret.Name = "picSecret";
             this.picSecret.Size = new System.Drawing.Size(24, 24);
             this.picSecret.TabIndex = 31;
@@ -151,7 +154,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(25, 83);
+            this.label4.Location = new System.Drawing.Point(25, 30);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(43, 13);
             this.label4.TabIndex = 13;
@@ -161,19 +164,19 @@
             // 
             this.rbUser.AutoSize = true;
             this.rbUser.Checked = true;
-            this.rbUser.Location = new System.Drawing.Point(108, 81);
+            this.rbUser.Location = new System.Drawing.Point(108, 28);
             this.rbUser.Name = "rbUser";
-            this.rbUser.Size = new System.Drawing.Size(72, 17);
+            this.rbUser.Size = new System.Drawing.Size(76, 17);
             this.rbUser.TabIndex = 14;
             this.rbUser.TabStop = true;
-            this.rbUser.Text = "User login";
+            this.rbUser.Text = "User Login";
             this.rbUser.UseVisualStyleBackColor = true;
             this.rbUser.CheckedChanged += new System.EventHandler(this.rbMethod_CheckedChanged);
             // 
             // rbSecret
             // 
             this.rbSecret.AutoSize = true;
-            this.rbSecret.Location = new System.Drawing.Point(214, 81);
+            this.rbSecret.Location = new System.Drawing.Point(214, 28);
             this.rbSecret.Name = "rbSecret";
             this.rbSecret.Size = new System.Drawing.Size(85, 17);
             this.rbSecret.TabIndex = 15;
@@ -184,14 +187,11 @@
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.picClient);
-            this.groupBox1.Controls.Add(this.picTenant);
-            this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.rbSecret);
             this.groupBox1.Controls.Add(this.txtClientId);
             this.groupBox1.Controls.Add(this.rbUser);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.label4);
-            this.groupBox1.Controls.Add(this.txtTenantId);
             this.groupBox1.Controls.Add(this.panClientSecret);
             this.groupBox1.Location = new System.Drawing.Point(12, 21);
             this.groupBox1.Name = "groupBox1";
@@ -215,7 +215,7 @@
             // 
             this.picTenant.Cursor = System.Windows.Forms.Cursors.Hand;
             this.picTenant.Image = ((System.Drawing.Image)(resources.GetObject("picTenant.Image")));
-            this.picTenant.Location = new System.Drawing.Point(369, 22);
+            this.picTenant.Location = new System.Drawing.Point(355, 1);
             this.picTenant.Name = "picTenant";
             this.picTenant.Size = new System.Drawing.Size(24, 24);
             this.picTenant.TabIndex = 29;
@@ -234,6 +234,19 @@
             this.groupBox2.TabIndex = 17;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Power Apps Checker Service";
+            // 
+            // textBox1
+            // 
+            this.textBox1.BackColor = System.Drawing.SystemColors.Window;
+            this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textBox1.Location = new System.Drawing.Point(108, 54);
+            this.textBox1.Multiline = true;
+            this.textBox1.Name = "textBox1";
+            this.textBox1.ReadOnly = true;
+            this.textBox1.Size = new System.Drawing.Size(255, 34);
+            this.textBox1.TabIndex = 29;
+            this.textBox1.Text = "Region must match the region for the client entered above. If uncertain, chose De" +
+    "fault.";
             // 
             // picRegion
             // 
@@ -277,19 +290,6 @@
             this.label5.Size = new System.Drawing.Size(41, 13);
             this.label5.TabIndex = 0;
             this.label5.Text = "Region";
-            // 
-            // textBox1
-            // 
-            this.textBox1.BackColor = System.Drawing.SystemColors.Window;
-            this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBox1.Location = new System.Drawing.Point(108, 54);
-            this.textBox1.Multiline = true;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(255, 34);
-            this.textBox1.TabIndex = 29;
-            this.textBox1.Text = "Region must match the region for the client entered above. If uncertain, chose De" +
-    "fault.";
             // 
             // button1
             // 

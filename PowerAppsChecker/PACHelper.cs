@@ -54,36 +54,28 @@ namespace Rappen.XTB.PAC.Helpers
             return client;
         }
 
-        public static HttpClient GetClient(string region, Guid tenantId, Guid clientId)
+        public static HttpClient GetClient(string region, Guid clientId)
         {
             var resource = string.Format(serviceUrl, region);
+            // Dummy endpoint just to get unauthorized response
             var query = $"{resource}/api/status/4799049A-E623-4B2A-818A-3A674E106DE5";
-            AuthenticationParameters authParams = null; 
-            var token = string.Empty;
             var client = new HttpClient();
             var request = new HttpRequestMessage(HttpMethod.Get, new Uri(query));
-            request.Headers.Add("x-ms-tenant-id", tenantId.ToString());
 
-            // NOTE - It is highly recommended to use async/await
             using (var response = client.SendAsync(request).GetAwaiter().GetResult())
             {
                 if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                 {
-                    // NOTE - It is highly recommended to use async/await
-                    authParams = AuthenticationParameters.CreateFromUnauthorizedResponseAsync(response).GetAwaiter().GetResult();
-
-                    // Found here: https://github.com/AzureAD/azure-activedirectory-library-for-dotnet/wiki/Acquiring-tokens-interactively---Public-client-application-flows
-
+                    // Method below found here: https://github.com/AzureAD/azure-activedirectory-library-for-dotnet/wiki/Acquiring-tokens-interactively---Public-client-application-flows
+                    var authParams = AuthenticationParameters.CreateFromUnauthorizedResponseAsync(response).GetAwaiter().GetResult();
                     var authContext = new AuthenticationContext(authParams.Authority);
                     var authResult = authContext.AcquireTokenAsync(
                         resource,
                         clientId.ToString(),
                         new Uri(redirectUrl),
                         new PlatformParameters(PromptBehavior.Auto)).GetAwaiter().GetResult();
-                    token = authResult.AccessToken;
-                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authResult.AccessToken);
                     client.DefaultRequestHeaders.Add("accept", "application/json,application/x-ms-sarif-v2");
-                    client.DefaultRequestHeaders.Add("x-ms-tenant-id", tenantId.ToString());
                     return client;
                 }
                 else

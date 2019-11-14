@@ -36,6 +36,8 @@ namespace Rappen.XTB.PAC
 
         internal void SettingsApplyToUI(Settings settings)
         {
+            rbUser.Checked = settings.AuthMethod == AuthMethod.User;
+            rbSecret.Checked = settings.AuthMethod == AuthMethod.Secret;
             if (!settings.TenantId.Equals(Guid.Empty)) txtTenantId.Text = settings.TenantId.ToString();
             if (!settings.ClientId.Equals(Guid.Empty)) txtClientId.Text = settings.ClientId.ToString();
             if (!string.IsNullOrEmpty(settings.ClientSecret)) txtClientSec.Text = settings.ClientSecret;
@@ -44,6 +46,7 @@ namespace Rappen.XTB.PAC
 
         internal void SettingsGetFromUI(Settings settings)
         {
+            settings.AuthMethod = rbSecret.Checked ? AuthMethod.Secret : AuthMethod.User;
             if (Guid.TryParse(txtTenantId.Text, out Guid tid))
             {
                 settings.TenantId = tid;
@@ -67,11 +70,6 @@ namespace Rappen.XTB.PAC
             {
                 return null;
             }
-            if (!Guid.TryParse(txtTenantId.Text, out var tenantId))
-            {
-                MessageBox.Show("Bad Tenant Guid");
-                return null;
-            }
             if (!Guid.TryParse(txtClientId.Text, out var clientId))
             {
                 MessageBox.Show("Bad Client Guid");
@@ -87,12 +85,17 @@ namespace Rappen.XTB.PAC
             {
                 if (rbSecret.Checked)
                 {
+                    if (!Guid.TryParse(txtTenantId.Text, out var tenantId))
+                    {
+                        MessageBox.Show("Bad Tenant Guid");
+                        return null;
+                    }
                     var clientSec = txtClientSec.Text;
                     return new Tuple<HttpClient, string>(PACHelper.GetClient(region, tenantId, clientId, clientSec), region);
                 }
                 else
                 {
-                    return new Tuple<HttpClient, string>(PACHelper.GetClient(region, tenantId, clientId), region);
+                    return new Tuple<HttpClient, string>(PACHelper.GetClient(region, clientId), region);
                 }
             }
             catch (Exception ex)
@@ -105,10 +108,9 @@ namespace Rappen.XTB.PAC
         private void CheckInputs()
         {
             btnConnectPAC.Enabled =
-                Guid.TryParse(txtTenantId.Text, out var tenantId) &&
                 Guid.TryParse(txtClientId.Text, out var clientId) &&
                 cbRegion.SelectedItem != null &&
-                (rbUser.Checked || !string.IsNullOrEmpty(txtClientSec.Text));
+                (rbUser.Checked || (Guid.TryParse(txtTenantId.Text, out var tenantId) && !string.IsNullOrEmpty(txtClientSec.Text)));
         }
 
         private void picClient_Click(object sender, EventArgs e)
