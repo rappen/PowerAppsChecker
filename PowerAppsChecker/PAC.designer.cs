@@ -35,6 +35,8 @@
             this.btnResetWindows = new System.Windows.Forms.ToolStripButton();
             this.btnAnalyze = new System.Windows.Forms.ToolStripButton();
             this.btnConnectPAC = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.toolStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -54,9 +56,11 @@
             this.toolStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsbCloseThisTab,
-            this.btnResetWindows,
+            this.toolStripSeparator1,
+            this.btnConnectPAC,
+            this.toolStripButton1,
             this.btnAnalyze,
-            this.btnConnectPAC});
+            this.btnResetWindows});
             this.toolStrip.Location = new System.Drawing.Point(0, 0);
             this.toolStrip.Name = "toolStrip";
             this.toolStrip.Size = new System.Drawing.Size(747, 31);
@@ -74,6 +78,7 @@
             // 
             // btnResetWindows
             // 
+            this.btnResetWindows.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.btnResetWindows.Image = ((System.Drawing.Image)(resources.GetObject("btnResetWindows.Image")));
             this.btnResetWindows.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnResetWindows.Name = "btnResetWindows";
@@ -99,6 +104,19 @@
             this.btnConnectPAC.Text = "Connect PAC";
             this.btnConnectPAC.Click += new System.EventHandler(this.btnConnectPAC_Click);
             // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 31);
+            // 
+            // toolStripButton1
+            // 
+            this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
+            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton1.Name = "toolStripButton1";
+            this.toolStripButton1.Size = new System.Drawing.Size(113, 28);
+            this.toolStripButton1.Text = "Select Solution";
+            // 
             // PAC
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -123,5 +141,7 @@
         private System.Windows.Forms.ToolStripButton btnResetWindows;
         private System.Windows.Forms.ToolStripButton btnAnalyze;
         private System.Windows.Forms.ToolStripButton btnConnectPAC;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripButton toolStripButton1;
     }
 }

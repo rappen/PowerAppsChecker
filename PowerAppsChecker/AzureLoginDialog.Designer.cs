@@ -38,12 +38,12 @@
             this.label1 = new System.Windows.Forms.Label();
             this.panClientSecret = new System.Windows.Forms.Panel();
             this.picSecret = new System.Windows.Forms.PictureBox();
+            this.picTenant = new System.Windows.Forms.PictureBox();
             this.label4 = new System.Windows.Forms.Label();
             this.rbUser = new System.Windows.Forms.RadioButton();
             this.rbSecret = new System.Windows.Forms.RadioButton();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.picClient = new System.Windows.Forms.PictureBox();
-            this.picTenant = new System.Windows.Forms.PictureBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.picRegion = new System.Windows.Forms.PictureBox();
@@ -52,9 +52,9 @@
             this.button1 = new System.Windows.Forms.Button();
             this.panClientSecret.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picSecret)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picTenant)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picClient)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.picTenant)).BeginInit();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picRegion)).BeginInit();
             this.SuspendLayout();
@@ -151,6 +151,17 @@
             this.picSecret.TabStop = false;
             this.picSecret.Click += new System.EventHandler(this.picSecret_Click);
             // 
+            // picTenant
+            // 
+            this.picTenant.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.picTenant.Image = ((System.Drawing.Image)(resources.GetObject("picTenant.Image")));
+            this.picTenant.Location = new System.Drawing.Point(355, 1);
+            this.picTenant.Name = "picTenant";
+            this.picTenant.Size = new System.Drawing.Size(24, 24);
+            this.picTenant.TabIndex = 29;
+            this.picTenant.TabStop = false;
+            this.picTenant.Click += new System.EventHandler(this.picTenant_Click);
+            // 
             // label4
             // 
             this.label4.AutoSize = true;
@@ -211,17 +222,6 @@
             this.picClient.TabStop = false;
             this.picClient.Click += new System.EventHandler(this.picClient_Click);
             // 
-            // picTenant
-            // 
-            this.picTenant.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.picTenant.Image = ((System.Drawing.Image)(resources.GetObject("picTenant.Image")));
-            this.picTenant.Location = new System.Drawing.Point(355, 1);
-            this.picTenant.Name = "picTenant";
-            this.picTenant.Size = new System.Drawing.Size(24, 24);
-            this.picTenant.TabIndex = 29;
-            this.picTenant.TabStop = false;
-            this.picTenant.Click += new System.EventHandler(this.picTenant_Click);
-            // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.textBox1);
@@ -245,7 +245,7 @@
             this.textBox1.ReadOnly = true;
             this.textBox1.Size = new System.Drawing.Size(255, 34);
             this.textBox1.TabIndex = 29;
-            this.textBox1.Text = "Region must match the region for the client entered above. If uncertain, chose De" +
+            this.textBox1.Text = "Geography must match the geo for the client entered above. If uncertain, chose De" +
     "fault.";
             // 
             // picRegion
@@ -287,9 +287,9 @@
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(25, 29);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(41, 13);
+            this.label5.Size = new System.Drawing.Size(59, 13);
             this.label5.TabIndex = 0;
-            this.label5.Text = "Region";
+            this.label5.Text = "Geography";
             // 
             // button1
             // 
@@ -323,10 +323,10 @@
             this.panClientSecret.ResumeLayout(false);
             this.panClientSecret.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picSecret)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picTenant)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picClient)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.picTenant)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picRegion)).EndInit();
