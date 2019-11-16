@@ -12,15 +12,20 @@ using System.Net.Http;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 using XrmToolBox.Extensibility;
+using XrmToolBox.Extensibility.Interfaces;
 
 namespace Rappen.XTB.PAC
 {
-    public partial class PAC : PluginControlBase
+    public partial class PAC : PluginControlBase, IGitHubPlugin, IPayPalPlugin, IAboutPlugin
     {
         #region Private Fields
 
         internal readonly SarifControl sarifControl;
         internal readonly ScopeControl scopeControl;
+        internal AppInsights ai = new AppInsights(new AiConfig(aiEndpoint, aiKey) { PluginName = "Power Apps Checker" });
+        private const string aiEndpoint = "https://dc.services.visualstudio.com/v2/track";
+        //private const string aiKey = "cc7cb081-b489-421d-bb61-2ee53495c336";    // jonas@rappen.net tenant, TestAI 
+        private const string aiKey = "eed73022-2444-45fd-928b-5eebd8fa46a6";    // jonas@rappen.net tenant, XrmToolBox
         private readonly AzureLoginDialog azureLogin;
         private readonly SolutionDialog solutionSelector;
         private HttpClient pacclient;
@@ -30,6 +35,14 @@ namespace Rappen.XTB.PAC
         #endregion Private Fields
 
         #region Internal Properties
+
+        public string DonationDescription => "Power Apps Checker fan club";
+
+        public string EmailAccount => "jonas@rappen.net";
+
+        public string RepositoryName => "PowerAppsChecker";
+
+        public string UserName => "rappen";
 
         internal HttpClient PACClient
         {
@@ -49,7 +62,6 @@ namespace Rappen.XTB.PAC
         }
 
         internal string PACRegion { get => pacregion; }
-
         #endregion Internal Properties
 
         #region Public Constructors
@@ -75,6 +87,14 @@ namespace Rappen.XTB.PAC
             base.ClosingPlugin(info);
         }
 
+        public void ShowAboutDialog()
+        {
+            using (var about = new About(this))
+            {
+                about.ShowDialog(this);
+            }
+        }
+
         public override void UpdateConnection(IOrganizationService newService, ConnectionDetail detail, string actionName, object parameter)
         {
             base.UpdateConnection(newService, detail, actionName, parameter);
@@ -91,6 +111,7 @@ namespace Rappen.XTB.PAC
 
         private void btnAnalyze_Click(object sender, EventArgs e)
         {
+            ai.WriteEvent("Analyze");
             SendAnalysis(GetAnalysisArgs());
         }
 
@@ -108,6 +129,7 @@ namespace Rappen.XTB.PAC
 
         private void PAC_Load(object sender, EventArgs e)
         {
+            ai.WriteEvent("Load");
             if (SettingsManager.Instance.TryLoad(GetType(), out Settings settings, ConnectionDetail?.ConnectionName))
             {
                 SettingsApplyToUI(settings);
@@ -278,5 +300,15 @@ namespace Rappen.XTB.PAC
         }
 
         #endregion Private Methods
+
+        private void tslByJonas_Click(object sender, EventArgs e)
+        {
+            ShowAboutDialog();
+        }
+
+        private void PAC_OnCloseTool(object sender, EventArgs e)
+        {
+            ai.WriteEvent("Close");
+        }
     }
 }

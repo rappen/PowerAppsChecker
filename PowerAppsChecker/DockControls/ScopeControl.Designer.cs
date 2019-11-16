@@ -56,7 +56,7 @@
             this.picRuleHelp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.picRuleHelp.Cursor = System.Windows.Forms.Cursors.No;
             this.picRuleHelp.Image = ((System.Drawing.Image)(resources.GetObject("picRuleHelp.Image")));
-            this.picRuleHelp.Location = new System.Drawing.Point(376, 295);
+            this.picRuleHelp.Location = new System.Drawing.Point(376, 490);
             this.picRuleHelp.Name = "picRuleHelp";
             this.picRuleHelp.Size = new System.Drawing.Size(24, 24);
             this.picRuleHelp.TabIndex = 27;
@@ -104,7 +104,7 @@
             // 
             this.lblRules.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblRules.AutoSize = true;
-            this.lblRules.Location = new System.Drawing.Point(18, 270);
+            this.lblRules.Location = new System.Drawing.Point(18, 465);
             this.lblRules.Name = "lblRules";
             this.lblRules.Size = new System.Drawing.Size(87, 13);
             this.lblRules.TabIndex = 26;
@@ -139,7 +139,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtRuleDescr.BackColor = System.Drawing.SystemColors.Window;
             this.txtRuleDescr.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.txtRuleDescr.Location = new System.Drawing.Point(15, 295);
+            this.txtRuleDescr.Location = new System.Drawing.Point(15, 490);
             this.txtRuleDescr.Multiline = true;
             this.txtRuleDescr.Name = "txtRuleDescr";
             this.txtRuleDescr.ReadOnly = true;
@@ -158,7 +158,7 @@
             this.lvRules.HideSelection = false;
             this.lvRules.Location = new System.Drawing.Point(15, 66);
             this.lvRules.Name = "lvRules";
-            this.lvRules.Size = new System.Drawing.Size(384, 201);
+            this.lvRules.Size = new System.Drawing.Size(384, 396);
             this.lvRules.TabIndex = 23;
             this.lvRules.UseCompatibleStateImageBehavior = false;
             this.lvRules.View = System.Windows.Forms.View.Details;
@@ -248,7 +248,7 @@
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(0, 67);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(409, 362);
+            this.panel2.Size = new System.Drawing.Size(409, 557);
             this.panel2.TabIndex = 44;
             // 
             // ScopeControl
@@ -256,7 +256,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Window;
-            this.ClientSize = new System.Drawing.Size(409, 429);
+            this.ClientSize = new System.Drawing.Size(409, 624);
             this.CloseButton = false;
             this.CloseButtonVisible = false;
             this.Controls.Add(this.panel2);

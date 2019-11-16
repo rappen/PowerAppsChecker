@@ -34,6 +34,7 @@
             this.btnConnectPAC = new System.Windows.Forms.ToolStripButton();
             this.btnSelectSolutions = new System.Windows.Forms.ToolStripButton();
             this.btnAnalyze = new System.Windows.Forms.ToolStripButton();
+            this.tslByJonas = new System.Windows.Forms.ToolStripLabel();
             this.toolStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -54,7 +55,8 @@
             this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnConnectPAC,
             this.btnSelectSolutions,
-            this.btnAnalyze});
+            this.btnAnalyze,
+            this.tslByJonas});
             this.toolStrip.Location = new System.Drawing.Point(0, 0);
             this.toolStrip.Name = "toolStrip";
             this.toolStrip.Size = new System.Drawing.Size(747, 31);
@@ -87,6 +89,17 @@
             this.btnAnalyze.Text = "Analyze";
             this.btnAnalyze.Click += new System.EventHandler(this.btnAnalyze_Click);
             // 
+            // tslByJonas
+            // 
+            this.tslByJonas.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.tslByJonas.Image = ((System.Drawing.Image)(resources.GetObject("tslByJonas.Image")));
+            this.tslByJonas.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.tslByJonas.IsLink = true;
+            this.tslByJonas.Name = "tslByJonas";
+            this.tslByJonas.Size = new System.Drawing.Size(106, 28);
+            this.tslByJonas.Text = "by Jonas Rapp";
+            this.tslByJonas.Click += new System.EventHandler(this.tslByJonas_Click);
+            // 
             // PAC
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -95,7 +108,10 @@
             this.Controls.Add(this.dockContainer);
             this.Controls.Add(this.toolStrip);
             this.Name = "PAC";
+            this.PluginIcon = ((System.Drawing.Icon)(resources.GetObject("$this.PluginIcon")));
             this.Size = new System.Drawing.Size(747, 366);
+            this.TabIcon = ((System.Drawing.Image)(resources.GetObject("$this.TabIcon")));
+            this.OnCloseTool += new System.EventHandler(this.PAC_OnCloseTool);
             this.Load += new System.EventHandler(this.PAC_Load);
             this.toolStrip.ResumeLayout(false);
             this.toolStrip.PerformLayout();
@@ -110,5 +126,6 @@
         private System.Windows.Forms.ToolStripButton btnAnalyze;
         private System.Windows.Forms.ToolStripButton btnConnectPAC;
         private System.Windows.Forms.ToolStripButton btnSelectSolutions;
+        private System.Windows.Forms.ToolStripLabel tslByJonas;
     }
 }

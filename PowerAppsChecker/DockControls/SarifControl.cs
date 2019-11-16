@@ -74,6 +74,7 @@ namespace Rappen.XTB.PAC.DockControls
             {
                 if (od.ShowDialog() == DialogResult.OK)
                 {
+                    pac.ai.WriteEvent("OpenSarifFile");
                     Reset();
                     var sarif = File.ReadAllText(od.FileName);
                     txtSarif.Text = sarif;
@@ -97,6 +98,7 @@ namespace Rappen.XTB.PAC.DockControls
             {
                 if (sd.ShowDialog() == DialogResult.OK)
                 {
+                    pac.ai.WriteEvent("SaveSarifFile");
                     SaveSarifToFile(sd.FileName);
                     MessageBox.Show($"{sd.FileName} saved!");
                 }
@@ -164,7 +166,9 @@ namespace Rappen.XTB.PAC.DockControls
             if (dgResults.Rows[e.RowIndex].DataBoundItem is FlattenedSarifResult result)
             {
                 txtMessage.Text = result.Message;
+                txtHowToFix.Text = result.Rule.HowToFix?.Summary;
                 txtSnippet.Text = result.Snippet.Replace("\n", "\r\n");
+                picRuleHelp.Tag = result.Rule.GuidanceUrl;
             }
         }
 
@@ -230,6 +234,14 @@ namespace Rappen.XTB.PAC.DockControls
             {
                 txtStartTime.Text = result.Runs[0].Invocations[0].StartTimeUtc.ToLocalTime().ToString();
                 txtEndTime.Text = result.Runs[0].Invocations[0].EndTimeUtc.ToLocalTime().ToString();
+            }
+        }
+
+        private void picRuleHelp_Click(object sender, EventArgs e)
+        {
+            if (picRuleHelp.Tag is string helpurl)
+            {
+                Process.Start(helpurl.Replace("client=PAChecker", "client=Rappen.XTB.PAC"));
             }
         }
 
@@ -316,6 +328,5 @@ namespace Rappen.XTB.PAC.DockControls
         }
 
         #endregion Private Methods
-
     }
 }
