@@ -31,12 +31,10 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PAC));
             this.dockContainer = new WeifenLuo.WinFormsUI.Docking.DockPanel();
             this.toolStrip = new System.Windows.Forms.ToolStrip();
-            this.tsbCloseThisTab = new System.Windows.Forms.ToolStripButton();
-            this.btnResetWindows = new System.Windows.Forms.ToolStripButton();
-            this.btnAnalyze = new System.Windows.Forms.ToolStripButton();
             this.btnConnectPAC = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
+            this.btnSelectSolutions = new System.Windows.Forms.ToolStripButton();
+            this.btnAnalyze = new System.Windows.Forms.ToolStripButton();
+            this.btnResetWindows = new System.Windows.Forms.ToolStripButton();
             this.toolStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -55,45 +53,14 @@
             this.toolStrip.BackColor = System.Drawing.SystemColors.Window;
             this.toolStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tsbCloseThisTab,
-            this.toolStripSeparator1,
             this.btnConnectPAC,
-            this.toolStripButton1,
+            this.btnSelectSolutions,
             this.btnAnalyze,
             this.btnResetWindows});
             this.toolStrip.Location = new System.Drawing.Point(0, 0);
             this.toolStrip.Name = "toolStrip";
             this.toolStrip.Size = new System.Drawing.Size(747, 31);
             this.toolStrip.TabIndex = 27;
-            // 
-            // tsbCloseThisTab
-            // 
-            this.tsbCloseThisTab.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.tsbCloseThisTab.Image = ((System.Drawing.Image)(resources.GetObject("tsbCloseThisTab.Image")));
-            this.tsbCloseThisTab.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tsbCloseThisTab.Name = "tsbCloseThisTab";
-            this.tsbCloseThisTab.Size = new System.Drawing.Size(28, 28);
-            this.tsbCloseThisTab.Text = "Close this tab";
-            this.tsbCloseThisTab.Click += new System.EventHandler(this.tsbCloseThisTab_Click);
-            // 
-            // btnResetWindows
-            // 
-            this.btnResetWindows.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.btnResetWindows.Image = ((System.Drawing.Image)(resources.GetObject("btnResetWindows.Image")));
-            this.btnResetWindows.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnResetWindows.Name = "btnResetWindows";
-            this.btnResetWindows.Size = new System.Drawing.Size(113, 28);
-            this.btnResetWindows.Text = "Reset windows";
-            this.btnResetWindows.Click += new System.EventHandler(this.btnResetWindows_Click);
-            // 
-            // btnAnalyze
-            // 
-            this.btnAnalyze.Image = ((System.Drawing.Image)(resources.GetObject("btnAnalyze.Image")));
-            this.btnAnalyze.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnAnalyze.Name = "btnAnalyze";
-            this.btnAnalyze.Size = new System.Drawing.Size(76, 28);
-            this.btnAnalyze.Text = "Analyze";
-            this.btnAnalyze.Click += new System.EventHandler(this.btnAnalyze_Click);
             // 
             // btnConnectPAC
             // 
@@ -104,18 +71,33 @@
             this.btnConnectPAC.Text = "Connect PAC";
             this.btnConnectPAC.Click += new System.EventHandler(this.btnConnectPAC_Click);
             // 
-            // toolStripSeparator1
+            // btnSelectSolutions
             // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 31);
+            this.btnSelectSolutions.Image = ((System.Drawing.Image)(resources.GetObject("btnSelectSolutions.Image")));
+            this.btnSelectSolutions.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnSelectSolutions.Name = "btnSelectSolutions";
+            this.btnSelectSolutions.Size = new System.Drawing.Size(113, 28);
+            this.btnSelectSolutions.Text = "Select Solution";
+            this.btnSelectSolutions.Click += new System.EventHandler(this.btnSelectSolutions_Click);
             // 
-            // toolStripButton1
+            // btnAnalyze
             // 
-            this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
-            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(113, 28);
-            this.toolStripButton1.Text = "Select Solution";
+            this.btnAnalyze.Image = ((System.Drawing.Image)(resources.GetObject("btnAnalyze.Image")));
+            this.btnAnalyze.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnAnalyze.Name = "btnAnalyze";
+            this.btnAnalyze.Size = new System.Drawing.Size(76, 28);
+            this.btnAnalyze.Text = "Analyze";
+            this.btnAnalyze.Click += new System.EventHandler(this.btnAnalyze_Click);
+            // 
+            // btnResetWindows
+            // 
+            this.btnResetWindows.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.btnResetWindows.Image = ((System.Drawing.Image)(resources.GetObject("btnResetWindows.Image")));
+            this.btnResetWindows.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnResetWindows.Name = "btnResetWindows";
+            this.btnResetWindows.Size = new System.Drawing.Size(113, 28);
+            this.btnResetWindows.Text = "Reset windows";
+            this.btnResetWindows.Click += new System.EventHandler(this.btnResetWindows_Click);
             // 
             // PAC
             // 
@@ -137,11 +119,9 @@
         #endregion
         private WeifenLuo.WinFormsUI.Docking.DockPanel dockContainer;
         private System.Windows.Forms.ToolStrip toolStrip;
-        private System.Windows.Forms.ToolStripButton tsbCloseThisTab;
         private System.Windows.Forms.ToolStripButton btnResetWindows;
         private System.Windows.Forms.ToolStripButton btnAnalyze;
         private System.Windows.Forms.ToolStripButton btnConnectPAC;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.ToolStripButton toolStripButton1;
+        private System.Windows.Forms.ToolStripButton btnSelectSolutions;
     }
 }

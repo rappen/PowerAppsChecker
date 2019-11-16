@@ -179,11 +179,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AzureLoginDialog.cs">
+    <Compile Include="Dialogs\AzureLoginDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AzureLoginDialog.Designer.cs">
+    <Compile Include="Dialogs\AzureLoginDialog.Designer.cs">
       <DependentUpon>AzureLoginDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\SolutionDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\SolutionDialog.Designer.cs">
+      <DependentUpon>SolutionDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="DockControls\ScopeControl.cs">
       <SubType>Form</SubType>
@@ -196,12 +202,6 @@
     </Compile>
     <Compile Include="DockControls\SarifControl.Designer.cs">
       <DependentUpon>SarifControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="DockControls\SolutionControl.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="DockControls\SolutionControl.Designer.cs">
-      <DependentUpon>SolutionControl.cs</DependentUpon>
     </Compile>
     <Compile Include="PACHelper.cs" />
     <Compile Include="PACHelperTypes.cs" />
@@ -220,17 +220,17 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="AzureLoginDialog.resx">
+    <EmbeddedResource Include="Dialogs\AzureLoginDialog.resx">
       <DependentUpon>AzureLoginDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\SolutionDialog.resx">
+      <DependentUpon>SolutionDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="DockControls\ScopeControl.resx">
       <DependentUpon>ScopeControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="DockControls\SarifControl.resx">
       <DependentUpon>SarifControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="DockControls\SolutionControl.resx">
-      <DependentUpon>SolutionControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PAC.resx">
       <DependentUpon>PAC.cs</DependentUpon>

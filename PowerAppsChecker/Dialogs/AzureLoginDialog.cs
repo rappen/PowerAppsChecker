@@ -5,16 +5,15 @@ using System.Net.Http;
 using System.Windows.Forms;
 using XrmToolBox.Extensibility;
 
-namespace Rappen.XTB.PAC
+namespace Rappen.XTB.PAC.Dialogs
 {
     public partial class AzureLoginDialog : Form
     {
         #region Public Constructors
 
-        public AzureLoginDialog(PAC pac)
+        public AzureLoginDialog()
         {
             InitializeComponent();
-            btnConnectPAC.Enabled = Guid.TryParse(txtTenantId.Text, out Guid t) && Guid.TryParse(txtClientId.Text, out Guid c) && !string.IsNullOrWhiteSpace(txtClientSec.Text);
         }
 
         #endregion Public Constructors
@@ -42,6 +41,7 @@ namespace Rappen.XTB.PAC
             if (!settings.ClientId.Equals(Guid.Empty)) txtClientId.Text = settings.ClientId.ToString();
             if (!string.IsNullOrEmpty(settings.ClientSecret)) txtClientSec.Text = settings.ClientSecret;
             if (!string.IsNullOrEmpty(settings.Region)) cbRegion.SelectedIndex = cbRegion.Items.IndexOf(settings.Region);
+            CheckInputs();
         }
 
         internal void SettingsGetFromUI(Settings settings)
@@ -61,8 +61,20 @@ namespace Rappen.XTB.PAC
 
         #endregion Internal Methods
 
-
         #region Private Methods
+
+        private void cbRegion_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            CheckInputs();
+        }
+
+        private void CheckInputs()
+        {
+            btnConnectPAC.Enabled =
+                Guid.TryParse(txtClientId.Text, out var clientId) &&
+                cbRegion.SelectedItem != null &&
+                (rbUser.Checked || (Guid.TryParse(txtTenantId.Text, out var tenantId) && !string.IsNullOrEmpty(txtClientSec.Text)));
+        }
 
         private Tuple<HttpClient, string> ConnectPAChecker(bool silent = false)
         {
@@ -105,14 +117,6 @@ namespace Rappen.XTB.PAC
             }
         }
 
-        private void CheckInputs()
-        {
-            btnConnectPAC.Enabled =
-                Guid.TryParse(txtClientId.Text, out var clientId) &&
-                cbRegion.SelectedItem != null &&
-                (rbUser.Checked || (Guid.TryParse(txtTenantId.Text, out var tenantId) && !string.IsNullOrEmpty(txtClientSec.Text)));
-        }
-
         private void picClient_Click(object sender, EventArgs e)
         {
             Process.Start("https://docs.microsoft.com/en-us/powershell/powerapps/get-started-powerapps-checker?view=pa-ps-latest#powerapps-checker-authentication-and-authorization");
@@ -139,16 +143,11 @@ namespace Rappen.XTB.PAC
             CheckInputs();
         }
 
-        #endregion Private Methods
-
         private void txtInput_TextChanged(object sender, EventArgs e)
         {
             CheckInputs();
         }
 
-        private void cbRegion_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            CheckInputs();
-        }
+        #endregion Private Methods
     }
 }

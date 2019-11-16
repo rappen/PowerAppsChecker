@@ -2,6 +2,7 @@
 using Microsoft.Xrm.Sdk;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Rappen.XTB.PAC.Helpers
@@ -41,13 +42,22 @@ namespace Rappen.XTB.PAC.Helpers
     {
         #region Public Fields
 
-        public Guid CorrId;
-        public List<string> Exclusions;
-        public string FileUrl;
-        public List<Rule> Rules;
-        public List<RuleSet> RuleSets;
+        public Guid CorrId = Guid.NewGuid();
+        public List<Solution> Solutions = new List<Solution>();
+        public List<string> FileExclusions = new List<string>();
+        public List<Rule> Rules = new List<Rule>();
+        public List<RuleSet> RuleSets = new List<RuleSet>();
 
         #endregion Public Fields
+    }
+
+    public class Solution
+    {
+        public string UniqueName;
+        public string LocalFilePath;
+        public Uri UploadUrl;
+        public string LocalFileName => Path.GetFileName(LocalFilePath);
+        public string UploadFileName => UploadUrl.Segments.LastOrDefault();
     }
 
     public class AnalysisStatus

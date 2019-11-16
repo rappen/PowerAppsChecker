@@ -56,7 +56,7 @@ namespace Rappen.XTB.PAC.DockControls
             {
                 RuleSets = new List<RuleSet>(),
                 Rules = new List<Rule>(),
-                Exclusions = txtExclusions.Text.Split(',').Select(e => e.Trim()).Where(e => !string.IsNullOrEmpty(e)).ToList()
+                FileExclusions = txtExclusions.Text.Split(',').Select(e => e.Trim()).Where(e => !string.IsNullOrEmpty(e)).ToList()
             };
             if (rbScopeRuleset.Checked && cbRuleset.SelectedItem is RuleSet ruleset)
             {

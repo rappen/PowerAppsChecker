@@ -26,6 +26,10 @@ namespace Rappen.XTB.PAC.Helpers
 
         public static AnalysisStatus GetAnalysisStatus(this HttpClient client, string statusurl)
         {
+            if (client == null)
+            {
+                return null;
+            }
             var status = client.GetAsync(statusurl).GetAwaiter().GetResult().Content.ReadAsStringAsync().GetAwaiter().GetResult();
             var jss = new JavaScriptSerializer();
             return jss.Deserialize<AnalysisStatus>(status);
@@ -127,10 +131,14 @@ namespace Rappen.XTB.PAC.Helpers
 
         public static HttpResponseMessage SendAnalysis(this HttpClient client, string region, AnalysisArgs args)
         {
+            if (client == null)
+            {
+                return null;
+            }
             var apiUrl = $"{string.Format(serviceUrl, region)}/api/analyze";
             var values = new Dictionary<string, string>
             {
-                { "sasUriList", $"[\"{args.FileUrl}\"]"},
+                { "sasUriList", $"[{string.Join(", ", args.Solutions.Select(s => $"\"{s.UploadUrl}\""))}]"},
             };
             if (args.RuleSets != null && args.RuleSets.Count > 0)
             {
@@ -140,9 +148,9 @@ namespace Rappen.XTB.PAC.Helpers
             {
                 values.Add("ruleCodes", $"[{string.Join(", ", args.Rules.Select(r => $"{{\"code\": \"{r.Code}\", \"include\": \"true\"}}"))}]");
             }
-            if (args.Exclusions != null)
+            if (args.FileExclusions != null)
             {
-                values.Add("fileExclusions", $"[{string.Join(", ", args.Exclusions.Select(f => $"\"{f}\""))}]");
+                values.Add("fileExclusions", $"[{string.Join(", ", args.FileExclusions.Select(f => $"\"{f}\""))}]");
             }
             var bodystr = "{" + string.Join(",", values.Select(v => "\"" + v.Key + "\":" + v.Value)) + "}";
             var body = new StringContent(bodystr, Encoding.UTF8);
@@ -177,6 +185,10 @@ namespace Rappen.XTB.PAC.Helpers
 
         public static string UploadSolution(this HttpClient client, string region, Guid corrid, string filepath)
         {
+            if (client == null)
+            {
+                return null;
+            }
             var apiUrl = $"{string.Format(serviceUrl, region)}/api/upload";
             var file = File.ReadAllBytes(filepath);
             var filename = Path.GetFileName(filepath);

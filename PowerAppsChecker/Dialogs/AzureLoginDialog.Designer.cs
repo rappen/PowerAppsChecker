@@ -1,4 +1,4 @@
-﻿namespace Rappen.XTB.PAC
+﻿namespace Rappen.XTB.PAC.Dialogs
 {
     partial class AzureLoginDialog
     {
@@ -49,7 +49,7 @@
             this.picRegion = new System.Windows.Forms.PictureBox();
             this.cbRegion = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
+            this.btnCancel = new System.Windows.Forms.Button();
             this.panClientSecret.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picSecret)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picTenant)).BeginInit();
@@ -291,16 +291,16 @@
             this.label5.TabIndex = 0;
             this.label5.Text = "Geography";
             // 
-            // button1
+            // btnCancel
             // 
-            this.button1.BackColor = System.Drawing.SystemColors.Window;
-            this.button1.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.button1.Location = new System.Drawing.Point(12, 292);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(135, 33);
-            this.button1.TabIndex = 18;
-            this.button1.Text = "Cancel";
-            this.button1.UseVisualStyleBackColor = false;
+            this.btnCancel.BackColor = System.Drawing.SystemColors.Window;
+            this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.btnCancel.Location = new System.Drawing.Point(12, 292);
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.Size = new System.Drawing.Size(135, 33);
+            this.btnCancel.TabIndex = 18;
+            this.btnCancel.Text = "Cancel";
+            this.btnCancel.UseVisualStyleBackColor = false;
             // 
             // AzureLoginDialog
             // 
@@ -308,9 +308,9 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Window;
-            this.CancelButton = this.button1;
+            this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(449, 337);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btnConnectPAC);
@@ -355,6 +355,6 @@
         private System.Windows.Forms.PictureBox picClient;
         private System.Windows.Forms.PictureBox picTenant;
         private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button btnCancel;
     }
 }

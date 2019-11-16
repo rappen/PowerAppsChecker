@@ -1,21 +1,17 @@
 ﻿using McTools.Xrm.Connection;
-using Microsoft.CodeAnalysis.Sarif;
 using Microsoft.Crm.Sdk.Messages;
 using Microsoft.Xrm.Sdk;
-using Microsoft.Xrm.Sdk.Query;
+using Rappen.XTB.PAC.Dialogs;
 using Rappen.XTB.PAC.DockControls;
 using Rappen.XTB.PAC.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 using XrmToolBox.Extensibility;
-using static System.Windows.Forms.ListView;
 
 namespace Rappen.XTB.PAC
 {
@@ -24,11 +20,12 @@ namespace Rappen.XTB.PAC
         #region Private Fields
 
         internal readonly SarifControl sarifControl;
-        private readonly AzureLoginDialog azureLogin;
         internal readonly ScopeControl scopeControl;
-        private readonly SolutionControl solutionControl;
+        private readonly AzureLoginDialog azureLogin;
+        private readonly SolutionDialog solutionSelector;
         private HttpClient pacclient;
         private string pacregion;
+        private List<Solution> solutions;
 
         #endregion Private Fields
 
@@ -64,8 +61,8 @@ namespace Rappen.XTB.PAC
             dockContainer.Theme = theme;
             scopeControl = new ScopeControl(this);
             sarifControl = new SarifControl(this);
-            solutionControl = new SolutionControl(this);
-            azureLogin = new AzureLoginDialog(this);
+            azureLogin = new AzureLoginDialog();
+            solutionSelector = new SolutionDialog(this);
         }
 
         #endregion Public Constructors
@@ -82,7 +79,6 @@ namespace Rappen.XTB.PAC
         public override void UpdateConnection(IOrganizationService newService, ConnectionDetail detail, string actionName, object parameter)
         {
             base.UpdateConnection(newService, detail, actionName, parameter);
-            solutionControl.UpdateConnection(newService);
             if (SettingsManager.Instance.TryLoad(GetType(), out Settings settings, detail.ConnectionName))
             {
                 SettingsApplyToUI(settings);
@@ -96,7 +92,13 @@ namespace Rappen.XTB.PAC
 
         private void btnAnalyze_Click(object sender, EventArgs e)
         {
-            SendAnalysis();
+            SendAnalysis(GetAnalysisArgs());
+        }
+
+        private void btnConnectPAC_Click(object sender, EventArgs e)
+        {
+            pacclient = null;
+            var a = PACClient;
         }
 
         private void btnResetWindows_Click(object sender, EventArgs e)
@@ -104,6 +106,11 @@ namespace Rappen.XTB.PAC
             ResetDockLayout();
         }
 
+        private void btnSelectSolutions_Click(object sender, EventArgs e)
+        {
+            solutions = solutionSelector.GetSolutions();
+            Enable(true);
+        }
         private void PAC_Load(object sender, EventArgs e)
         {
             if (SettingsManager.Instance.TryLoad(GetType(), out Settings settings, ConnectionDetail?.ConnectionName))
@@ -112,11 +119,6 @@ namespace Rappen.XTB.PAC
             }
             SetupDockControls();
             scopeControl.LoadRuleSets();
-        }
-
-        private void tsbCloseThisTab_Click(object sender, EventArgs e)
-        {
-            CloseTool();
         }
 
         #endregion Private event handlers
@@ -136,8 +138,6 @@ namespace Rappen.XTB.PAC
                     return scopeControl;
                 case "Rappen.XTB.PAC.DockControls.SarifControl":
                     return sarifControl;
-                case "Rappen.XTB.PAC.DockControls.SolutionControl":
-                    return solutionControl;
                 default:
                     return null;
             }
@@ -146,11 +146,8 @@ namespace Rappen.XTB.PAC
         private void ResetDockLayout()
         {
             sarifControl.Show(dockContainer, DockState.Document);
-            solutionControl.Show(dockContainer, DockState.DockTop);
             scopeControl.Show(dockContainer, DockState.DockLeft);
-            dockContainer.DockTopPortion = solutionControl.originalSize.Height;
             dockContainer.DockLeftPortion = scopeControl.originalSize.Width;
-            //solutionControl.Show(sarifControl.Pane, DockAlignment.Top, solutionControl.originalSize.Height);
         }
 
         private void SaveDockPanels()
@@ -188,18 +185,65 @@ namespace Rappen.XTB.PAC
         internal void Enable(bool enable)
         {
             Enabled = enable;
-            btnAnalyze.Enabled = enable && solutionControl.Uploaded && scopeControl.EnableAnalysis();
+            btnAnalyze.Enabled = enable && solutions != null && solutions.Count > 0 && scopeControl.EnableAnalysis();
             scopeControl.Enable(enable);
             sarifControl.Enable(enable);
-            solutionControl.Enable(enable);
         }
 
-        private void SendAnalysis()
+        private void ExportSolution(AnalysisArgs analysisargs, Solution solution)
         {
             Enable(false);
             sarifControl.Reset();
-            var analysisargs = scopeControl.GetAnalysisScopeArgs();
-            solutionControl.GetAnalysisSolutionArgs(analysisargs);
+            var solname = solution.UniqueName;
+            WorkAsync(new WorkAsyncInfo
+            {
+                Message = "Exporting",
+                AsyncArgument = solname,
+                Work = (worker, args) =>
+                {
+                    var sol = args.Argument as string;
+                    var req = new ExportSolutionRequest
+                    {
+                        SolutionName = sol,
+                        Managed = false
+                    };
+                    args.Result = Service.Execute(req) as ExportSolutionResponse;
+                },
+                PostWorkCallBack = (args) =>
+                {
+                    if (args.Error != null)
+                    {
+                        MessageBox.Show(args.Error.Message);
+                    }
+                    else if (args.Result is ExportSolutionResponse resp)
+                    {
+                        var exportXml = resp.ExportSolutionFile;
+                        var filename = Path.Combine(Paths.LogsPath, solname + ".zip");
+                        File.WriteAllBytes(filename, exportXml);
+                        solution.LocalFilePath = filename;
+                    }
+                    Enable(true);
+                    SendAnalysis(analysisargs);
+                }
+            });
+        }
+
+        private void SendAnalysis(AnalysisArgs analysisargs)
+        {
+            Enable(false);
+            sarifControl.Reset();
+            var notexported = analysisargs.Solutions.FirstOrDefault(s => !string.IsNullOrEmpty(s.UniqueName) && string.IsNullOrEmpty(s.LocalFilePath));
+            if (notexported != null)
+            {
+                ExportSolution(analysisargs, notexported);
+                return;
+            }
+            var notuploaded = analysisargs.Solutions.FirstOrDefault(s => !string.IsNullOrEmpty(s.LocalFilePath) && s.UploadUrl == null);
+            if (notuploaded != null)
+            {
+                UploadSolutionFile(analysisargs, notuploaded);
+                return;
+            }
             WorkAsync(new WorkAsyncInfo
             {
                 Message = "Initiating analysis",
@@ -234,28 +278,63 @@ namespace Rappen.XTB.PAC
             });
         }
 
+        private AnalysisArgs GetAnalysisArgs()
+        {
+            var analysisargs = scopeControl.GetAnalysisScopeArgs();
+            analysisargs.Solutions = solutions;
+            return analysisargs;
+        }
+
         private void SettingsApplyToUI(Settings settings)
         {
-            solutionControl.SettingsApplyToUI(settings);
             scopeControl.txtExclusions.Text = settings.FileExclusions;
             azureLogin.SettingsApplyToUI(settings);
+            solutionSelector.SettingsApplyToUI(settings);
         }
 
         private Settings SettingsGetFromUI()
         {
             var settings = new Settings();
-            solutionControl.SettingsGetFromUI(settings);
             settings.FileExclusions = scopeControl.txtExclusions.Text;
             azureLogin.SettingsGetFromUI(settings);
+            solutionSelector.SettingsGetFromUI(settings);
             return settings;
         }
 
-        #endregion Private Methods
-
-        private void btnConnectPAC_Click(object sender, EventArgs e)
+        private void UploadSolutionFile(AnalysisArgs analysisargs, Solution solution)
         {
-            pacclient = null;
-            var a = PACClient;
+            Enable(false);
+            sarifControl.Reset();
+            var corrid = Guid.NewGuid();
+            WorkAsync(new WorkAsyncInfo
+            {
+                Message = "Uploading",
+                AsyncArgument = new { client = PACClient, corr = corrid, file = solution.LocalFilePath },
+                Work = (worker, args) =>
+                {
+                    var a = args.Argument as dynamic;
+                    var client = a.client as HttpClient;
+                    var corr = a.corr as Guid?;
+                    var file = a.file as string;
+                    args.Result = client.UploadSolution(PACRegion, (Guid)corr, file);
+                },
+                PostWorkCallBack = (args) =>
+                {
+                    if (args.Error != null)
+                    {
+                        MessageBox.Show(args.Error.Message);
+                    }
+                    else if (args.Result is string bloburl)
+                    {
+                        solution.UploadUrl = new Uri(bloburl);
+                    }
+                    Enable(true);
+                    SendAnalysis(analysisargs);
+                }
+            });
         }
+
+
+        #endregion Private Methods
     }
 }
