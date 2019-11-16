@@ -72,7 +72,6 @@ namespace Rappen.XTB.PAC
         public override void ClosingPlugin(PluginCloseInfo info)
         {
             SettingsManager.Instance.Save(GetType(), SettingsGetFromUI(), ConnectionDetail?.ConnectionName);
-            SaveDockPanels();
             base.ClosingPlugin(info);
         }
 
@@ -101,84 +100,23 @@ namespace Rappen.XTB.PAC
             var a = PACClient;
         }
 
-        private void btnResetWindows_Click(object sender, EventArgs e)
-        {
-            ResetDockLayout();
-        }
-
         private void btnSelectSolutions_Click(object sender, EventArgs e)
         {
             solutions = solutionSelector.GetSolutions();
             Enable(true);
         }
+
         private void PAC_Load(object sender, EventArgs e)
         {
             if (SettingsManager.Instance.TryLoad(GetType(), out Settings settings, ConnectionDetail?.ConnectionName))
             {
                 SettingsApplyToUI(settings);
             }
-            SetupDockControls();
+            ResetDockLayout();
             scopeControl.LoadRuleSets();
         }
 
         #endregion Private event handlers
-
-        #region Dock methods
-
-        private static string GetDockFileName()
-        {
-            return Path.Combine(Paths.SettingsPath, "Rappen.XTB.PAC_DockPanels.xml");
-        }
-
-        private IDockContent dockDeSerialization(string persistString)
-        {
-            switch (persistString)
-            {
-                case "Rappen.XTB.PAC.DockControls.RuleControl":
-                    return scopeControl;
-                case "Rappen.XTB.PAC.DockControls.SarifControl":
-                    return sarifControl;
-                default:
-                    return null;
-            }
-        }
-
-        private void ResetDockLayout()
-        {
-            sarifControl.Show(dockContainer, DockState.Document);
-            scopeControl.Show(dockContainer, DockState.DockLeft);
-            dockContainer.DockLeftPortion = scopeControl.originalSize.Width;
-        }
-
-        private void SaveDockPanels()
-        {
-            var dockFile = GetDockFileName();
-            dockContainer.SaveAsXml(dockFile);
-        }
-
-        private void SetupDockControls()
-        {
-            //string dockFile = GetDockFileName();
-            //if (File.Exists(dockFile))
-            //{
-            //    try
-            //    {
-            //        dockContainer.LoadFromXml(dockFile, dockDeSerialization);
-            //        return;
-            //    }
-            //    catch (InvalidOperationException)
-            //    {
-            //        // Restore from file failed
-            //    }
-            //    catch (ArgumentOutOfRangeException)
-            //    {
-            //        // Restore from file failed
-            //    }
-            //}
-            ResetDockLayout();
-        }
-
-        #endregion Dock methods
 
         #region Private Methods
 
@@ -193,7 +131,6 @@ namespace Rappen.XTB.PAC
         private void ExportSolution(AnalysisArgs analysisargs, Solution solution)
         {
             Enable(false);
-            sarifControl.Reset();
             var solname = solution.UniqueName;
             WorkAsync(new WorkAsyncInfo
             {
@@ -228,10 +165,24 @@ namespace Rappen.XTB.PAC
             });
         }
 
+        private AnalysisArgs GetAnalysisArgs()
+        {
+            var analysisargs = scopeControl.GetAnalysisScopeArgs();
+            analysisargs.Solutions = solutions;
+            sarifControl.SetArgs(analysisargs);
+            return analysisargs;
+        }
+
+        private void ResetDockLayout()
+        {
+            sarifControl.Show(dockContainer, DockState.Document);
+            scopeControl.Show(dockContainer, DockState.DockLeft);
+            dockContainer.DockLeftPortion = scopeControl.originalSize.Width;
+        }
+
         private void SendAnalysis(AnalysisArgs analysisargs)
         {
             Enable(false);
-            sarifControl.Reset();
             var notexported = analysisargs.Solutions.FirstOrDefault(s => !string.IsNullOrEmpty(s.UniqueName) && string.IsNullOrEmpty(s.LocalFilePath));
             if (notexported != null)
             {
@@ -278,13 +229,6 @@ namespace Rappen.XTB.PAC
             });
         }
 
-        private AnalysisArgs GetAnalysisArgs()
-        {
-            var analysisargs = scopeControl.GetAnalysisScopeArgs();
-            analysisargs.Solutions = solutions;
-            return analysisargs;
-        }
-
         private void SettingsApplyToUI(Settings settings)
         {
             scopeControl.txtExclusions.Text = settings.FileExclusions;
@@ -304,7 +248,6 @@ namespace Rappen.XTB.PAC
         private void UploadSolutionFile(AnalysisArgs analysisargs, Solution solution)
         {
             Enable(false);
-            sarifControl.Reset();
             var corrid = Guid.NewGuid();
             WorkAsync(new WorkAsyncInfo
             {
@@ -333,7 +276,6 @@ namespace Rappen.XTB.PAC
                 }
             });
         }
-
 
         #endregion Private Methods
     }

@@ -34,7 +34,6 @@
             this.btnConnectPAC = new System.Windows.Forms.ToolStripButton();
             this.btnSelectSolutions = new System.Windows.Forms.ToolStripButton();
             this.btnAnalyze = new System.Windows.Forms.ToolStripButton();
-            this.btnResetWindows = new System.Windows.Forms.ToolStripButton();
             this.toolStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -55,8 +54,7 @@
             this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnConnectPAC,
             this.btnSelectSolutions,
-            this.btnAnalyze,
-            this.btnResetWindows});
+            this.btnAnalyze});
             this.toolStrip.Location = new System.Drawing.Point(0, 0);
             this.toolStrip.Name = "toolStrip";
             this.toolStrip.Size = new System.Drawing.Size(747, 31);
@@ -89,16 +87,6 @@
             this.btnAnalyze.Text = "Analyze";
             this.btnAnalyze.Click += new System.EventHandler(this.btnAnalyze_Click);
             // 
-            // btnResetWindows
-            // 
-            this.btnResetWindows.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.btnResetWindows.Image = ((System.Drawing.Image)(resources.GetObject("btnResetWindows.Image")));
-            this.btnResetWindows.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnResetWindows.Name = "btnResetWindows";
-            this.btnResetWindows.Size = new System.Drawing.Size(113, 28);
-            this.btnResetWindows.Text = "Reset windows";
-            this.btnResetWindows.Click += new System.EventHandler(this.btnResetWindows_Click);
-            // 
             // PAC
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -119,7 +107,6 @@
         #endregion
         private WeifenLuo.WinFormsUI.Docking.DockPanel dockContainer;
         private System.Windows.Forms.ToolStrip toolStrip;
-        private System.Windows.Forms.ToolStripButton btnResetWindows;
         private System.Windows.Forms.ToolStripButton btnAnalyze;
         private System.Windows.Forms.ToolStripButton btnConnectPAC;
         private System.Windows.Forms.ToolStripButton btnSelectSolutions;

@@ -243,7 +243,7 @@ namespace Rappen.XTB.PAC.DockControls
             pac.Enable(true);
         }
 
-        private ListViewItem RuleToListItem(Helpers.Rule rule)
+        private ListViewItem RuleToListItem(Rule rule)
         {
             var groupby = (rbGroupCategory.Checked ? $"Category: {rule.PrimaryCategory}" : $"Severity: {rule.Severity}");
             var group = lvRules.Groups.Cast<ListViewGroup>().FirstOrDefault(g => g.Header == groupby);

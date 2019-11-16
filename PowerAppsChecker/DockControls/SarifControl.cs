@@ -2,8 +2,11 @@
 using Rappen.XTB.PAC.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Windows.Forms;
 using XrmToolBox.Extensibility;
@@ -12,9 +15,11 @@ namespace Rappen.XTB.PAC.DockControls
 {
     public partial class SarifControl : WeifenLuo.WinFormsUI.Docking.DockContent
     {
+
         #region Private Fields
 
         private readonly PAC pac;
+        private TextBox filterSeverity;
 
         #endregion Private Fields
 
@@ -35,19 +40,20 @@ namespace Rappen.XTB.PAC.DockControls
             btnSaveSarif.Enabled = enable && !string.IsNullOrWhiteSpace(txtResultFile.Text);
         }
 
-        internal void Reset()
+        internal void SetArgs(AnalysisArgs args)
         {
-            txtRunCorrId.Text = "";
-            txtStatusUrl.Text = "";
-            txtStatus.Text = "";
-            progAnalysis.Value = 0;
-            txtResultFile.Text = "";
+            Reset();
+            txtCorrId.Text = args.CorrId.ToString();
+            txtExclusions.Text = string.Join(", ", args.FileExclusions);
+            txtRulesets.Text = string.Join(", ", args.RuleSets.Select(r => r.Name));
+            lbRules.DataSource = args.Rules;
+            dgSolutions.DataSource = args.Solutions;
+            dgSolutions.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
         }
 
         internal void StartStatusCheck(string statusurl)
         {
-            txtStatus.Text = "Sent";
-            progAnalysis.Value = 1;
+            SetStatus("Sent", 1);
             txtStatusUrl.Text = statusurl;
             tmStatus.Start();
         }
@@ -68,6 +74,7 @@ namespace Rappen.XTB.PAC.DockControls
             {
                 if (od.ShowDialog() == DialogResult.OK)
                 {
+                    Reset();
                     var sarif = File.ReadAllText(od.FileName);
                     txtSarif.Text = sarif;
                     ParseSarifLog(PACHelper.GetSarifFromString(sarif));
@@ -121,8 +128,7 @@ namespace Rappen.XTB.PAC.DockControls
                     else if (args.Result is AnalysisStatus status)
                     {
                         txtRunCorrId.Text = status.RunCorrelationId.ToString();
-                        txtStatus.Text = status.Status;
-                        progAnalysis.Value = status.Progress;
+                        SetStatus(status.Status, status.Progress);
                         if (status.Progress >= 100)
                         {
                             SetStatus(status);
@@ -150,6 +156,15 @@ namespace Rappen.XTB.PAC.DockControls
                 var file = dgResults[e.ColumnIndex, e.RowIndex].Value.ToString();
                 var url = pac.ConnectionDetail.WebApplicationUrl + file;
                 Process.Start(url);
+            }
+        }
+
+        private void dgResults_CellEnter(object sender, DataGridViewCellEventArgs e)
+        {
+            if (dgResults.Rows[e.RowIndex].DataBoundItem is FlattenedSarifResult result)
+            {
+                txtMessage.Text = result.Message;
+                txtSnippet.Text = result.Snippet.Replace("\n", "\r\n");
             }
         }
 
@@ -195,7 +210,7 @@ namespace Rappen.XTB.PAC.DockControls
                             }
                         }
                         pac.Enable(true);
-                        progAnalysis.Value = 0;
+                        SetStatus("", 0);
                     }
                 });
             }
@@ -208,6 +223,33 @@ namespace Rappen.XTB.PAC.DockControls
                 return;
             }
             dgResults.DataSource = FlattenedSarifResult.GetFlattenedResults(result.Runs[0], pac.scopeControl.Rules);
+            dgResults.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
+            dgArtifacts.DataSource = result.Runs[0].Artifacts.Select(a => new Helpers.Artifact(a)).ToList();
+            dgArtifacts.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
+            if (result.Runs[0].Invocations.Count == 1)
+            {
+                txtStartTime.Text = result.Runs[0].Invocations[0].StartTimeUtc.ToLocalTime().ToString();
+                txtEndTime.Text = result.Runs[0].Invocations[0].EndTimeUtc.ToLocalTime().ToString();
+            }
+        }
+
+        private void Reset()
+        {
+            txtCorrId.Text = "";
+            txtRunCorrId.Text = "";
+            txtExclusions.Text = "";
+            txtRulesets.Text = "";
+            lbRules.DataSource = null;
+            dgSolutions.DataSource = null;
+            txtStatusUrl.Text = "";
+            SetStatus("", 0);
+            txtResultFile.Text = "";
+            dgResults.DataSource = null;
+            foreach (var severitybox in panTop.Controls.Cast<Control>().Select(c => c as TextBox).Where(t => t != null && t.Tag is string))
+            {
+                severitybox.Text = "-";
+            }
+            panTop.Visible = false;
         }
 
         private void SaveSarifToFile(string filename)
@@ -220,6 +262,17 @@ namespace Rappen.XTB.PAC.DockControls
             txtSarif.Text = sarif;
         }
 
+        private void SetStatus(string status, int progress)
+        {
+            txtStatus.Text = status;
+            progAnalysis.Value = progress;
+            if (!string.IsNullOrEmpty(status))
+            {
+                panTop.Visible = true;
+            }
+            progAnalysis.Visible = !string.IsNullOrEmpty(status);
+        }
+
         private void SetStatus(AnalysisStatus status)
         {
             txtResultCountCritical.Text = status.IssueSummary.CriticalIssueCount.ToString();
@@ -227,6 +280,7 @@ namespace Rappen.XTB.PAC.DockControls
             txtResultCountMedium.Text = status.IssueSummary.MediumIssueCount.ToString();
             txtResultCountLow.Text = status.IssueSummary.LowIssueCount.ToString();
             txtResultCountInfo.Text = status.IssueSummary.InformationalIssueCount.ToString();
+            panTop.Visible = true;
         }
 
         private void tmStatus_Tick(object sender, EventArgs e)
@@ -234,14 +288,34 @@ namespace Rappen.XTB.PAC.DockControls
             CheckAnalysisStatus();
         }
 
-        #endregion Private Methods
-
-        private void dgResults_CellEnter(object sender, DataGridViewCellEventArgs e)
+        private void txtResultCountInfo_Click(object sender, EventArgs e)
         {
-            if ( dgResults.Rows[e.RowIndex].DataBoundItem is FlattenedSarifResult result)
+            if (sender is TextBox textbox && textbox.Tag is string tagstr)
             {
-                txtMessage.Text = result.Message;
+                if (filterSeverity == textbox)
+                {
+                    tagstr = null;
+                    filterSeverity = null;
+                }
+                else
+                {
+                    filterSeverity = textbox;
+                }
+                CurrencyManager currencyManager = (CurrencyManager)BindingContext[dgResults.DataSource];
+                currencyManager.SuspendBinding();
+                foreach (var row in dgResults.Rows.Cast<DataGridViewRow>())
+                {
+                    row.Visible = tagstr == null || row.Cells["colSeverity"].Value.ToString() == tagstr;
+                }
+                currencyManager.ResumeBinding();
+                foreach (var severitybox in panTop.Controls.Cast<Control>().Select(c => c as TextBox).Where(t => t != null && t.Tag is string))
+                {
+                    severitybox.BackColor = filterSeverity == severitybox ? Color.Red : SystemColors.Window;
+                }
             }
         }
+
+        #endregion Private Methods
+
     }
 }

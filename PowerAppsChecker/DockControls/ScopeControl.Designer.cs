@@ -168,7 +168,7 @@
             // columnHeader1
             // 
             this.columnHeader1.Text = "Rule";
-            this.columnHeader1.Width = 377;
+            this.columnHeader1.Width = 350;
             // 
             // txtExclusions
             // 
@@ -257,12 +257,15 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Window;
             this.ClientSize = new System.Drawing.Size(409, 429);
+            this.CloseButton = false;
+            this.CloseButtonVisible = false;
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
+            this.DockAreas = ((WeifenLuo.WinFormsUI.Docking.DockAreas)((WeifenLuo.WinFormsUI.Docking.DockAreas.DockLeft | WeifenLuo.WinFormsUI.Docking.DockAreas.DockRight)));
             this.HideOnClose = true;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(400, 0);
+            this.MinimumSize = new System.Drawing.Size(400, 39);
             this.Name = "ScopeControl";
             this.TabText = "Analysis Scope";
             this.Text = "Analysis Scope";

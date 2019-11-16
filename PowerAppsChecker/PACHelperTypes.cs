@@ -43,21 +43,12 @@ namespace Rappen.XTB.PAC.Helpers
         #region Public Fields
 
         public Guid CorrId = Guid.NewGuid();
-        public List<Solution> Solutions = new List<Solution>();
         public List<string> FileExclusions = new List<string>();
         public List<Rule> Rules = new List<Rule>();
         public List<RuleSet> RuleSets = new List<RuleSet>();
+        public List<Solution> Solutions = new List<Solution>();
 
         #endregion Public Fields
-    }
-
-    public class Solution
-    {
-        public string UniqueName;
-        public string LocalFilePath;
-        public Uri UploadUrl;
-        public string LocalFileName => Path.GetFileName(LocalFilePath);
-        public string UploadFileName => UploadUrl.Segments.LastOrDefault();
     }
 
     public class AnalysisStatus
@@ -86,6 +77,18 @@ namespace Rappen.XTB.PAC.Helpers
         }
 
         #endregion Public Methods
+    }
+
+    public class Artifact
+    {
+        public string File { get; set; }
+        public int Size { get; set; }
+
+        public Artifact(Microsoft.CodeAnalysis.Sarif.Artifact artifact)
+        {
+            File = artifact.Location.Uri.ToString();
+            Size = artifact.Length;
+        }
     }
 
     public class Fix
@@ -119,17 +122,17 @@ namespace Rappen.XTB.PAC.Helpers
         public int? EndLine;
         public string Message;
         public string Snippet;
+        public Rule Rule;
 
         #endregion Public Fields
 
         #region Public Properties
 
-        public Category Category { get; set; }
-        public string RuleId { get; set; }
-        public Component ComponentType { get; set; }
-        public Uri FilePath { get; set; }
-        public string Module { get; set; }
         public string Severity { get; set; }
+        public string RuleDescription => Rule.ToString();
+        public Category Category => Rule.PrimaryCategory;
+        public string Module { get; set; }
+        public Uri FilePath { get; set; }
         public int? StartLine { get; set; }
 
         #endregion Public Properties
@@ -139,22 +142,18 @@ namespace Rappen.XTB.PAC.Helpers
 
         public static List<FlattenedSarifResult> GetFlattenedResults(Run run, List<Rule> rules)
         {
-            var query =
-                run.Results
+            return run.Results
                 .SelectMany(r => r.Locations, (result, location) => new FlattenedSarifResult
                 {
-                    RuleId = result.RuleId,
+                    Rule = rules.FirstOrDefault(r => r.Code == result.RuleId),
                     Message = result.Message?.Text,
                     FilePath = location.PhysicalLocation?.ArtifactLocation?.Uri,
                     StartLine = location.PhysicalLocation?.Region?.StartLine,
                     Snippet = location.PhysicalLocation?.Region?.Snippet?.Text,
                     EndLine = location.PhysicalLocation?.Region?.EndLine,
                     Module = location.PropertyNames.Contains("module") ? location.GetProperty("module") : null,
-                    Severity = result.PropertyNames.Contains("severity") ? result.GetProperty("severity") : null,
-                    ComponentType = (Component)rules.FirstOrDefault(r => r.Code == result.RuleId).ComponentType,
-                    Category = rules.FirstOrDefault(r => r.Code == result.RuleId).PrimaryCategory
-                });
-            return query.ToList();
+                    Severity = result.PropertyNames.Contains("severity") ? result.GetProperty("severity") : null
+                }).ToList();
         }
 
         #endregion Public Methods
@@ -217,31 +216,17 @@ namespace Rappen.XTB.PAC.Helpers
         #endregion Public Methods
     }
 
-    public class SolutionItem
+    public class Solution
     {
-        #region Public Fields
+        #region Public Properties
 
-        public Entity Solution;
+        public string LocalFileName => Path.GetFileName(LocalFilePath);
+        public string LocalFilePath { get; internal set; }
+        public string UniqueName { get; internal set; }
+        public string UploadFileName => UploadUrl?.Segments?.LastOrDefault();
+        public Uri UploadUrl { get; internal set; }
 
-        #endregion Public Fields
-
-        #region Public Constructors
-
-        public SolutionItem(Entity solution)
-        {
-            Solution = solution;
-        }
-
-        #endregion Public Constructors
-
-        #region Public Methods
-
-        public override string ToString()
-        {
-            return Solution["friendlyname"].ToString();
-        }
-
-        #endregion Public Methods
+        #endregion Public Properties
     }
 
     public class StatusSummary
