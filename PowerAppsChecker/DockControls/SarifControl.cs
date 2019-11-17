@@ -172,12 +172,12 @@ namespace Rappen.XTB.PAC.DockControls
             }
         }
 
-        private void dgResults_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
-        {
-            var col = dgResults.Columns[e.ColumnIndex];
-            //dgGrouper.Options.StartCollapsed = true;
-            //dgGrouper.SetGroupOn(col);
-        }
+        //private void dgResults_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        //{
+        //    var col = dgResults.Columns[e.ColumnIndex];
+        //    dgGrouper.Options.StartCollapsed = true;
+        //    dgGrouper.SetGroupOn(col);
+        //}
 
         private void GetResultFile(AnalysisStatus status)
         {
@@ -206,6 +206,7 @@ namespace Rappen.XTB.PAC.DockControls
                         }
                         else if (args.Result is List<string> results && results.Count > 0)
                         {
+                            SetStatus("", 0);
                             SetSarif(results[0]);
                             btnSaveSarif.Enabled = true;
                             foreach (var result in results)
@@ -214,7 +215,6 @@ namespace Rappen.XTB.PAC.DockControls
                             }
                         }
                         pac.Enable(true);
-                        SetStatus("", 0);
                     }
                 });
             }
@@ -232,6 +232,7 @@ namespace Rappen.XTB.PAC.DockControls
             dgArtifacts.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
             if (result.Runs[0].Invocations.Count == 1)
             {
+                txtStatus.Text = result.Runs[0].Invocations[0].ExecutionSuccessful ? "Successful" : "Unsuccessful";
                 txtStartTime.Text = result.Runs[0].Invocations[0].StartTimeUtc.ToLocalTime().ToString();
                 txtEndTime.Text = result.Runs[0].Invocations[0].EndTimeUtc.ToLocalTime().ToString();
             }
@@ -256,7 +257,12 @@ namespace Rappen.XTB.PAC.DockControls
             txtStatusUrl.Text = "";
             SetStatus("", 0);
             txtResultFile.Text = "";
-            dgResults.DataSource = null;
+            if (dgResults.DataSource != null)
+            {
+                var cols = dgResults.Columns.Cast<DataGridViewColumn>().ToArray();
+                dgResults.DataSource = null;
+                dgResults.Columns.AddRange(cols);
+            }
             foreach (var severitybox in panTop.Controls.Cast<Control>().Select(c => c as TextBox).Where(t => t != null && t.Tag is string))
             {
                 severitybox.Text = "-";

@@ -29,8 +29,8 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SarifControl));
             this.tabControlResults = new System.Windows.Forms.TabControl();
             this.tabResults = new System.Windows.Forms.TabPage();
@@ -167,8 +167,8 @@
             this.dgResults.AllowUserToAddRows = false;
             this.dgResults.AllowUserToDeleteRows = false;
             this.dgResults.AllowUserToResizeRows = false;
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.dgResults.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.dgResults.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle5;
             this.dgResults.BackgroundColor = System.Drawing.SystemColors.Window;
             this.dgResults.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgResults.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
@@ -187,7 +187,6 @@
             this.dgResults.TabIndex = 1;
             this.dgResults.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgResults_CellDoubleClick);
             this.dgResults.CellEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgResults_CellEnter);
-            this.dgResults.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgResults_ColumnHeaderMouseClick);
             // 
             // colSeverity
             // 
@@ -231,8 +230,8 @@
             // colStartLine
             // 
             this.colStartLine.DataPropertyName = "StartLine";
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.colStartLine.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.colStartLine.DefaultCellStyle = dataGridViewCellStyle6;
             this.colStartLine.HeaderText = "Line";
             this.colStartLine.Name = "colStartLine";
             this.colStartLine.ReadOnly = true;
@@ -418,7 +417,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(83, 12);
+            this.label2.Location = new System.Drawing.Point(81, 12);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(29, 13);
             this.label2.TabIndex = 2;
@@ -441,7 +440,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(16, 12);
+            this.label1.Location = new System.Drawing.Point(14, 12);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(38, 13);
             this.label1.TabIndex = 0;
@@ -600,16 +599,16 @@
             // txtEndTime
             // 
             this.txtEndTime.BackColor = System.Drawing.SystemColors.Window;
-            this.txtEndTime.Location = new System.Drawing.Point(576, 18);
+            this.txtEndTime.Location = new System.Drawing.Point(480, 44);
             this.txtEndTime.Name = "txtEndTime";
             this.txtEndTime.ReadOnly = true;
-            this.txtEndTime.Size = new System.Drawing.Size(254, 20);
+            this.txtEndTime.Size = new System.Drawing.Size(143, 20);
             this.txtEndTime.TabIndex = 56;
             // 
             // label18
             // 
             this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(439, 21);
+            this.label18.Location = new System.Drawing.Point(393, 47);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(52, 13);
             this.label18.TabIndex = 57;
@@ -618,16 +617,16 @@
             // txtStartTime
             // 
             this.txtStartTime.BackColor = System.Drawing.SystemColors.Window;
-            this.txtStartTime.Location = new System.Drawing.Point(154, 18);
+            this.txtStartTime.Location = new System.Drawing.Point(480, 18);
             this.txtStartTime.Name = "txtStartTime";
             this.txtStartTime.ReadOnly = true;
-            this.txtStartTime.Size = new System.Drawing.Size(254, 20);
+            this.txtStartTime.Size = new System.Drawing.Size(143, 20);
             this.txtStartTime.TabIndex = 54;
             // 
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(17, 21);
+            this.label17.Location = new System.Drawing.Point(393, 21);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(55, 13);
             this.label17.TabIndex = 55;
@@ -712,13 +711,13 @@
             this.lbRules.FormattingEnabled = true;
             this.lbRules.Location = new System.Drawing.Point(154, 148);
             this.lbRules.Name = "lbRules";
-            this.lbRules.Size = new System.Drawing.Size(386, 134);
+            this.lbRules.Size = new System.Drawing.Size(469, 147);
             this.lbRules.TabIndex = 46;
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(17, 47);
+            this.label8.Location = new System.Drawing.Point(17, 21);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(110, 13);
             this.label8.TabIndex = 45;
@@ -727,10 +726,10 @@
             // txtCorrId
             // 
             this.txtCorrId.BackColor = System.Drawing.SystemColors.Window;
-            this.txtCorrId.Location = new System.Drawing.Point(154, 44);
+            this.txtCorrId.Location = new System.Drawing.Point(154, 18);
             this.txtCorrId.Name = "txtCorrId";
             this.txtCorrId.ReadOnly = true;
-            this.txtCorrId.Size = new System.Drawing.Size(254, 20);
+            this.txtCorrId.Size = new System.Drawing.Size(219, 20);
             this.txtCorrId.TabIndex = 44;
             // 
             // label10
@@ -756,7 +755,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(439, 47);
+            this.label11.Location = new System.Drawing.Point(17, 47);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(92, 13);
             this.label11.TabIndex = 43;
@@ -765,10 +764,10 @@
             // txtRunCorrId
             // 
             this.txtRunCorrId.BackColor = System.Drawing.SystemColors.Window;
-            this.txtRunCorrId.Location = new System.Drawing.Point(576, 44);
+            this.txtRunCorrId.Location = new System.Drawing.Point(154, 44);
             this.txtRunCorrId.Name = "txtRunCorrId";
             this.txtRunCorrId.ReadOnly = true;
-            this.txtRunCorrId.Size = new System.Drawing.Size(254, 20);
+            this.txtRunCorrId.Size = new System.Drawing.Size(219, 20);
             this.txtRunCorrId.TabIndex = 37;
             // 
             // tabFiles
