@@ -37,6 +37,8 @@ namespace Rappen.XTB.PAC
         private HttpClient pacclient;
         private string pacregion;
         private List<Solution> solutions;
+        private Solution LastExportTry;
+        private Solution LastUploadTry;
 
         #endregion Private Fields
 
@@ -49,7 +51,7 @@ namespace Rappen.XTB.PAC
             dockContainer.Theme = theme;
             scopeControl = new ScopeControl(this);
             sarifControl = new SarifControl(this);
-            azureLogin = new AzureLoginDialog();
+            azureLogin = new AzureLoginDialog(this);
             solutionSelector = new SolutionDialog(this);
         }
 
@@ -75,7 +77,7 @@ namespace Rappen.XTB.PAC
             {
                 if (pacclient == null)
                 {
-                    var clientregion = azureLogin.GetPACClient(this);
+                    var clientregion = azureLogin.GetPACClient();
                     if (clientregion != null)
                     {
                         pacclient = clientregion.Item1;
@@ -145,10 +147,12 @@ namespace Rappen.XTB.PAC
         #endregion Internal Methods
 
         #region Event handlers
-        
+
         private void btnAnalyze_Click(object sender, EventArgs e)
         {
             ai.WriteEvent("Analyze");
+            LastExportTry = null;
+            LastUploadTry = null;
             SendAnalysis(GetAnalysisArgs());
         }
 
@@ -185,13 +189,19 @@ namespace Rappen.XTB.PAC
         {
             ShowAboutDialog();
         }
-        
+
         #endregion Event handlers
 
         #region Private Methods
-        
+
         private void ExportSolution(AnalysisArgs analysisargs, Solution solution)
         {
+            if (LastExportTry == solution)
+            {
+                MessageBox.Show($"Failed to export {solution}");
+                return;
+            }
+            LastExportTry = solution;
             Enable(false);
             var solname = solution.UniqueName;
             WorkAsync(new WorkAsyncInfo
@@ -217,9 +227,16 @@ namespace Rappen.XTB.PAC
                     else if (args.Result is ExportSolutionResponse resp)
                     {
                         var exportXml = resp.ExportSolutionFile;
-                        var filename = Path.Combine(WorkingFolder, solname + ".zip");
-                        File.WriteAllBytes(filename, exportXml);
-                        solution.LocalFilePath = filename;
+                        var filepath = WorkingFolder;
+                        var filename = $"{solname} {solution.Version}";
+                        var fullpath = Path.Combine(filepath, filename + ".zip");
+                        int i = 0;
+                        while (File.Exists(fullpath))
+                        {
+                            fullpath = Path.Combine(filepath, $"{filename} ({++i}).zip");
+                        }
+                        File.WriteAllBytes(fullpath, exportXml);
+                        solution.LocalFilePath = fullpath;
                     }
                     Enable(true);
                     SendAnalysis(analysisargs);
@@ -234,7 +251,7 @@ namespace Rappen.XTB.PAC
             sarifControl.SetArgs(analysisargs);
             return analysisargs;
         }
-        
+
         private void ResetDockLayout()
         {
             sarifControl.Show(dockContainer, DockState.Document);
@@ -244,7 +261,6 @@ namespace Rappen.XTB.PAC
 
         private void SendAnalysis(AnalysisArgs analysisargs)
         {
-            Enable(false);
             var notexported = analysisargs.Solutions.FirstOrDefault(s => !string.IsNullOrEmpty(s.UniqueName) && string.IsNullOrEmpty(s.LocalFilePath));
             if (notexported != null)
             {
@@ -257,10 +273,16 @@ namespace Rappen.XTB.PAC
                 UploadSolutionFile(analysisargs, notuploaded);
                 return;
             }
+            var pacclient = PACClient;
+            if (pacclient == null)
+            {
+                return;
+            }
+            Enable(false);
             WorkAsync(new WorkAsyncInfo
             {
                 Message = $"Sending {analysisargs.SolutionNames} for analysis",
-                AsyncArgument = new { client = PACClient, analysisargs },
+                AsyncArgument = new { client = pacclient, analysisargs },
                 Work = (worker, args) =>
                 {
                     var a = args.Argument as dynamic;
@@ -306,15 +328,26 @@ namespace Rappen.XTB.PAC
             solutionSelector.SettingsGetFromUI(settings);
             return settings;
         }
-        
+
         private void UploadSolutionFile(AnalysisArgs analysisargs, Solution solution)
         {
+            if (LastUploadTry == solution)
+            {
+                MessageBox.Show($"Failed to upload {solution}");
+                return;
+            }
+            LastUploadTry = solution;
+            var pacclient = PACClient;
+            if (pacclient == null)
+            {
+                return;
+            }
             Enable(false);
             var corrid = Guid.NewGuid();
             WorkAsync(new WorkAsyncInfo
             {
                 Message = $"Uploading {solution.LocalFileName}",
-                AsyncArgument = new { client = PACClient, corr = corrid, file = solution.LocalFilePath },
+                AsyncArgument = new { client = pacclient, corr = corrid, file = solution.LocalFilePath },
                 Work = (worker, args) =>
                 {
                     var a = args.Argument as dynamic;
