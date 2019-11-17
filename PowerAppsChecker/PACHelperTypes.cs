@@ -48,6 +48,8 @@ namespace Rappen.XTB.PAC.Helpers
         public List<RuleSet> RuleSets = new List<RuleSet>();
         public List<Solution> Solutions = new List<Solution>();
 
+        public string SolutionNames => string.Join(", ", Solutions.Select(s => s.ToString()));
+
         #endregion Public Fields
     }
 
@@ -225,6 +227,11 @@ namespace Rappen.XTB.PAC.Helpers
         public string UniqueName { get; internal set; }
         public string UploadFileName => UploadUrl?.Segments?.LastOrDefault();
         public Uri UploadUrl { get; internal set; }
+
+        public override string ToString()
+        {
+            return UniqueName ?? LocalFileName;
+        }
 
         #endregion Public Properties
     }

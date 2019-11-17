@@ -161,6 +161,7 @@ namespace Rappen.XTB.PAC
         private void btnSelectSolutions_Click(object sender, EventArgs e)
         {
             solutions = solutionSelector.GetSolutions();
+            scopeControl.SetSolutions(solutions);
             Enable(true);
         }
 
@@ -195,7 +196,7 @@ namespace Rappen.XTB.PAC
             var solname = solution.UniqueName;
             WorkAsync(new WorkAsyncInfo
             {
-                Message = "Exporting",
+                Message = $"Exporting {solname}",
                 AsyncArgument = solname,
                 Work = (worker, args) =>
                 {
@@ -258,7 +259,7 @@ namespace Rappen.XTB.PAC
             }
             WorkAsync(new WorkAsyncInfo
             {
-                Message = "Initiating analysis",
+                Message = $"Sending {analysisargs.SolutionNames} for analysis",
                 AsyncArgument = new { client = PACClient, analysisargs },
                 Work = (worker, args) =>
                 {
@@ -312,7 +313,7 @@ namespace Rappen.XTB.PAC
             var corrid = Guid.NewGuid();
             WorkAsync(new WorkAsyncInfo
             {
-                Message = "Uploading",
+                Message = $"Uploading {solution.LocalFileName}",
                 AsyncArgument = new { client = PACClient, corr = corrid, file = solution.LocalFilePath },
                 Work = (worker, args) =>
                 {
