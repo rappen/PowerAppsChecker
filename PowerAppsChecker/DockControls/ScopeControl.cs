@@ -41,8 +41,6 @@ namespace Rappen.XTB.PAC.DockControls
         {
             Enabled = enable;
             cbRuleset.Enabled = enable && cbRuleset.Items.Count > 0;
-            picRuleHelp.Enabled = enable && lvRules.SelectedItems.Count > 0;
-            picRuleHelp.Cursor = picRuleHelp.Enabled ? Cursors.Hand : Cursors.No;
         }
 
         internal bool EnableAnalysis()
@@ -103,6 +101,11 @@ namespace Rappen.XTB.PAC.DockControls
             });
         }
 
+        internal void SetSolutions(List<Solution> solutions)
+        {
+            txtSolutions.Text = string.Join(", ", solutions.Select(s => s.ToString()));
+        }
+
         #endregion Internal Methods
 
         #region Private Methods
@@ -159,6 +162,7 @@ namespace Rappen.XTB.PAC.DockControls
                         }
                     }
                     pac.Enable(enabled);
+                    SetRuleDetails();
                 }
             });
         }
@@ -211,23 +215,26 @@ namespace Rappen.XTB.PAC.DockControls
 
         private void lvRules_SelectedIndexChanged(object sender, EventArgs e)
         {
+            SetRuleDetails();
+        }
+
+        private void SetRuleDetails()
+        {
+            lblCatSev.Text = rbGroupSeverity.Checked ? "Category" : "Severity";
             if (lvRules.SelectedItems.Count > 0 && lvRules.SelectedItems[0].Tag is Helpers.Rule rule)
             {
+                linkRuleId.Text = rule.Code;
+                //linkRuleId.LinkArea = new LinkArea(rule.Code.Length + 1, 9);
+                lblCatSevValue.Text = rbGroupSeverity.Checked ? rule.PrimaryCategory.ToString() : rule.Severity.ToString();
                 txtRuleDescr.Text = rule.Summary;
             }
             else
             {
+                linkRuleId.Text = "";
+                lblCatSevValue.Text = "";
                 txtRuleDescr.Text = "";
             }
             pac.Enable(true);
-        }
-
-        private void picRuleHelp_Click(object sender, EventArgs e)
-        {
-            if (lvRules.SelectedItems.Count > 0 && lvRules.SelectedItems[0].Tag is Helpers.Rule rule)
-            {
-                Process.Start(rule.GuidanceUrl.Replace("client=PAChecker", "client=Rappen.XTB.PAC"));
-            }
         }
 
         private void rbGroupBy_CheckedChanged(object sender, EventArgs e)
@@ -277,5 +284,18 @@ namespace Rappen.XTB.PAC.DockControls
         }
 
         #endregion Private Methods
+
+        private void linkExclusions_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Process.Start("https://docs.microsoft.com/en-us/powerapps/developer/common-data-service/checker/webapi/analyze#body");
+        }
+
+        private void linkRuleId_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (lvRules.SelectedItems.Count > 0 && lvRules.SelectedItems[0].Tag is Rule rule)
+            {
+                Process.Start(rule.GuidanceUrl.Replace("client=PAChecker", "client=Rappen.XTB.PAC"));
+            }
+        }
     }
 }
