@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Rappen.XrmToolBox.PowerAppsChecker</id>
+    <version>1.0.0</version>
+    <title>Power Apps Checker for XrmToolBox</title>
+    <authors>Jonas Rapp</authors>
+    <owners>rappen</owners>
+    <projectUrl>https://PowerAppsChecker.com</projectUrl>
+    <iconUrl>https://github.com/rappen/PowerAppsChecker/raw/master/docs/images/PAC-medium.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>
+      
+      
+    </description>
+    <summary>Check your Power Apps solutions, Canvas Apps and Power Automate flows before they hit the build pipeline!</summary>
+    <releaseNotes>
+First release.
+    </releaseNotes>
+    <copyright>Copyright 2019 Jonas Rapp</copyright>
+    <tags>XrmToolBox Plugins PowerAppsChecker</tags>
+    <dependencies>
+      <dependency id="XrmToolBox" version="1.2019.11.35" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin\Release\Rappen.XTB.PAC.dll" target="lib\net452\Plugins" />
+  </files>
+</package>
