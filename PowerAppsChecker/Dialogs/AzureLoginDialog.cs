@@ -9,18 +9,21 @@ namespace Rappen.XTB.PAC.Dialogs
 {
     public partial class AzureLoginDialog : Form
     {
+        private readonly PAC pac;
+
         #region Public Constructors
 
-        public AzureLoginDialog()
+        public AzureLoginDialog(PAC pac)
         {
             InitializeComponent();
+            this.pac = pac;
         }
 
         #endregion Public Constructors
 
         #region Public Methods
 
-        public Tuple<HttpClient, string> GetPACClient(PAC pac)
+        public Tuple<HttpClient, string> GetPACClient()
         {
             if (ShowDialog(pac) == DialogResult.OK)
             {
@@ -103,11 +106,21 @@ namespace Rappen.XTB.PAC.Dialogs
                         return null;
                     }
                     var clientSec = txtClientSec.Text;
-                    return new Tuple<HttpClient, string>(PACHelper.GetClient(region, tenantId, clientId, clientSec), region);
+                    var clientregion = new Tuple<HttpClient, string>(PACHelper.GetClient(region, tenantId, clientId, clientSec), region);
+                    if (clientregion.Item1 != null)
+                    {
+                        pac.ai.WriteEvent($"Connect CS {cbRegion.Text}");
+                    }
+                    return clientregion;
                 }
                 else
                 {
-                    return new Tuple<HttpClient, string>(PACHelper.GetClient(region, clientId), region);
+                    var clientregion = new Tuple<HttpClient, string>(PACHelper.GetClient(region, clientId), region);
+                    if (clientregion.Item1 != null)
+                    {
+                        pac.ai.WriteEvent($"Connect UP {cbRegion.Text}");
+                    }
+                    return clientregion;
                 }
             }
             catch (Exception ex)
