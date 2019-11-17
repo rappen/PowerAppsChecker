@@ -18,11 +18,17 @@ namespace Rappen.XTB.PAC
 {
     public partial class PAC : PluginControlBase, IGitHubPlugin, IPayPalPlugin, IAboutPlugin
     {
-        #region Private Fields
+
+        #region Internal Fields
 
         internal readonly SarifControl sarifControl;
         internal readonly ScopeControl scopeControl;
         internal AppInsights ai = new AppInsights(new AiConfig(aiEndpoint, aiKey) { PluginName = "Power Apps Checker" });
+
+        #endregion Internal Fields
+
+        #region Private Fields
+
         private const string aiEndpoint = "https://dc.services.visualstudio.com/v2/track";
         //private const string aiKey = "cc7cb081-b489-421d-bb61-2ee53495c336";    // jonas@rappen.net tenant, TestAI 
         private const string aiKey = "eed73022-2444-45fd-928b-5eebd8fa46a6";    // jonas@rappen.net tenant, XrmToolBox
@@ -34,7 +40,22 @@ namespace Rappen.XTB.PAC
 
         #endregion Private Fields
 
-        #region Internal Properties
+        #region Public Constructors
+
+        public PAC()
+        {
+            InitializeComponent();
+            var theme = new VS2015LightTheme();
+            dockContainer.Theme = theme;
+            scopeControl = new ScopeControl(this);
+            sarifControl = new SarifControl(this);
+            azureLogin = new AzureLoginDialog();
+            solutionSelector = new SolutionDialog(this);
+        }
+
+        #endregion Public Constructors
+
+        #region Public Properties
 
         public string DonationDescription => "Power Apps Checker fan club";
 
@@ -43,6 +64,10 @@ namespace Rappen.XTB.PAC
         public string RepositoryName => "PowerAppsChecker";
 
         public string UserName => "rappen";
+
+        #endregion Public Properties
+
+        #region Internal Properties
 
         internal HttpClient PACClient
         {
@@ -61,23 +86,22 @@ namespace Rappen.XTB.PAC
             }
         }
 
-        internal string PACRegion { get => pacregion; }
-        #endregion Internal Properties
+        internal string PACRegion => pacregion;
 
-        #region Public Constructors
-
-        public PAC()
+        internal string WorkingFolder
         {
-            InitializeComponent();
-            var theme = new VS2015LightTheme();
-            dockContainer.Theme = theme;
-            scopeControl = new ScopeControl(this);
-            sarifControl = new SarifControl(this);
-            azureLogin = new AzureLoginDialog();
-            solutionSelector = new SolutionDialog(this);
+            get
+            {
+                var path = Path.Combine(Paths.XrmToolBoxPath, "Rappen.XTB.PAC");
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+                return path;
+            }
         }
 
-        #endregion Public Constructors
+        #endregion Internal Properties
 
         #region Public Methods
 
@@ -102,13 +126,26 @@ namespace Rappen.XTB.PAC
             {
                 SettingsApplyToUI(settings);
             }
+            solutionSelector.LoadSolutions(settings);
             Enable(true);
         }
 
         #endregion Public Methods
 
-        #region Private event handlers
+        #region Internal Methods
 
+        internal void Enable(bool enable)
+        {
+            Enabled = enable;
+            btnAnalyze.Enabled = enable && solutions != null && solutions.Count > 0 && scopeControl.EnableAnalysis();
+            scopeControl.Enable(enable);
+            sarifControl.Enable(enable);
+        }
+
+        #endregion Internal Methods
+
+        #region Event handlers
+        
         private void btnAnalyze_Click(object sender, EventArgs e)
         {
             ai.WriteEvent("Analyze");
@@ -138,18 +175,20 @@ namespace Rappen.XTB.PAC
             scopeControl.LoadRuleSets();
         }
 
-        #endregion Private event handlers
-
-        #region Private Methods
-
-        internal void Enable(bool enable)
+        private void PAC_OnCloseTool(object sender, EventArgs e)
         {
-            Enabled = enable;
-            btnAnalyze.Enabled = enable && solutions != null && solutions.Count > 0 && scopeControl.EnableAnalysis();
-            scopeControl.Enable(enable);
-            sarifControl.Enable(enable);
+            ai.WriteEvent("Close");
         }
 
+        private void tslByJonas_Click(object sender, EventArgs e)
+        {
+            ShowAboutDialog();
+        }
+        
+        #endregion Event handlers
+
+        #region Private Methods
+        
         private void ExportSolution(AnalysisArgs analysisargs, Solution solution)
         {
             Enable(false);
@@ -177,7 +216,7 @@ namespace Rappen.XTB.PAC
                     else if (args.Result is ExportSolutionResponse resp)
                     {
                         var exportXml = resp.ExportSolutionFile;
-                        var filename = Path.Combine(Paths.LogsPath, solname + ".zip");
+                        var filename = Path.Combine(WorkingFolder, solname + ".zip");
                         File.WriteAllBytes(filename, exportXml);
                         solution.LocalFilePath = filename;
                     }
@@ -194,7 +233,7 @@ namespace Rappen.XTB.PAC
             sarifControl.SetArgs(analysisargs);
             return analysisargs;
         }
-
+        
         private void ResetDockLayout()
         {
             sarifControl.Show(dockContainer, DockState.Document);
@@ -266,7 +305,7 @@ namespace Rappen.XTB.PAC
             solutionSelector.SettingsGetFromUI(settings);
             return settings;
         }
-
+        
         private void UploadSolutionFile(AnalysisArgs analysisargs, Solution solution)
         {
             Enable(false);
@@ -300,15 +339,5 @@ namespace Rappen.XTB.PAC
         }
 
         #endregion Private Methods
-
-        private void tslByJonas_Click(object sender, EventArgs e)
-        {
-            ShowAboutDialog();
-        }
-
-        private void PAC_OnCloseTool(object sender, EventArgs e)
-        {
-            ai.WriteEvent("Close");
-        }
     }
 }

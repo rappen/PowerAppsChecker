@@ -5,12 +5,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
+using xrmtb.XrmToolBox.Controls.Controls;
 using XrmToolBox.Extensibility;
 
 namespace Rappen.XTB.PAC.Dialogs
 {
     public partial class SolutionDialog : Form
     {
+
         #region Private Fields
 
         private readonly PAC pac;
@@ -32,7 +34,6 @@ namespace Rappen.XTB.PAC.Dialogs
 
         public List<Solution> GetSolutions()
         {
-            LoadSolutions();
             solutions = new List<Solution>();
             if (ShowDialog(pac) == DialogResult.OK)
             {
@@ -45,65 +46,7 @@ namespace Rappen.XTB.PAC.Dialogs
 
         #region Internal Methods
 
-        internal void SettingsApplyToUI(Settings settings)
-        {
-            txtFilename.Text = settings.SolutionFile;
-        }
-
-        internal void SettingsGetFromUI(Settings settings)
-        {
-            settings.SolutionFile = txtFilename.Text;
-        }
-
-        #endregion Internal Methods
-
-        #region Private Methods
-
-        private void AddSelectedSolution()
-        {
-            solutions.Add(new Solution
-            {
-                UniqueName = rbOrg.Checked ? cbSolution.SelectedEntity["uniquename"].ToString() : null,
-                LocalFilePath = rbLocal.Checked ? txtFilename.Text : null
-            });
-        }
-
-        private void btnAddSolution_Click(object sender, EventArgs e)
-        {
-            AddSelectedSolution();
-        }
-
-        private void btnOpenFile_Click(object sender, EventArgs e)
-        {
-            using (var od = new OpenFileDialog
-            {
-                InitialDirectory = Paths.LogsPath,
-                CheckPathExists = true,
-                DefaultExt = "zip",
-                Filter = "ZIP files|*.zip|All files|*.*",
-                Title = "Select Solution file"
-            })
-            {
-                if (od.ShowDialog() == DialogResult.OK)
-                {
-                    txtFilename.Text = od.FileName;
-                }
-            }
-        }
-
-        private void CheckInputs()
-        {
-            btnOK.Enabled =
-                (rbOrg.Checked && cbSolution.SelectedEntity != null) ||
-                (rbLocal.Checked && File.Exists(txtFilename.Text));
-        }
-
-        private void inputs_Changed(object sender, EventArgs e)
-        {
-            CheckInputs();
-        }
-
-        private void LoadSolutions()
+        internal void LoadSolutions(Settings settings)
         {
             cbSolution.DataSource = null;
             if (pac.Service == null)
@@ -134,9 +77,86 @@ namespace Rappen.XTB.PAC.Dialogs
                     {
                         cbSolution.DataSource = solutions;
                     }
+                    SettingsApplyToUI(settings);
                     CheckInputs();
                 }
             });
+        }
+
+        internal void SettingsApplyToUI(Settings settings)
+        {
+            if (!string.IsNullOrEmpty(settings.SolutionName))
+            {
+                foreach (var solution in cbSolution.Items)
+                {
+                    if (solution is CDSComboBoxItem solitem)
+                    {
+                        if (solitem.Entity["uniquename"].ToString() == settings.SolutionName)
+                        {
+                            cbSolution.SelectedItem = solution;
+                        }
+                    }
+                }
+            }
+            txtFilename.Text = settings.SolutionFile;
+        }
+
+        internal void SettingsGetFromUI(Settings settings)
+        {
+            settings.SolutionName = cbSolution.SelectedEntity != null ? cbSolution.SelectedEntity["uniquename"].ToString() : null;
+            settings.SolutionFile = txtFilename.Text;
+        }
+
+        #endregion Internal Methods
+
+        #region Private Methods
+
+        private void AddSelectedSolution()
+        {
+            solutions.Add(new Solution
+            {
+                UniqueName = rbOrg.Checked ? cbSolution.SelectedEntity["uniquename"].ToString() : null,
+                LocalFilePath = rbLocal.Checked ? txtFilename.Text : null
+            });
+        }
+
+        private void btnAddSolution_Click(object sender, EventArgs e)
+        {
+            AddSelectedSolution();
+        }
+
+        private void btnOpenFile_Click(object sender, EventArgs e)
+        {
+            using (var od = new OpenFileDialog
+            {
+                CheckPathExists = true,
+                DefaultExt = "zip",
+                Filter = "ZIP files|*.zip|All files|*.*",
+                Title = "Select Solution file"
+            })
+            {
+                if (od.ShowDialog() == DialogResult.OK)
+                {
+                    txtFilename.Text = od.FileName;
+                }
+            }
+        }
+
+        private void CheckInputs()
+        {
+            rbOrg.Enabled = pac.Service != null;
+            if (!rbOrg.Enabled)
+            {
+                rbLocal.Checked = true;
+            }
+            btnOK.Enabled =
+                (rbOrg.Checked && cbSolution.SelectedEntity != null) ||
+                (rbLocal.Checked && File.Exists(txtFilename.Text));
+        }
+
+        private void inputs_Changed(object sender, EventArgs e)
+        {
+            CheckInputs();
         }
 
         private void rbSource_CheckedChanged(object sender, EventArgs e)
@@ -153,5 +173,6 @@ namespace Rappen.XTB.PAC.Dialogs
         }
 
         #endregion Private Methods
+
     }
 }

@@ -267,11 +267,17 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>ilmerge.exe /target:library /targetplatform:v4,"C:\Windows\Microsoft.NET\Framework\v4.0.30319" "/out:Rappen.XTB.PAC.dll" "$(TargetFileName)" "xrmtb.XrmToolBox.Controls.dll" "Sarif.dll" "Sarif.Converters.dll" "CsvHelper.dll"
+    <PostBuildEvent>ilmerge.exe /target:library /targetplatform:v4,"C:\Windows\Microsoft.NET\Framework\v4.0.30319" "/out:Rappen.XTB.PAC.dll" "$(TargetFileName)" "xrmtb.XrmToolBox.Controls.dll" "Sarif.dll" "Sarif.Converters.dll" "CsvHelper.dll" "System.Collections.Immutable.dll"
 
 if $(ConfigurationName) == Debug (
   IF NOT EXIST Plugins mkdir Plugins
   move /Y Rappen.XTB.PAC.dll Plugins
+  del "$(TargetFileName)"
+  del "xrmtb.XrmToolBox.Controls.dll"
+  del "Sarif.dll"
+  del "Sarif.Converters.dll"
+  del "CsvHelper.dll"
+  del "System.Collections.Immutable.dll"
 )</PostBuildEvent>
   </PropertyGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
