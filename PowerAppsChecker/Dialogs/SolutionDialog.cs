@@ -116,6 +116,7 @@ namespace Rappen.XTB.PAC.Dialogs
             solutions.Add(new Solution
             {
                 UniqueName = rbOrg.Checked ? cbSolution.SelectedEntity["uniquename"].ToString() : null,
+                Version = rbOrg.Checked ? new Version(cbSolution.SelectedEntity["version"].ToString()) : null,
                 LocalFilePath = rbLocal.Checked ? txtFilename.Text : null
             });
         }

@@ -226,6 +226,7 @@ namespace Rappen.XTB.PAC.Helpers
         public string LocalFilePath { get; internal set; }
         public string UniqueName { get; internal set; }
         public string UploadFileName => UploadUrl?.Segments?.LastOrDefault();
+        public Version Version { get; internal set; }
         public Uri UploadUrl { get; internal set; }
 
         public override string ToString()
