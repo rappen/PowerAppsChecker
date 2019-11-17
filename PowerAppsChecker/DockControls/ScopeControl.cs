@@ -20,7 +20,7 @@ namespace Rappen.XTB.PAC.DockControls
         #region Internal Fields
 
         internal Size originalSize;
-        internal List<Rule> Rules => lvRules.Items.Cast<ListViewItem>().Where(i => i.Tag is Rule).Select(i => i.Tag as Rule).ToList();
+        internal List<Rule> Rules => lvRules.Items.Cast<ListViewItem>().Select(i => RuleFromListItem(i)).Where(r => r != null).ToList();
 
         #endregion Internal Fields
 
@@ -154,7 +154,7 @@ namespace Rappen.XTB.PAC.DockControls
                     {
                         MessageBox.Show(args.Error.Message);
                     }
-                    else if (args.Result is Helpers.Rule[] rulelist)
+                    else if (args.Result is Rule[] rulelist)
                     {
                         if (AddRules(rulelist))
                         {
@@ -241,7 +241,9 @@ namespace Rappen.XTB.PAC.DockControls
         {
             if (((RadioButton)sender).Checked)
             {
-                LoadRules();
+                var rules = Rules;
+                lvRules.Items.Clear();
+                lvRules.Items.AddRange(rules.Select(r => RuleToListItem(r)).ToArray());
             }
         }
 
@@ -266,6 +268,16 @@ namespace Rappen.XTB.PAC.DockControls
                 Group = group
             };
             return item;
+        }
+        
+        private static Rule RuleFromListItem(ListViewItem item)
+        {
+            if (item.Tag is Rule rule)
+            {
+                rule.Include = item.Checked;
+                return rule;
+            }
+            return null;
         }
 
         private void UpdateRuleCounts()

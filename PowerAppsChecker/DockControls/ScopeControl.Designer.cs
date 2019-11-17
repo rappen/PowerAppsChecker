@@ -53,12 +53,14 @@
             this.lblCatSevValue = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.panel1 = new System.Windows.Forms.Panel();
             this.panTop.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // rbGroupCategory
@@ -267,11 +269,9 @@
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.panel1);
             this.panel2.Controls.Add(this.label5);
-            this.panel2.Controls.Add(this.rbScopeRules);
             this.panel2.Controls.Add(this.cbRuleset);
-            this.panel2.Controls.Add(this.rbScopeRuleset);
-            this.panel2.Controls.Add(this.label9);
             this.panel2.Controls.Add(this.chkAllRules);
             this.panel2.Controls.Add(this.rbGroupCategory);
             this.panel2.Controls.Add(this.rbGroupSeverity);
@@ -356,6 +356,16 @@
             this.splitContainer1.SplitterWidth = 8;
             this.splitContainer1.TabIndex = 46;
             // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.label9);
+            this.panel1.Controls.Add(this.rbScopeRuleset);
+            this.panel1.Controls.Add(this.rbScopeRules);
+            this.panel1.Location = new System.Drawing.Point(0, 0);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(356, 26);
+            this.panel1.TabIndex = 43;
+            // 
             // ScopeControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -385,6 +395,8 @@
             this.splitContainer1.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -415,5 +427,6 @@
         private System.Windows.Forms.Label lblCatSev;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.SplitContainer splitContainer1;
+        private System.Windows.Forms.Panel panel1;
     }
 }
