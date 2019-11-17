@@ -175,8 +175,8 @@ namespace Rappen.XTB.PAC.DockControls
         private void dgResults_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             var col = dgResults.Columns[e.ColumnIndex];
-            dgGrouper.Options.StartCollapsed = true;
-            dgGrouper.SetGroupOn(col);
+            //dgGrouper.Options.StartCollapsed = true;
+            //dgGrouper.SetGroupOn(col);
         }
 
         private void GetResultFile(AnalysisStatus status)

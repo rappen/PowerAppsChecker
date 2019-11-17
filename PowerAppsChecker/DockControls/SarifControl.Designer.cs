@@ -42,6 +42,9 @@
             this.colModule = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colFile = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colStartLine = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.txtHowToFix = new System.Windows.Forms.TextBox();
+            this.label19 = new System.Windows.Forms.Label();
+            this.picRuleHelp = new System.Windows.Forms.PictureBox();
             this.txtSnippet = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.txtMessage = new System.Windows.Forms.TextBox();
@@ -89,11 +92,7 @@
             this.txtRunCorrId = new System.Windows.Forms.TextBox();
             this.tabFiles = new System.Windows.Forms.TabPage();
             this.dgArtifacts = new System.Windows.Forms.DataGridView();
-            this.dgGrouper = new Subro.Controls.DataGridViewGrouper(this.components);
             this.tmStatus = new System.Windows.Forms.Timer(this.components);
-            this.picRuleHelp = new System.Windows.Forms.PictureBox();
-            this.txtHowToFix = new System.Windows.Forms.TextBox();
-            this.label19 = new System.Windows.Forms.Label();
             this.tabControlResults.SuspendLayout();
             this.tabResults.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -101,6 +100,7 @@
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgResults)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picRuleHelp)).BeginInit();
             this.panTop.SuspendLayout();
             this.panStatus.SuspendLayout();
             this.tabSarif.SuspendLayout();
@@ -109,7 +109,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgSolutions)).BeginInit();
             this.tabFiles.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgArtifacts)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.picRuleHelp)).BeginInit();
             this.SuspendLayout();
             // 
             // tabControlResults
@@ -159,7 +158,7 @@
             this.splitContainer1.Panel2.Controls.Add(this.txtMessage);
             this.splitContainer1.Panel2.Controls.Add(this.label6);
             this.splitContainer1.Size = new System.Drawing.Size(920, 393);
-            this.splitContainer1.SplitterDistance = 298;
+            this.splitContainer1.SplitterDistance = 294;
             this.splitContainer1.SplitterWidth = 8;
             this.splitContainer1.TabIndex = 3;
             // 
@@ -184,7 +183,7 @@
             this.dgResults.Name = "dgResults";
             this.dgResults.ReadOnly = true;
             this.dgResults.RowHeadersVisible = false;
-            this.dgResults.Size = new System.Drawing.Size(920, 298);
+            this.dgResults.Size = new System.Drawing.Size(920, 294);
             this.dgResults.TabIndex = 1;
             this.dgResults.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgResults_CellDoubleClick);
             this.dgResults.CellEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgResults_CellEnter);
@@ -238,6 +237,39 @@
             this.colStartLine.Name = "colStartLine";
             this.colStartLine.ReadOnly = true;
             this.colStartLine.Width = 50;
+            // 
+            // txtHowToFix
+            // 
+            this.txtHowToFix.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtHowToFix.BackColor = System.Drawing.SystemColors.Window;
+            this.txtHowToFix.Location = new System.Drawing.Point(95, 60);
+            this.txtHowToFix.Name = "txtHowToFix";
+            this.txtHowToFix.ReadOnly = true;
+            this.txtHowToFix.Size = new System.Drawing.Size(786, 20);
+            this.txtHowToFix.TabIndex = 34;
+            // 
+            // label19
+            // 
+            this.label19.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(14, 63);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(61, 13);
+            this.label19.TabIndex = 33;
+            this.label19.Text = "How To Fix";
+            // 
+            // picRuleHelp
+            // 
+            this.picRuleHelp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.picRuleHelp.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.picRuleHelp.Image = ((System.Drawing.Image)(resources.GetObject("picRuleHelp.Image")));
+            this.picRuleHelp.Location = new System.Drawing.Point(887, 58);
+            this.picRuleHelp.Name = "picRuleHelp";
+            this.picRuleHelp.Size = new System.Drawing.Size(24, 24);
+            this.picRuleHelp.TabIndex = 32;
+            this.picRuleHelp.TabStop = false;
+            this.picRuleHelp.Click += new System.EventHandler(this.picRuleHelp_Click);
             // 
             // txtSnippet
             // 
@@ -765,48 +797,10 @@
             this.dgArtifacts.Size = new System.Drawing.Size(926, 460);
             this.dgArtifacts.TabIndex = 0;
             // 
-            // dgGrouper
-            // 
-            this.dgGrouper.DataGridView = this.dgResults;
-            this.dgGrouper.Options = ((Subro.Controls.GroupingOptions)(resources.GetObject("dgGrouper.Options")));
-            // 
             // tmStatus
             // 
             this.tmStatus.Interval = 5000;
             this.tmStatus.Tick += new System.EventHandler(this.tmStatus_Tick);
-            // 
-            // picRuleHelp
-            // 
-            this.picRuleHelp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.picRuleHelp.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.picRuleHelp.Image = ((System.Drawing.Image)(resources.GetObject("picRuleHelp.Image")));
-            this.picRuleHelp.Location = new System.Drawing.Point(887, 58);
-            this.picRuleHelp.Name = "picRuleHelp";
-            this.picRuleHelp.Size = new System.Drawing.Size(24, 24);
-            this.picRuleHelp.TabIndex = 32;
-            this.picRuleHelp.TabStop = false;
-            this.picRuleHelp.Click += new System.EventHandler(this.picRuleHelp_Click);
-            // 
-            // txtHowToFix
-            // 
-            this.txtHowToFix.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtHowToFix.BackColor = System.Drawing.SystemColors.Window;
-            this.txtHowToFix.Location = new System.Drawing.Point(95, 60);
-            this.txtHowToFix.Name = "txtHowToFix";
-            this.txtHowToFix.ReadOnly = true;
-            this.txtHowToFix.Size = new System.Drawing.Size(786, 20);
-            this.txtHowToFix.TabIndex = 34;
-            // 
-            // label19
-            // 
-            this.label19.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(14, 63);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(61, 13);
-            this.label19.TabIndex = 33;
-            this.label19.Text = "How To Fix";
             // 
             // SarifControl
             // 
@@ -831,6 +825,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgResults)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picRuleHelp)).EndInit();
             this.panTop.ResumeLayout(false);
             this.panTop.PerformLayout();
             this.panStatus.ResumeLayout(false);
@@ -843,7 +838,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgSolutions)).EndInit();
             this.tabFiles.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgArtifacts)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.picRuleHelp)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -854,7 +848,6 @@
         private System.Windows.Forms.TabPage tabResults;
         private System.Windows.Forms.TabPage tabSarif;
         private System.Windows.Forms.RichTextBox txtSarif;
-        private Subro.Controls.DataGridViewGrouper dgGrouper;
         private System.Windows.Forms.Panel panTop;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.TextBox txtResultFile;
