@@ -77,7 +77,10 @@ namespace Rappen.XTB.PAC.Dialogs
                     {
                         cbSolution.DataSource = solutions;
                     }
-                    SettingsApplyToUI(settings);
+                    if (settings != null)
+                    {
+                        SettingsApplyToUI(settings);
+                    }
                     CheckInputs();
                 }
             });
