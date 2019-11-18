@@ -121,10 +121,15 @@ namespace Rappen.XTB.PAC.Helpers
     {
         #region Public Fields
 
-        public int? EndLine;
+        public Rule Rule;
         public string Message;
         public string Snippet;
-        public Rule Rule;
+        public string Module;
+        public string Member;
+        public string Type;
+        public Uri FilePath;
+        public int? StartLine;
+        public int? EndLine;
 
         #endregion Public Fields
 
@@ -133,9 +138,8 @@ namespace Rappen.XTB.PAC.Helpers
         public string Severity { get; set; }
         public string RuleDescription => Rule.ToString();
         public Category Category => Rule.PrimaryCategory;
-        public string Module { get; set; }
-        public Uri FilePath { get; set; }
-        public int? StartLine { get; set; }
+        public Component Component => Rule.Component;
+        public string Location => (Member ?? Module ?? Type ?? FilePath.ToString()) + (StartLine != null && StartLine > 0 ? $" (Line {StartLine})" : "");
 
         #endregion Public Properties
 
@@ -144,17 +148,37 @@ namespace Rappen.XTB.PAC.Helpers
 
         public static List<FlattenedSarifResult> GetFlattenedResults(Run run, List<Rule> rules)
         {
+            void AddMissingComponent(Rule rule)
+            {
+                if (rule.ComponentType != 0 ||
+                    !(run.Tool.Driver.Rules.FirstOrDefault(r => r.Id == rule.Code) is ReportingDescriptor sarifrule) ||
+                    !sarifrule.TryGetProperty("componentType", out string type) ||
+                    string.IsNullOrWhiteSpace(type))
+                {
+                    return;
+                }
+                rule.ComponentType = (int)Enum.Parse(typeof(Component), type);
+            }
+
+            string GetPropertyOrNull(PropertyBagHolder bag, string name)
+            {
+                return bag.PropertyNames.Contains(name) ? bag.GetProperty(name) : null;
+            }
+
+            rules.ForEach(AddMissingComponent);
             return run.Results
                 .SelectMany(r => r.Locations, (result, location) => new FlattenedSarifResult
                 {
                     Rule = rules.FirstOrDefault(r => r.Code == result.RuleId),
+                    Severity = GetPropertyOrNull(result, "severity"),
                     Message = result.Message?.Text,
+                    Snippet = location.PhysicalLocation?.Region?.Snippet?.Text,
+                    Module = GetPropertyOrNull(location, "module"),
+                    Member = GetPropertyOrNull(location, "member"),
+                    Type = GetPropertyOrNull(location, "type"),
                     FilePath = location.PhysicalLocation?.ArtifactLocation?.Uri,
                     StartLine = location.PhysicalLocation?.Region?.StartLine,
-                    Snippet = location.PhysicalLocation?.Region?.Snippet?.Text,
-                    EndLine = location.PhysicalLocation?.Region?.EndLine,
-                    Module = location.PropertyNames.Contains("module") ? location.GetProperty("module") : null,
-                    Severity = result.PropertyNames.Contains("severity") ? result.GetProperty("severity") : null
+                    EndLine = location.PhysicalLocation?.Region?.EndLine
                 }).ToList();
         }
 
@@ -167,6 +191,7 @@ namespace Rappen.XTB.PAC.Helpers
 
         public string Code;
         public int ComponentType;
+        public Component Component => (Component)ComponentType;
         public string Description;
         public string GuidanceUrl;
         public Fix HowToFix;

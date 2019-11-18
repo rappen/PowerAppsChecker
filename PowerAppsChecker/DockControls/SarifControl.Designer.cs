@@ -29,19 +29,11 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SarifControl));
             this.tabControlResults = new System.Windows.Forms.TabControl();
             this.tabResults = new System.Windows.Forms.TabPage();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.dgResults = new System.Windows.Forms.DataGridView();
-            this.colSeverity = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colRule = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colCategory = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colModule = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colFile = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colStartLine = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.txtHowToFix = new System.Windows.Forms.TextBox();
             this.label19 = new System.Windows.Forms.Label();
             this.picRuleHelp = new System.Windows.Forms.PictureBox();
@@ -93,6 +85,11 @@
             this.tabFiles = new System.Windows.Forms.TabPage();
             this.dgArtifacts = new System.Windows.Forms.DataGridView();
             this.tmStatus = new System.Windows.Forms.Timer(this.components);
+            this.colSeverity = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colRule = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colCategory = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colComponent = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colLocation = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabControlResults.SuspendLayout();
             this.tabResults.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -158,7 +155,7 @@
             this.splitContainer1.Panel2.Controls.Add(this.txtMessage);
             this.splitContainer1.Panel2.Controls.Add(this.label6);
             this.splitContainer1.Size = new System.Drawing.Size(920, 393);
-            this.splitContainer1.SplitterDistance = 294;
+            this.splitContainer1.SplitterDistance = 286;
             this.splitContainer1.SplitterWidth = 8;
             this.splitContainer1.TabIndex = 3;
             // 
@@ -167,75 +164,22 @@
             this.dgResults.AllowUserToAddRows = false;
             this.dgResults.AllowUserToDeleteRows = false;
             this.dgResults.AllowUserToResizeRows = false;
-            dataGridViewCellStyle5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.dgResults.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle5;
             this.dgResults.BackgroundColor = System.Drawing.SystemColors.Window;
             this.dgResults.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgResults.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.colSeverity,
             this.colRule,
             this.colCategory,
-            this.colModule,
-            this.colFile,
-            this.colStartLine});
+            this.colComponent,
+            this.colLocation});
             this.dgResults.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgResults.Location = new System.Drawing.Point(0, 0);
             this.dgResults.Name = "dgResults";
             this.dgResults.ReadOnly = true;
             this.dgResults.RowHeadersVisible = false;
-            this.dgResults.Size = new System.Drawing.Size(920, 294);
+            this.dgResults.Size = new System.Drawing.Size(920, 286);
             this.dgResults.TabIndex = 1;
-            this.dgResults.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgResults_CellDoubleClick);
             this.dgResults.CellEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgResults_CellEnter);
-            // 
-            // colSeverity
-            // 
-            this.colSeverity.DataPropertyName = "Severity";
-            this.colSeverity.HeaderText = "Severity";
-            this.colSeverity.Name = "colSeverity";
-            this.colSeverity.ReadOnly = true;
-            this.colSeverity.Width = 80;
-            // 
-            // colRule
-            // 
-            this.colRule.DataPropertyName = "RuleDescription";
-            this.colRule.HeaderText = "Rule";
-            this.colRule.Name = "colRule";
-            this.colRule.ReadOnly = true;
-            this.colRule.Width = 150;
-            // 
-            // colCategory
-            // 
-            this.colCategory.DataPropertyName = "Category";
-            this.colCategory.HeaderText = "Category";
-            this.colCategory.Name = "colCategory";
-            this.colCategory.ReadOnly = true;
-            // 
-            // colModule
-            // 
-            this.colModule.DataPropertyName = "Module";
-            this.colModule.HeaderText = "Module";
-            this.colModule.Name = "colModule";
-            this.colModule.ReadOnly = true;
-            this.colModule.Width = 200;
-            // 
-            // colFile
-            // 
-            this.colFile.DataPropertyName = "FilePath";
-            this.colFile.HeaderText = "File";
-            this.colFile.Name = "colFile";
-            this.colFile.ReadOnly = true;
-            this.colFile.Width = 200;
-            // 
-            // colStartLine
-            // 
-            this.colStartLine.DataPropertyName = "StartLine";
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.colStartLine.DefaultCellStyle = dataGridViewCellStyle6;
-            this.colStartLine.HeaderText = "Line";
-            this.colStartLine.Name = "colStartLine";
-            this.colStartLine.ReadOnly = true;
-            this.colStartLine.Width = 50;
             // 
             // txtHowToFix
             // 
@@ -801,6 +745,44 @@
             this.tmStatus.Interval = 5000;
             this.tmStatus.Tick += new System.EventHandler(this.tmStatus_Tick);
             // 
+            // colSeverity
+            // 
+            this.colSeverity.DataPropertyName = "Severity";
+            this.colSeverity.HeaderText = "Severity";
+            this.colSeverity.Name = "colSeverity";
+            this.colSeverity.ReadOnly = true;
+            this.colSeverity.Width = 80;
+            // 
+            // colRule
+            // 
+            this.colRule.DataPropertyName = "RuleDescription";
+            this.colRule.HeaderText = "Rule";
+            this.colRule.Name = "colRule";
+            this.colRule.ReadOnly = true;
+            this.colRule.Width = 150;
+            // 
+            // colCategory
+            // 
+            this.colCategory.DataPropertyName = "Category";
+            this.colCategory.HeaderText = "Category";
+            this.colCategory.Name = "colCategory";
+            this.colCategory.ReadOnly = true;
+            // 
+            // colComponent
+            // 
+            this.colComponent.DataPropertyName = "Component";
+            this.colComponent.HeaderText = "Component";
+            this.colComponent.Name = "colComponent";
+            this.colComponent.ReadOnly = true;
+            // 
+            // colLocation
+            // 
+            this.colLocation.DataPropertyName = "Location";
+            this.colLocation.HeaderText = "Location";
+            this.colLocation.Name = "colLocation";
+            this.colLocation.ReadOnly = true;
+            this.colLocation.Width = 200;
+            // 
             // SarifControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -895,14 +877,13 @@
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.TextBox txtStartTime;
         private System.Windows.Forms.Label label17;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colSeverity;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colRule;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colCategory;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colModule;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colFile;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colStartLine;
         private System.Windows.Forms.PictureBox picRuleHelp;
         private System.Windows.Forms.TextBox txtHowToFix;
         private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colSeverity;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colRule;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colCategory;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colComponent;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colLocation;
     }
 }

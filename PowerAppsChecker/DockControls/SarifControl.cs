@@ -29,6 +29,7 @@ namespace Rappen.XTB.PAC.DockControls
         {
             this.pac = pac;
             InitializeComponent();
+            DoubleBuffered = true;
         }
 
         #endregion Public Constructors
@@ -149,16 +150,6 @@ namespace Rappen.XTB.PAC.DockControls
                     pac.Enable(enabled);
                 }
             });
-        }
-
-        private void dgResults_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (dgResults.Columns[e.ColumnIndex].Name == colFile.Name && pac.ConnectionDetail != null)
-            {
-                var file = dgResults[e.ColumnIndex, e.RowIndex].Value.ToString();
-                var url = pac.ConnectionDetail.WebApplicationUrl + file;
-                Process.Start(url);
-            }
         }
 
         private void dgResults_CellEnter(object sender, DataGridViewCellEventArgs e)
