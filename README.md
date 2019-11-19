@@ -1,6 +1,6 @@
 # PowerApps Checker tool for XrmToolBox
 
-![Power Apps Checker for XrmToolBox](https://github.com/rappen/PowerAppsChecker/raw/master/docs/images/PAC-banner.png "Power Apps Checker logo")
+![Power Apps Checker for XrmToolBox](https://github.com/rappen/PowerAppsChecker/raw/master/docs/images/PAC-banner-xtb.png "Power Apps Checker logo")
 
 Power Apps Checker was first introduced as the
 [Solution Checker](https://powerapps.microsoft.com/en-us/blog/make-higher-quality-apps-with-solution-checker/) 
