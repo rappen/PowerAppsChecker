@@ -30,6 +30,7 @@ namespace Rappen.XTB.PAC.DockControls
             this.pac = pac;
             InitializeComponent();
             DoubleBuffered = true;
+            txtSnippet.AutoSize = true;
         }
 
         #endregion Public Constructors
@@ -62,6 +63,12 @@ namespace Rappen.XTB.PAC.DockControls
         #endregion Internal Methods
 
         #region Private Methods
+
+        private static void FixDetailVisibility(Label text, Label label)
+        {
+            label.Visible = !string.IsNullOrWhiteSpace(text.Text);
+            text.Visible = label.Visible;
+        }
 
         private void btnOpenSarif_Click(object sender, EventArgs e)
         {
@@ -134,7 +141,7 @@ namespace Rappen.XTB.PAC.DockControls
                         SetStatus(status.Status, status.Progress);
                         if (status.Progress >= 100)
                         {
-                            SetStatus(status);
+                            SetCounts(status);
                             if (status.ResultFileUris != null && status.ResultFileUris.Length > 0)
                             {
                                 txtResultFile.Text = status.ResultFileUris[0];
@@ -152,23 +159,15 @@ namespace Rappen.XTB.PAC.DockControls
             });
         }
 
-        private void dgResults_CellEnter(object sender, DataGridViewCellEventArgs e)
+        private void dgResults_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (dgResults.Rows[e.RowIndex].DataBoundItem is FlattenedSarifResult result)
-            {
-                txtMessage.Text = result.Message;
-                txtHowToFix.Text = result.Rule.HowToFix?.Summary;
-                txtSnippet.Text = result.Snippet.Replace("\n", "\r\n");
-                picRuleHelp.Tag = result.Rule.GuidanceUrl;
-            }
+            SetDetailInfo(dgResults.Rows[e.RowIndex].DataBoundItem as FlattenedSarifResult, true);
         }
 
-        //private void dgResults_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
-        //{
-        //    var col = dgResults.Columns[e.ColumnIndex];
-        //    dgGrouper.Options.StartCollapsed = true;
-        //    dgGrouper.SetGroupOn(col);
-        //}
+        private void dgResults_CellEnter(object sender, DataGridViewCellEventArgs e)
+        {
+            SetDetailInfo(dgResults.Rows[e.RowIndex].DataBoundItem as FlattenedSarifResult);
+        }
 
         private void GetResultFile(AnalysisStatus status)
         {
@@ -211,13 +210,29 @@ namespace Rappen.XTB.PAC.DockControls
             }
         }
 
+        //private void dgResults_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        //{
+        //    var col = dgResults.Columns[e.ColumnIndex];
+        //    dgGrouper.Options.StartCollapsed = true;
+        //    dgGrouper.SetGroupOn(col);
+        //}
+        private void linkFix_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (e.Link?.LinkData != null)
+            {
+                Process.Start(e.Link.LinkData.ToString());
+            }
+        }
+
         private void ParseSarifLog(SarifLog result)
         {
             if (result.Runs.Count == 0)
             {
                 return;
             }
-            dgResults.DataSource = FlattenedSarifResult.GetFlattenedResults(result.Runs[0], pac.scopeControl.Rules);
+            var flatresults = FlattenedSarifResult.GetFlattenedResults(result.Runs[0], pac.scopeControl.Rules);
+            SetCounts(flatresults);
+            dgResults.DataSource = flatresults;
             dgResults.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
             dgArtifacts.DataSource = result.Runs[0].Artifacts.Select(a => new Helpers.Artifact(a)).ToList();
             dgArtifacts.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
@@ -229,12 +244,16 @@ namespace Rappen.XTB.PAC.DockControls
             }
         }
 
-        private void picRuleHelp_Click(object sender, EventArgs e)
+        private void picDetailClose_Click(object sender, EventArgs e)
         {
-            if (picRuleHelp.Tag is string helpurl)
-            {
-                Process.Start(helpurl.Replace("client=PAChecker", "client=Rappen.XTB.PAC"));
-            }
+            SetDetailInfo(null);
+        }
+
+        private void picDetailOpen_Click(object sender, EventArgs e)
+        {
+            SetDetailInfo(dgResults.SelectedCells
+                .Cast<DataGridViewCell>()
+                .FirstOrDefault()?.OwningRow.DataBoundItem as FlattenedSarifResult, true);
         }
 
         private void Reset()
@@ -254,16 +273,73 @@ namespace Rappen.XTB.PAC.DockControls
                 dgResults.DataSource = null;
                 dgResults.Columns.AddRange(cols);
             }
-            foreach (var severitybox in panTop.Controls.Cast<Control>().Select(c => c as TextBox).Where(t => t != null && t.Tag is string))
-            {
-                severitybox.Text = "-";
-            }
-            panTop.Visible = false;
+            panTop.Controls
+                .Cast<Control>()
+                .Select(c => c as TextBox)
+                .Where(t => t != null && t.Tag is string)
+                .ToList()
+                .ForEach(t => t.Text = "-");
+            SetDetailInfo(null);
         }
 
         private void SaveSarifToFile(string filename)
         {
             File.WriteAllText(filename, txtSarif.Text);
+        }
+
+        private void SetCounts(List<FlattenedSarifResult> flatresults)
+        {
+            txtResultCountCritical.Text = flatresults.Count(r => r.Severity == "Critical").ToString();
+            txtResultCountHigh.Text = flatresults.Count(r => r.Severity == "High").ToString();
+            txtResultCountMedium.Text = flatresults.Count(r => r.Severity == "Medium").ToString();
+            txtResultCountLow.Text = flatresults.Count(r => r.Severity == "Low").ToString();
+            txtResultCountInfo.Text = flatresults.Count(r => r.Severity == "Informational").ToString();
+        }
+
+        private void SetCounts(AnalysisStatus status)
+        {
+            txtResultCountCritical.Text = status.IssueSummary.CriticalIssueCount.ToString();
+            txtResultCountHigh.Text = status.IssueSummary.HighIssueCount.ToString();
+            txtResultCountMedium.Text = status.IssueSummary.MediumIssueCount.ToString();
+            txtResultCountLow.Text = status.IssueSummary.LowIssueCount.ToString();
+            txtResultCountInfo.Text = status.IssueSummary.InformationalIssueCount.ToString();
+        }
+
+        private void SetDetailInfo(FlattenedSarifResult result, bool forceopen = false)
+        {
+            if (result != null && forceopen)
+            {
+                splitter.Panel2Collapsed = false;
+            }
+            if (result == null)
+            {
+                splitter.Panel2Collapsed = true;
+            }
+            picDetailOpen.Visible = splitter.Panel2Collapsed;
+            if (splitter.Panel2Collapsed)
+            {
+                return;
+            }
+            splitter.Panel2.SuspendLayout();
+            lblDetailHeader.Text = $"Details - {result.Severity}";
+            txtRule.Text = result.Rule.Code;
+            txtCategory.Text = result.Category.ToString();
+            txtIssue.Text = result.Message;
+            txtFix.Text = result.Rule.HowToFix?.Summary;
+            txtType.Text = result.Component.ToString();
+            txtLocation.Text = result.FilePath.ToString();
+            txtModule.Text = result.Module;
+            txtLine.Text = result.StartLine > 0 ? result.StartLine.ToString() : string.Empty;
+            txtSnippet.Text = result.Snippet?.Replace("\n", "\r\n");
+            linkFix.Links[0].LinkData = result.Rule?.GuidanceUrl?.Replace("client=PAChecker", "client=Rappen.XTB.PAC");
+            FixDetailVisibility(txtIssue, lblIssue);
+            FixDetailVisibility(txtFix, lblFix);
+            FixDetailVisibility(txtType, lblType);
+            FixDetailVisibility(txtLocation, lblLocation);
+            FixDetailVisibility(txtModule, lblModule);
+            FixDetailVisibility(txtLine, lblLine);
+            FixDetailVisibility(txtSnippet, lblSnippet);
+            splitter.Panel2.ResumeLayout();
         }
 
         private void SetSarif(string sarif)
@@ -275,21 +351,16 @@ namespace Rappen.XTB.PAC.DockControls
         {
             txtStatus.Text = status;
             progAnalysis.Value = progress;
-            if (!string.IsNullOrEmpty(status))
-            {
-                panTop.Visible = true;
-            }
             progAnalysis.Visible = !string.IsNullOrEmpty(status);
         }
 
-        private void SetStatus(AnalysisStatus status)
+        private void splitContainer1_Panel2_SizeChanged(object sender, EventArgs e)
         {
-            txtResultCountCritical.Text = status.IssueSummary.CriticalIssueCount.ToString();
-            txtResultCountHigh.Text = status.IssueSummary.HighIssueCount.ToString();
-            txtResultCountMedium.Text = status.IssueSummary.MediumIssueCount.ToString();
-            txtResultCountLow.Text = status.IssueSummary.LowIssueCount.ToString();
-            txtResultCountInfo.Text = status.IssueSummary.InformationalIssueCount.ToString();
-            panTop.Visible = true;
+            splitter.Panel2.Controls.Cast<Control>()
+                .Where(c => c is Label)
+                .Where(c => c.MaximumSize.Width != 0)
+                .ToList()
+                .ForEach(c => c.MaximumSize = new Size(splitter.Panel2.Width - 20, c.MaximumSize.Height));
         }
 
         private void tmStatus_Tick(object sender, EventArgs e)
@@ -317,10 +388,12 @@ namespace Rappen.XTB.PAC.DockControls
                     row.Visible = tagstr == null || row.Cells["colSeverity"].Value.ToString() == tagstr;
                 }
                 currencyManager.ResumeBinding();
-                foreach (var severitybox in panTop.Controls.Cast<Control>().Select(c => c as TextBox).Where(t => t != null && t.Tag is string))
-                {
-                    severitybox.BackColor = filterSeverity == severitybox ? Color.Red : SystemColors.Window;
-                }
+                panTop.Controls
+                    .Cast<Control>()
+                    .Select(c => c as TextBox)
+                    .Where(t => t != null && t.Tag is string)
+                    .ToList()
+                    .ForEach(t => t.BackColor = filterSeverity == t ? Color.Red : SystemColors.Window);
             }
         }
 

@@ -142,22 +142,20 @@ namespace Rappen.XTB.PAC.Helpers
         public string Location => (Member ?? Module ?? Type ?? FilePath.ToString()) + (StartLine != null && StartLine > 0 ? $" (Line {StartLine})" : "");
 
         #endregion Public Properties
-
-
+        
         #region Public Methods
 
         public static List<FlattenedSarifResult> GetFlattenedResults(Run run, List<Rule> rules)
         {
             void AddMissingComponent(Rule rule)
             {
-                if (rule.ComponentType != 0 ||
-                    !(run.Tool.Driver.Rules.FirstOrDefault(r => r.Id == rule.Code) is ReportingDescriptor sarifrule) ||
-                    !sarifrule.TryGetProperty("componentType", out string type) ||
-                    string.IsNullOrWhiteSpace(type))
+                if (rule.ComponentType == 0 &&
+                    (run.Tool?.Driver?.Rules?.FirstOrDefault(r => r.Id == rule.Code) is ReportingDescriptor sarifrule) &&
+                    sarifrule.TryGetProperty("componentType", out string type) &&
+                    Enum.TryParse(type, true, out Component component))
                 {
-                    return;
+                    rule.ComponentType = (int)component;
                 }
-                rule.ComponentType = (int)Enum.Parse(typeof(Component), type);
             }
 
             string GetPropertyOrNull(PropertyBagHolder bag, string name)

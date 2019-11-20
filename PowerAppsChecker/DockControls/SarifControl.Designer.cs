@@ -32,15 +32,13 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SarifControl));
             this.tabControlResults = new System.Windows.Forms.TabControl();
             this.tabResults = new System.Windows.Forms.TabPage();
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.splitter = new System.Windows.Forms.SplitContainer();
             this.dgResults = new System.Windows.Forms.DataGridView();
-            this.txtHowToFix = new System.Windows.Forms.TextBox();
-            this.label19 = new System.Windows.Forms.Label();
-            this.picRuleHelp = new System.Windows.Forms.PictureBox();
-            this.txtSnippet = new System.Windows.Forms.TextBox();
-            this.label7 = new System.Windows.Forms.Label();
-            this.txtMessage = new System.Windows.Forms.TextBox();
-            this.label6 = new System.Windows.Forms.Label();
+            this.colSeverity = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colRule = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colCategory = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colComponent = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colLocation = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panTop = new System.Windows.Forms.Panel();
             this.panStatus = new System.Windows.Forms.Panel();
             this.progAnalysis = new System.Windows.Forms.ProgressBar();
@@ -56,6 +54,28 @@
             this.txtResultCountCritical = new System.Windows.Forms.TextBox();
             this.txtResultCountMedium = new System.Windows.Forms.TextBox();
             this.txtResultCountHigh = new System.Windows.Forms.TextBox();
+            this.txtSnippet = new System.Windows.Forms.Label();
+            this.lblSnippet = new System.Windows.Forms.Label();
+            this.txtLine = new System.Windows.Forms.Label();
+            this.lblLine = new System.Windows.Forms.Label();
+            this.txtModule = new System.Windows.Forms.Label();
+            this.lblModule = new System.Windows.Forms.Label();
+            this.txtLocation = new System.Windows.Forms.Label();
+            this.lblLocation = new System.Windows.Forms.Label();
+            this.txtType = new System.Windows.Forms.Label();
+            this.lblType = new System.Windows.Forms.Label();
+            this.linkFix = new System.Windows.Forms.LinkLabel();
+            this.txtFix = new System.Windows.Forms.Label();
+            this.lblFix = new System.Windows.Forms.Label();
+            this.txtIssue = new System.Windows.Forms.Label();
+            this.lblIssue = new System.Windows.Forms.Label();
+            this.txtCategory = new System.Windows.Forms.Label();
+            this.lblCategory = new System.Windows.Forms.Label();
+            this.txtRule = new System.Windows.Forms.Label();
+            this.lblRule = new System.Windows.Forms.Label();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.lblDetailHeader = new System.Windows.Forms.Label();
+            this.picDetailClose = new System.Windows.Forms.PictureBox();
             this.tabSarif = new System.Windows.Forms.TabPage();
             this.txtSarif = new System.Windows.Forms.RichTextBox();
             this.panel1 = new System.Windows.Forms.Panel();
@@ -85,27 +105,25 @@
             this.tabFiles = new System.Windows.Forms.TabPage();
             this.dgArtifacts = new System.Windows.Forms.DataGridView();
             this.tmStatus = new System.Windows.Forms.Timer(this.components);
-            this.colSeverity = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colRule = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colCategory = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colComponent = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colLocation = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.picDetailOpen = new System.Windows.Forms.PictureBox();
             this.tabControlResults.SuspendLayout();
             this.tabResults.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
-            this.splitContainer1.Panel1.SuspendLayout();
-            this.splitContainer1.Panel2.SuspendLayout();
-            this.splitContainer1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitter)).BeginInit();
+            this.splitter.Panel1.SuspendLayout();
+            this.splitter.Panel2.SuspendLayout();
+            this.splitter.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgResults)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.picRuleHelp)).BeginInit();
             this.panTop.SuspendLayout();
             this.panStatus.SuspendLayout();
+            this.panel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.picDetailClose)).BeginInit();
             this.tabSarif.SuspendLayout();
             this.panel1.SuspendLayout();
             this.tabTech.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgSolutions)).BeginInit();
             this.tabFiles.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgArtifacts)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picDetailOpen)).BeginInit();
             this.SuspendLayout();
             // 
             // tabControlResults
@@ -123,8 +141,7 @@
             // 
             // tabResults
             // 
-            this.tabResults.Controls.Add(this.splitContainer1);
-            this.tabResults.Controls.Add(this.panTop);
+            this.tabResults.Controls.Add(this.splitter);
             this.tabResults.Location = new System.Drawing.Point(4, 22);
             this.tabResults.Name = "tabResults";
             this.tabResults.Padding = new System.Windows.Forms.Padding(3);
@@ -133,31 +150,47 @@
             this.tabResults.Text = "Results";
             this.tabResults.UseVisualStyleBackColor = true;
             // 
-            // splitContainer1
+            // splitter
             // 
-            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
-            this.splitContainer1.Location = new System.Drawing.Point(3, 64);
-            this.splitContainer1.Name = "splitContainer1";
-            this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.splitter.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitter.Location = new System.Drawing.Point(3, 3);
+            this.splitter.Name = "splitter";
             // 
-            // splitContainer1.Panel1
+            // splitter.Panel1
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.dgResults);
+            this.splitter.Panel1.Controls.Add(this.dgResults);
+            this.splitter.Panel1.Controls.Add(this.panTop);
             // 
-            // splitContainer1.Panel2
+            // splitter.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.txtHowToFix);
-            this.splitContainer1.Panel2.Controls.Add(this.label19);
-            this.splitContainer1.Panel2.Controls.Add(this.picRuleHelp);
-            this.splitContainer1.Panel2.Controls.Add(this.txtSnippet);
-            this.splitContainer1.Panel2.Controls.Add(this.label7);
-            this.splitContainer1.Panel2.Controls.Add(this.txtMessage);
-            this.splitContainer1.Panel2.Controls.Add(this.label6);
-            this.splitContainer1.Size = new System.Drawing.Size(920, 393);
-            this.splitContainer1.SplitterDistance = 286;
-            this.splitContainer1.SplitterWidth = 8;
-            this.splitContainer1.TabIndex = 3;
+            this.splitter.Panel2.AutoScroll = true;
+            this.splitter.Panel2.Controls.Add(this.txtSnippet);
+            this.splitter.Panel2.Controls.Add(this.lblSnippet);
+            this.splitter.Panel2.Controls.Add(this.txtLine);
+            this.splitter.Panel2.Controls.Add(this.lblLine);
+            this.splitter.Panel2.Controls.Add(this.txtModule);
+            this.splitter.Panel2.Controls.Add(this.lblModule);
+            this.splitter.Panel2.Controls.Add(this.txtLocation);
+            this.splitter.Panel2.Controls.Add(this.lblLocation);
+            this.splitter.Panel2.Controls.Add(this.txtType);
+            this.splitter.Panel2.Controls.Add(this.lblType);
+            this.splitter.Panel2.Controls.Add(this.linkFix);
+            this.splitter.Panel2.Controls.Add(this.txtFix);
+            this.splitter.Panel2.Controls.Add(this.lblFix);
+            this.splitter.Panel2.Controls.Add(this.txtIssue);
+            this.splitter.Panel2.Controls.Add(this.lblIssue);
+            this.splitter.Panel2.Controls.Add(this.txtCategory);
+            this.splitter.Panel2.Controls.Add(this.lblCategory);
+            this.splitter.Panel2.Controls.Add(this.txtRule);
+            this.splitter.Panel2.Controls.Add(this.lblRule);
+            this.splitter.Panel2.Controls.Add(this.panel2);
+            this.splitter.Panel2.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
+            this.splitter.Panel2.SizeChanged += new System.EventHandler(this.splitContainer1_Panel2_SizeChanged);
+            this.splitter.Panel2MinSize = 0;
+            this.splitter.Size = new System.Drawing.Size(920, 454);
+            this.splitter.SplitterDistance = 618;
+            this.splitter.SplitterWidth = 8;
+            this.splitter.TabIndex = 3;
             // 
             // dgResults
             // 
@@ -173,92 +206,56 @@
             this.colComponent,
             this.colLocation});
             this.dgResults.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgResults.Location = new System.Drawing.Point(0, 0);
+            this.dgResults.Location = new System.Drawing.Point(0, 61);
             this.dgResults.Name = "dgResults";
             this.dgResults.ReadOnly = true;
             this.dgResults.RowHeadersVisible = false;
-            this.dgResults.Size = new System.Drawing.Size(920, 286);
+            this.dgResults.Size = new System.Drawing.Size(618, 393);
             this.dgResults.TabIndex = 1;
+            this.dgResults.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgResults_CellDoubleClick);
             this.dgResults.CellEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgResults_CellEnter);
             // 
-            // txtHowToFix
+            // colSeverity
             // 
-            this.txtHowToFix.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtHowToFix.BackColor = System.Drawing.SystemColors.Window;
-            this.txtHowToFix.Location = new System.Drawing.Point(95, 60);
-            this.txtHowToFix.Name = "txtHowToFix";
-            this.txtHowToFix.ReadOnly = true;
-            this.txtHowToFix.Size = new System.Drawing.Size(786, 20);
-            this.txtHowToFix.TabIndex = 34;
+            this.colSeverity.DataPropertyName = "Severity";
+            this.colSeverity.HeaderText = "Severity";
+            this.colSeverity.Name = "colSeverity";
+            this.colSeverity.ReadOnly = true;
+            this.colSeverity.Width = 80;
             // 
-            // label19
+            // colRule
             // 
-            this.label19.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(14, 63);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(61, 13);
-            this.label19.TabIndex = 33;
-            this.label19.Text = "How To Fix";
+            this.colRule.DataPropertyName = "RuleDescription";
+            this.colRule.HeaderText = "Rule";
+            this.colRule.Name = "colRule";
+            this.colRule.ReadOnly = true;
+            this.colRule.Width = 150;
             // 
-            // picRuleHelp
+            // colCategory
             // 
-            this.picRuleHelp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.picRuleHelp.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.picRuleHelp.Image = ((System.Drawing.Image)(resources.GetObject("picRuleHelp.Image")));
-            this.picRuleHelp.Location = new System.Drawing.Point(887, 58);
-            this.picRuleHelp.Name = "picRuleHelp";
-            this.picRuleHelp.Size = new System.Drawing.Size(24, 24);
-            this.picRuleHelp.TabIndex = 32;
-            this.picRuleHelp.TabStop = false;
-            this.picRuleHelp.Click += new System.EventHandler(this.picRuleHelp_Click);
+            this.colCategory.DataPropertyName = "Category";
+            this.colCategory.HeaderText = "Category";
+            this.colCategory.Name = "colCategory";
+            this.colCategory.ReadOnly = true;
             // 
-            // txtSnippet
+            // colComponent
             // 
-            this.txtSnippet.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtSnippet.BackColor = System.Drawing.SystemColors.Window;
-            this.txtSnippet.Location = new System.Drawing.Point(95, 31);
-            this.txtSnippet.Multiline = true;
-            this.txtSnippet.Name = "txtSnippet";
-            this.txtSnippet.ReadOnly = true;
-            this.txtSnippet.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtSnippet.Size = new System.Drawing.Size(816, 23);
-            this.txtSnippet.TabIndex = 3;
+            this.colComponent.DataPropertyName = "Component";
+            this.colComponent.HeaderText = "Component";
+            this.colComponent.Name = "colComponent";
+            this.colComponent.ReadOnly = true;
             // 
-            // label7
+            // colLocation
             // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(14, 34);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(43, 13);
-            this.label7.TabIndex = 2;
-            this.label7.Text = "Snippet";
-            // 
-            // txtMessage
-            // 
-            this.txtMessage.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtMessage.BackColor = System.Drawing.SystemColors.Window;
-            this.txtMessage.Location = new System.Drawing.Point(95, 5);
-            this.txtMessage.Name = "txtMessage";
-            this.txtMessage.ReadOnly = true;
-            this.txtMessage.Size = new System.Drawing.Size(816, 20);
-            this.txtMessage.TabIndex = 1;
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(14, 8);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(50, 13);
-            this.label6.TabIndex = 0;
-            this.label6.Text = "Message";
+            this.colLocation.DataPropertyName = "Location";
+            this.colLocation.HeaderText = "Location";
+            this.colLocation.Name = "colLocation";
+            this.colLocation.ReadOnly = true;
+            this.colLocation.Width = 200;
             // 
             // panTop
             // 
+            this.panTop.Controls.Add(this.picDetailOpen);
             this.panTop.Controls.Add(this.panStatus);
             this.panTop.Controls.Add(this.label5);
             this.panTop.Controls.Add(this.txtResultCountInfo);
@@ -271,11 +268,10 @@
             this.panTop.Controls.Add(this.txtResultCountMedium);
             this.panTop.Controls.Add(this.txtResultCountHigh);
             this.panTop.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panTop.Location = new System.Drawing.Point(3, 3);
+            this.panTop.Location = new System.Drawing.Point(0, 0);
             this.panTop.Name = "panTop";
-            this.panTop.Size = new System.Drawing.Size(920, 61);
+            this.panTop.Size = new System.Drawing.Size(618, 61);
             this.panTop.TabIndex = 2;
-            this.panTop.Visible = false;
             // 
             // panStatus
             // 
@@ -286,7 +282,7 @@
             this.panStatus.Controls.Add(this.label12);
             this.panStatus.Location = new System.Drawing.Point(317, 10);
             this.panStatus.Name = "panStatus";
-            this.panStatus.Size = new System.Drawing.Size(604, 43);
+            this.panStatus.Size = new System.Drawing.Size(276, 43);
             this.panStatus.TabIndex = 45;
             // 
             // progAnalysis
@@ -296,7 +292,7 @@
             this.progAnalysis.BackColor = System.Drawing.SystemColors.Window;
             this.progAnalysis.Location = new System.Drawing.Point(108, 16);
             this.progAnalysis.Name = "progAnalysis";
-            this.progAnalysis.Size = new System.Drawing.Size(493, 20);
+            this.progAnalysis.Size = new System.Drawing.Size(165, 20);
             this.progAnalysis.TabIndex = 39;
             // 
             // txtStatus
@@ -313,14 +309,14 @@
             this.label12.AutoSize = true;
             this.label12.Location = new System.Drawing.Point(2, 2);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(37, 13);
+            this.label12.Size = new System.Drawing.Size(76, 13);
             this.label12.TabIndex = 44;
-            this.label12.Text = "Status";
+            this.label12.Text = "Analysis status";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(269, 12);
+            this.label5.Location = new System.Drawing.Point(268, 12);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(25, 13);
             this.label5.TabIndex = 8;
@@ -343,7 +339,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(206, 12);
+            this.label4.Location = new System.Drawing.Point(205, 12);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(27, 13);
             this.label4.TabIndex = 6;
@@ -431,6 +427,261 @@
             this.txtResultCountHigh.Text = "-";
             this.txtResultCountHigh.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.txtResultCountHigh.Click += new System.EventHandler(this.txtResultCountInfo_Click);
+            // 
+            // txtSnippet
+            // 
+            this.txtSnippet.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txtSnippet.Location = new System.Drawing.Point(10, 354);
+            this.txtSnippet.MaximumSize = new System.Drawing.Size(280, 200);
+            this.txtSnippet.Name = "txtSnippet";
+            this.txtSnippet.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
+            this.txtSnippet.Size = new System.Drawing.Size(280, 18);
+            this.txtSnippet.TabIndex = 44;
+            this.txtSnippet.Text = "-snippet-";
+            // 
+            // lblSnippet
+            // 
+            this.lblSnippet.AutoSize = true;
+            this.lblSnippet.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lblSnippet.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.lblSnippet.Location = new System.Drawing.Point(10, 336);
+            this.lblSnippet.Name = "lblSnippet";
+            this.lblSnippet.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
+            this.lblSnippet.Size = new System.Drawing.Size(43, 18);
+            this.lblSnippet.TabIndex = 43;
+            this.lblSnippet.Text = "Snippet";
+            // 
+            // txtLine
+            // 
+            this.txtLine.AutoSize = true;
+            this.txtLine.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txtLine.Location = new System.Drawing.Point(10, 318);
+            this.txtLine.Name = "txtLine";
+            this.txtLine.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
+            this.txtLine.Size = new System.Drawing.Size(29, 18);
+            this.txtLine.TabIndex = 53;
+            this.txtLine.Text = "-line-";
+            // 
+            // lblLine
+            // 
+            this.lblLine.AutoSize = true;
+            this.lblLine.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lblLine.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.lblLine.Location = new System.Drawing.Point(10, 300);
+            this.lblLine.Name = "lblLine";
+            this.lblLine.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
+            this.lblLine.Size = new System.Drawing.Size(27, 18);
+            this.lblLine.TabIndex = 52;
+            this.lblLine.Text = "Line";
+            // 
+            // txtModule
+            // 
+            this.txtModule.AutoSize = true;
+            this.txtModule.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txtModule.Location = new System.Drawing.Point(10, 282);
+            this.txtModule.MaximumSize = new System.Drawing.Size(280, 0);
+            this.txtModule.Name = "txtModule";
+            this.txtModule.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
+            this.txtModule.Size = new System.Drawing.Size(47, 18);
+            this.txtModule.TabIndex = 51;
+            this.txtModule.Text = "-module-";
+            // 
+            // lblModule
+            // 
+            this.lblModule.AutoSize = true;
+            this.lblModule.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lblModule.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.lblModule.Location = new System.Drawing.Point(10, 264);
+            this.lblModule.Name = "lblModule";
+            this.lblModule.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
+            this.lblModule.Size = new System.Drawing.Size(42, 18);
+            this.lblModule.TabIndex = 50;
+            this.lblModule.Text = "Module";
+            // 
+            // txtLocation
+            // 
+            this.txtLocation.AutoSize = true;
+            this.txtLocation.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txtLocation.Location = new System.Drawing.Point(10, 246);
+            this.txtLocation.MaximumSize = new System.Drawing.Size(280, 0);
+            this.txtLocation.Name = "txtLocation";
+            this.txtLocation.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
+            this.txtLocation.Size = new System.Drawing.Size(50, 18);
+            this.txtLocation.TabIndex = 49;
+            this.txtLocation.Text = "-location-";
+            // 
+            // lblLocation
+            // 
+            this.lblLocation.AutoSize = true;
+            this.lblLocation.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lblLocation.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.lblLocation.Location = new System.Drawing.Point(10, 228);
+            this.lblLocation.Name = "lblLocation";
+            this.lblLocation.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
+            this.lblLocation.Size = new System.Drawing.Size(48, 18);
+            this.lblLocation.TabIndex = 48;
+            this.lblLocation.Text = "Location";
+            // 
+            // txtType
+            // 
+            this.txtType.AutoSize = true;
+            this.txtType.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txtType.Location = new System.Drawing.Point(10, 210);
+            this.txtType.Name = "txtType";
+            this.txtType.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
+            this.txtType.Size = new System.Drawing.Size(33, 18);
+            this.txtType.TabIndex = 55;
+            this.txtType.Text = "-type-";
+            // 
+            // lblType
+            // 
+            this.lblType.AutoSize = true;
+            this.lblType.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lblType.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.lblType.Location = new System.Drawing.Point(10, 192);
+            this.lblType.Name = "lblType";
+            this.lblType.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
+            this.lblType.Size = new System.Drawing.Size(31, 18);
+            this.lblType.TabIndex = 54;
+            this.lblType.Text = "Type";
+            // 
+            // linkFix
+            // 
+            this.linkFix.AutoSize = true;
+            this.linkFix.Dock = System.Windows.Forms.DockStyle.Top;
+            this.linkFix.LinkArea = new System.Windows.Forms.LinkArea(0, 16);
+            this.linkFix.Location = new System.Drawing.Point(10, 174);
+            this.linkFix.Name = "linkFix";
+            this.linkFix.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
+            this.linkFix.Size = new System.Drawing.Size(90, 18);
+            this.linkFix.TabIndex = 47;
+            this.linkFix.TabStop = true;
+            this.linkFix.Text = "Read more online";
+            this.linkFix.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkFix_LinkClicked);
+            // 
+            // txtFix
+            // 
+            this.txtFix.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txtFix.Location = new System.Drawing.Point(10, 161);
+            this.txtFix.MaximumSize = new System.Drawing.Size(280, 200);
+            this.txtFix.Name = "txtFix";
+            this.txtFix.Size = new System.Drawing.Size(280, 13);
+            this.txtFix.TabIndex = 46;
+            this.txtFix.Text = "-fix-";
+            // 
+            // lblFix
+            // 
+            this.lblFix.AutoSize = true;
+            this.lblFix.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lblFix.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.lblFix.Location = new System.Drawing.Point(10, 143);
+            this.lblFix.Name = "lblFix";
+            this.lblFix.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
+            this.lblFix.Size = new System.Drawing.Size(92, 18);
+            this.lblFix.TabIndex = 45;
+            this.lblFix.Text = "Recommended fix";
+            // 
+            // txtIssue
+            // 
+            this.txtIssue.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txtIssue.Location = new System.Drawing.Point(10, 125);
+            this.txtIssue.MaximumSize = new System.Drawing.Size(280, 200);
+            this.txtIssue.Name = "txtIssue";
+            this.txtIssue.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
+            this.txtIssue.Size = new System.Drawing.Size(280, 18);
+            this.txtIssue.TabIndex = 42;
+            this.txtIssue.Text = "-issue-";
+            // 
+            // lblIssue
+            // 
+            this.lblIssue.AutoSize = true;
+            this.lblIssue.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lblIssue.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.lblIssue.Location = new System.Drawing.Point(10, 107);
+            this.lblIssue.Name = "lblIssue";
+            this.lblIssue.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
+            this.lblIssue.Size = new System.Drawing.Size(32, 18);
+            this.lblIssue.TabIndex = 41;
+            this.lblIssue.Text = "Issue";
+            // 
+            // txtCategory
+            // 
+            this.txtCategory.AutoSize = true;
+            this.txtCategory.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txtCategory.Location = new System.Drawing.Point(10, 89);
+            this.txtCategory.Name = "txtCategory";
+            this.txtCategory.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
+            this.txtCategory.Size = new System.Drawing.Size(54, 18);
+            this.txtCategory.TabIndex = 57;
+            this.txtCategory.Text = "-category-";
+            // 
+            // lblCategory
+            // 
+            this.lblCategory.AutoSize = true;
+            this.lblCategory.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lblCategory.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.lblCategory.Location = new System.Drawing.Point(10, 71);
+            this.lblCategory.Name = "lblCategory";
+            this.lblCategory.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
+            this.lblCategory.Size = new System.Drawing.Size(49, 18);
+            this.lblCategory.TabIndex = 56;
+            this.lblCategory.Text = "Category";
+            // 
+            // txtRule
+            // 
+            this.txtRule.AutoSize = true;
+            this.txtRule.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txtRule.Location = new System.Drawing.Point(10, 53);
+            this.txtRule.Name = "txtRule";
+            this.txtRule.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
+            this.txtRule.Size = new System.Drawing.Size(59, 18);
+            this.txtRule.TabIndex = 40;
+            this.txtRule.Text = "-rule name-";
+            // 
+            // lblRule
+            // 
+            this.lblRule.AutoSize = true;
+            this.lblRule.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lblRule.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.lblRule.Location = new System.Drawing.Point(10, 35);
+            this.lblRule.Name = "lblRule";
+            this.lblRule.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
+            this.lblRule.Size = new System.Drawing.Size(29, 18);
+            this.lblRule.TabIndex = 39;
+            this.lblRule.Text = "Rule";
+            // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.lblDetailHeader);
+            this.panel2.Controls.Add(this.picDetailClose);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel2.Location = new System.Drawing.Point(10, 0);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(284, 35);
+            this.panel2.TabIndex = 38;
+            // 
+            // lblDetailHeader
+            // 
+            this.lblDetailHeader.AutoSize = true;
+            this.lblDetailHeader.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblDetailHeader.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.lblDetailHeader.Location = new System.Drawing.Point(0, 6);
+            this.lblDetailHeader.Name = "lblDetailHeader";
+            this.lblDetailHeader.Size = new System.Drawing.Size(65, 24);
+            this.lblDetailHeader.TabIndex = 37;
+            this.lblDetailHeader.Text = "Details";
+            // 
+            // picDetailClose
+            // 
+            this.picDetailClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.picDetailClose.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.picDetailClose.Image = ((System.Drawing.Image)(resources.GetObject("picDetailClose.Image")));
+            this.picDetailClose.Location = new System.Drawing.Point(265, 9);
+            this.picDetailClose.Name = "picDetailClose";
+            this.picDetailClose.Size = new System.Drawing.Size(16, 16);
+            this.picDetailClose.TabIndex = 36;
+            this.picDetailClose.TabStop = false;
+            this.picDetailClose.Click += new System.EventHandler(this.picDetailClose_Click);
             // 
             // tabSarif
             // 
@@ -745,43 +996,17 @@
             this.tmStatus.Interval = 5000;
             this.tmStatus.Tick += new System.EventHandler(this.tmStatus_Tick);
             // 
-            // colSeverity
+            // picDetailOpen
             // 
-            this.colSeverity.DataPropertyName = "Severity";
-            this.colSeverity.HeaderText = "Severity";
-            this.colSeverity.Name = "colSeverity";
-            this.colSeverity.ReadOnly = true;
-            this.colSeverity.Width = 80;
-            // 
-            // colRule
-            // 
-            this.colRule.DataPropertyName = "RuleDescription";
-            this.colRule.HeaderText = "Rule";
-            this.colRule.Name = "colRule";
-            this.colRule.ReadOnly = true;
-            this.colRule.Width = 150;
-            // 
-            // colCategory
-            // 
-            this.colCategory.DataPropertyName = "Category";
-            this.colCategory.HeaderText = "Category";
-            this.colCategory.Name = "colCategory";
-            this.colCategory.ReadOnly = true;
-            // 
-            // colComponent
-            // 
-            this.colComponent.DataPropertyName = "Component";
-            this.colComponent.HeaderText = "Component";
-            this.colComponent.Name = "colComponent";
-            this.colComponent.ReadOnly = true;
-            // 
-            // colLocation
-            // 
-            this.colLocation.DataPropertyName = "Location";
-            this.colLocation.HeaderText = "Location";
-            this.colLocation.Name = "colLocation";
-            this.colLocation.ReadOnly = true;
-            this.colLocation.Width = 200;
+            this.picDetailOpen.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.picDetailOpen.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.picDetailOpen.Image = ((System.Drawing.Image)(resources.GetObject("picDetailOpen.Image")));
+            this.picDetailOpen.Location = new System.Drawing.Point(597, 9);
+            this.picDetailOpen.Name = "picDetailOpen";
+            this.picDetailOpen.Size = new System.Drawing.Size(16, 16);
+            this.picDetailOpen.TabIndex = 46;
+            this.picDetailOpen.TabStop = false;
+            this.picDetailOpen.Click += new System.EventHandler(this.picDetailOpen_Click);
             // 
             // SarifControl
             // 
@@ -800,17 +1025,19 @@
             this.Text = "SARIF analyzer";
             this.tabControlResults.ResumeLayout(false);
             this.tabResults.ResumeLayout(false);
-            this.splitContainer1.Panel1.ResumeLayout(false);
-            this.splitContainer1.Panel2.ResumeLayout(false);
-            this.splitContainer1.Panel2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
-            this.splitContainer1.ResumeLayout(false);
+            this.splitter.Panel1.ResumeLayout(false);
+            this.splitter.Panel2.ResumeLayout(false);
+            this.splitter.Panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitter)).EndInit();
+            this.splitter.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgResults)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.picRuleHelp)).EndInit();
             this.panTop.ResumeLayout(false);
             this.panTop.PerformLayout();
             this.panStatus.ResumeLayout(false);
             this.panStatus.PerformLayout();
+            this.panel2.ResumeLayout(false);
+            this.panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.picDetailClose)).EndInit();
             this.tabSarif.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
@@ -819,6 +1046,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgSolutions)).EndInit();
             this.tabFiles.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgArtifacts)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picDetailOpen)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -853,11 +1081,7 @@
         private System.Windows.Forms.Timer tmStatus;
         private System.Windows.Forms.DataGridView dgResults;
         private System.Windows.Forms.Button btnOpenSarif;
-        private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.TextBox txtMessage;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.TextBox txtSnippet;
-        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.SplitContainer splitter;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.TabPage tabTech;
         private System.Windows.Forms.Label label8;
@@ -877,13 +1101,33 @@
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.TextBox txtStartTime;
         private System.Windows.Forms.Label label17;
-        private System.Windows.Forms.PictureBox picRuleHelp;
-        private System.Windows.Forms.TextBox txtHowToFix;
-        private System.Windows.Forms.Label label19;
         private System.Windows.Forms.DataGridViewTextBoxColumn colSeverity;
         private System.Windows.Forms.DataGridViewTextBoxColumn colRule;
         private System.Windows.Forms.DataGridViewTextBoxColumn colCategory;
         private System.Windows.Forms.DataGridViewTextBoxColumn colComponent;
         private System.Windows.Forms.DataGridViewTextBoxColumn colLocation;
+        private System.Windows.Forms.PictureBox picDetailClose;
+        private System.Windows.Forms.Label lblDetailHeader;
+        private System.Windows.Forms.Label txtIssue;
+        private System.Windows.Forms.Label lblIssue;
+        private System.Windows.Forms.Label txtRule;
+        private System.Windows.Forms.Label lblRule;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Label lblSnippet;
+        private System.Windows.Forms.Label txtSnippet;
+        private System.Windows.Forms.Label txtFix;
+        private System.Windows.Forms.Label lblFix;
+        private System.Windows.Forms.Label txtLine;
+        private System.Windows.Forms.Label lblLine;
+        private System.Windows.Forms.Label txtModule;
+        private System.Windows.Forms.Label lblModule;
+        private System.Windows.Forms.Label txtLocation;
+        private System.Windows.Forms.Label lblLocation;
+        private System.Windows.Forms.LinkLabel linkFix;
+        private System.Windows.Forms.Label txtType;
+        private System.Windows.Forms.Label lblType;
+        private System.Windows.Forms.Label txtCategory;
+        private System.Windows.Forms.Label lblCategory;
+        private System.Windows.Forms.PictureBox picDetailOpen;
     }
 }
