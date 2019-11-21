@@ -40,6 +40,7 @@
             this.colComponent = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colLocation = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panTop = new System.Windows.Forms.Panel();
+            this.picDetailOpen = new System.Windows.Forms.PictureBox();
             this.panStatus = new System.Windows.Forms.Panel();
             this.progAnalysis = new System.Windows.Forms.ProgressBar();
             this.txtStatus = new System.Windows.Forms.TextBox();
@@ -105,7 +106,6 @@
             this.tabFiles = new System.Windows.Forms.TabPage();
             this.dgArtifacts = new System.Windows.Forms.DataGridView();
             this.tmStatus = new System.Windows.Forms.Timer(this.components);
-            this.picDetailOpen = new System.Windows.Forms.PictureBox();
             this.tabControlResults.SuspendLayout();
             this.tabResults.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitter)).BeginInit();
@@ -114,6 +114,7 @@
             this.splitter.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgResults)).BeginInit();
             this.panTop.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.picDetailOpen)).BeginInit();
             this.panStatus.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picDetailClose)).BeginInit();
@@ -123,7 +124,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgSolutions)).BeginInit();
             this.tabFiles.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgArtifacts)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.picDetailOpen)).BeginInit();
             this.SuspendLayout();
             // 
             // tabControlResults
@@ -272,6 +272,18 @@
             this.panTop.Name = "panTop";
             this.panTop.Size = new System.Drawing.Size(618, 61);
             this.panTop.TabIndex = 2;
+            // 
+            // picDetailOpen
+            // 
+            this.picDetailOpen.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.picDetailOpen.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.picDetailOpen.Image = ((System.Drawing.Image)(resources.GetObject("picDetailOpen.Image")));
+            this.picDetailOpen.Location = new System.Drawing.Point(597, 9);
+            this.picDetailOpen.Name = "picDetailOpen";
+            this.picDetailOpen.Size = new System.Drawing.Size(16, 16);
+            this.picDetailOpen.TabIndex = 46;
+            this.picDetailOpen.TabStop = false;
+            this.picDetailOpen.Click += new System.EventHandler(this.picDetailOpen_Click);
             // 
             // panStatus
             // 
@@ -996,18 +1008,6 @@
             this.tmStatus.Interval = 5000;
             this.tmStatus.Tick += new System.EventHandler(this.tmStatus_Tick);
             // 
-            // picDetailOpen
-            // 
-            this.picDetailOpen.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.picDetailOpen.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.picDetailOpen.Image = ((System.Drawing.Image)(resources.GetObject("picDetailOpen.Image")));
-            this.picDetailOpen.Location = new System.Drawing.Point(597, 9);
-            this.picDetailOpen.Name = "picDetailOpen";
-            this.picDetailOpen.Size = new System.Drawing.Size(16, 16);
-            this.picDetailOpen.TabIndex = 46;
-            this.picDetailOpen.TabStop = false;
-            this.picDetailOpen.Click += new System.EventHandler(this.picDetailOpen_Click);
-            // 
             // SarifControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1033,6 +1033,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgResults)).EndInit();
             this.panTop.ResumeLayout(false);
             this.panTop.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.picDetailOpen)).EndInit();
             this.panStatus.ResumeLayout(false);
             this.panStatus.PerformLayout();
             this.panel2.ResumeLayout(false);
@@ -1046,7 +1047,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgSolutions)).EndInit();
             this.tabFiles.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgArtifacts)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.picDetailOpen)).EndInit();
             this.ResumeLayout(false);
 
         }

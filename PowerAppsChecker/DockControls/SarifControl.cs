@@ -30,7 +30,7 @@ namespace Rappen.XTB.PAC.DockControls
             this.pac = pac;
             InitializeComponent();
             DoubleBuffered = true;
-            txtSnippet.AutoSize = true;
+            Reset();
         }
 
         #endregion Public Constructors

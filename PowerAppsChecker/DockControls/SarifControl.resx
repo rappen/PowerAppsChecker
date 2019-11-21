@@ -135,28 +135,13 @@
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="picDetailOpen.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADnQAAA50AWsks9YAAAAHdElNRQfjCxQVDTkE6aWLAAAAh0lEQVQ4T6WTIQ6AMAxF
-        d0Yk10ByhUkklishsUjkZOGLhpX9sQbEC+mD1ywkCyLyCyoZ27rLPCySjnSNtzcf1ajFwAwMxLGfBM/n
-        O1CInFYMqASeGFDpjUEhEI1ddMXADBrnrkUhfp1AQfz5HyjeJVQqniVU5rSWFIKBGHeBLTHDG7rEXigJ
-        J0XeCIYldoEmAAAAAElFTkSuQmCC
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO
+        dAAADnQBaySz1gAAAAd0SU1FB+MLFBUNOQTppYsAAACHSURBVDhPpZMhDoAwDEV3RiTXQHKFSSSWKyGx
+        SORk4YuGlf2xBsQL6YPXLCQLIvILKhnbuss8LJKOdI23Nx/VqMXADAzEsZ8Ez+c7UIicVgyoBJ4YUOmN
+        QSEQjV10xcAMGueuRSF+nUBB/PkfKN4lVCqeJVTmtJYUgoEYd4EtMcMbusReKAknRd4IhiV2gSYAAAAA
+        SUVORK5CYII=
 </value>
   </data>
-  <metadata name="colSeverity.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="colRule.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="colCategory.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="colComponent.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="colLocation.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
   <data name="picDetailClose.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO
