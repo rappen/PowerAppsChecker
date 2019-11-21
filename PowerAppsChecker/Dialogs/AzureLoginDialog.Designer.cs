@@ -67,14 +67,14 @@
             this.btnConnectPAC.Location = new System.Drawing.Point(297, 292);
             this.btnConnectPAC.Name = "btnConnectPAC";
             this.btnConnectPAC.Size = new System.Drawing.Size(135, 33);
-            this.btnConnectPAC.TabIndex = 11;
+            this.btnConnectPAC.TabIndex = 5;
             this.btnConnectPAC.Text = "Authenticate";
             this.btnConnectPAC.UseVisualStyleBackColor = false;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(11, 34);
+            this.label3.Location = new System.Drawing.Point(11, 8);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(67, 13);
             this.label3.TabIndex = 10;
@@ -82,11 +82,11 @@
             // 
             // txtClientSec
             // 
-            this.txtClientSec.Location = new System.Drawing.Point(94, 31);
+            this.txtClientSec.Location = new System.Drawing.Point(94, 5);
             this.txtClientSec.Name = "txtClientSec";
             this.txtClientSec.PasswordChar = '*';
             this.txtClientSec.Size = new System.Drawing.Size(255, 20);
-            this.txtClientSec.TabIndex = 9;
+            this.txtClientSec.TabIndex = 1;
             this.txtClientSec.Text = "7:7.RNl]/7yoqsR9/+e54JGE4A3.MM6z";
             this.txtClientSec.TextChanged += new System.EventHandler(this.txtInput_TextChanged);
             // 
@@ -104,23 +104,24 @@
             this.txtClientId.Location = new System.Drawing.Point(108, 53);
             this.txtClientId.Name = "txtClientId";
             this.txtClientId.Size = new System.Drawing.Size(255, 20);
-            this.txtClientId.TabIndex = 7;
+            this.txtClientId.TabIndex = 3;
             this.txtClientId.Text = "774beb47-454d-450c-980e-07bad5477469";
             this.txtClientId.TextChanged += new System.EventHandler(this.txtInput_TextChanged);
+            this.txtClientId.Leave += new System.EventHandler(this.txtClientId_Leave);
             // 
             // txtTenantId
             // 
-            this.txtTenantId.Location = new System.Drawing.Point(94, 5);
+            this.txtTenantId.Location = new System.Drawing.Point(94, 31);
             this.txtTenantId.Name = "txtTenantId";
             this.txtTenantId.Size = new System.Drawing.Size(255, 20);
-            this.txtTenantId.TabIndex = 6;
+            this.txtTenantId.TabIndex = 2;
             this.txtTenantId.Text = "03ef9e5e-caa4-41ad-b7a5-d657624eb692";
             this.txtTenantId.TextChanged += new System.EventHandler(this.txtInput_TextChanged);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(11, 8);
+            this.label1.Location = new System.Drawing.Point(11, 34);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(63, 13);
             this.label1.TabIndex = 5;
@@ -144,7 +145,7 @@
             // 
             this.picSecret.Cursor = System.Windows.Forms.Cursors.Hand;
             this.picSecret.Image = ((System.Drawing.Image)(resources.GetObject("picSecret.Image")));
-            this.picSecret.Location = new System.Drawing.Point(355, 27);
+            this.picSecret.Location = new System.Drawing.Point(355, 1);
             this.picSecret.Name = "picSecret";
             this.picSecret.Size = new System.Drawing.Size(24, 24);
             this.picSecret.TabIndex = 31;
@@ -155,7 +156,7 @@
             // 
             this.picTenant.Cursor = System.Windows.Forms.Cursors.Hand;
             this.picTenant.Image = ((System.Drawing.Image)(resources.GetObject("picTenant.Image")));
-            this.picTenant.Location = new System.Drawing.Point(355, 1);
+            this.picTenant.Location = new System.Drawing.Point(355, 27);
             this.picTenant.Name = "picTenant";
             this.picTenant.Size = new System.Drawing.Size(24, 24);
             this.picTenant.TabIndex = 29;
@@ -178,7 +179,7 @@
             this.rbUser.Location = new System.Drawing.Point(108, 28);
             this.rbUser.Name = "rbUser";
             this.rbUser.Size = new System.Drawing.Size(76, 17);
-            this.rbUser.TabIndex = 14;
+            this.rbUser.TabIndex = 1;
             this.rbUser.TabStop = true;
             this.rbUser.Text = "User Login";
             this.rbUser.UseVisualStyleBackColor = true;
@@ -190,7 +191,7 @@
             this.rbSecret.Location = new System.Drawing.Point(214, 28);
             this.rbSecret.Name = "rbSecret";
             this.rbSecret.Size = new System.Drawing.Size(85, 17);
-            this.rbSecret.TabIndex = 15;
+            this.rbSecret.TabIndex = 2;
             this.rbSecret.Text = "Client Secret";
             this.rbSecret.UseVisualStyleBackColor = true;
             this.rbSecret.CheckedChanged += new System.EventHandler(this.rbMethod_CheckedChanged);
@@ -231,7 +232,7 @@
             this.groupBox2.Location = new System.Drawing.Point(12, 180);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(420, 94);
-            this.groupBox2.TabIndex = 17;
+            this.groupBox2.TabIndex = 4;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Power Apps Checker Service";
             // 
@@ -299,7 +300,7 @@
             this.btnCancel.Location = new System.Drawing.Point(12, 292);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(135, 33);
-            this.btnCancel.TabIndex = 18;
+            this.btnCancel.TabIndex = 6;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = false;
             // 

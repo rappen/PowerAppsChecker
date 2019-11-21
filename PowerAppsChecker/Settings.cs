@@ -10,7 +10,8 @@ namespace Rappen.XTB.PAC
     {
         public AuthMethod AuthMethod { get; set; } = AuthMethod.User;
         public Guid TenantId { get; set; }
-        public Guid ClientId { get; set; }
+        public Guid ClientIdForUser { get; set; }
+        public Guid ClientIdForSecret { get; set; }
         public string ClientSecret { get; set; }
         public string Region { get; set; } = "Default";
         public string SolutionName { get; set; }

@@ -9,7 +9,13 @@ namespace Rappen.XTB.PAC.Dialogs
 {
     public partial class AzureLoginDialog : Form
     {
+        #region Private Fields
+
         private readonly PAC pac;
+        private Guid clientforsecret;
+        private Guid clientforuser;
+
+        #endregion Private Fields
 
         #region Public Constructors
 
@@ -40,8 +46,10 @@ namespace Rappen.XTB.PAC.Dialogs
         {
             rbUser.Checked = settings.AuthMethod == AuthMethod.User;
             rbSecret.Checked = settings.AuthMethod == AuthMethod.Secret;
+            clientforuser = settings.ClientIdForUser;
+            clientforsecret = settings.ClientIdForSecret;
+            MethodSwitch();
             if (!settings.TenantId.Equals(Guid.Empty)) txtTenantId.Text = settings.TenantId.ToString();
-            if (!settings.ClientId.Equals(Guid.Empty)) txtClientId.Text = settings.ClientId.ToString();
             if (!string.IsNullOrEmpty(settings.ClientSecret)) txtClientSec.Text = settings.ClientSecret;
             if (!string.IsNullOrEmpty(settings.Region)) cbRegion.SelectedIndex = cbRegion.Items.IndexOf(settings.Region);
             CheckInputs();
@@ -54,10 +62,8 @@ namespace Rappen.XTB.PAC.Dialogs
             {
                 settings.TenantId = tid;
             }
-            if (Guid.TryParse(txtClientId.Text, out Guid cid))
-            {
-                settings.ClientId = cid;
-            }
+            settings.ClientIdForUser = clientforuser;
+            settings.ClientIdForSecret = clientforsecret;
             settings.ClientSecret = txtClientSec.Text;
             settings.Region = cbRegion.Text;
         }
@@ -130,6 +136,13 @@ namespace Rappen.XTB.PAC.Dialogs
             }
         }
 
+        private void MethodSwitch()
+        {
+            panClientSecret.Visible = rbSecret.Checked;
+            txtClientId.Text = rbSecret.Checked ? clientforsecret.ToString() : clientforuser.ToString();
+            CheckInputs();
+        }
+
         private void picClient_Click(object sender, EventArgs e)
         {
             Process.Start("https://docs.microsoft.com/en-us/powershell/powerapps/get-started-powerapps-checker?view=pa-ps-latest#powerapps-checker-authentication-and-authorization");
@@ -152,8 +165,19 @@ namespace Rappen.XTB.PAC.Dialogs
 
         private void rbMethod_CheckedChanged(object sender, EventArgs e)
         {
-            panClientSecret.Visible = rbSecret.Checked;
-            CheckInputs();
+            MethodSwitch();
+        }
+
+        private void txtClientId_Leave(object sender, EventArgs e)
+        {
+            if (rbSecret.Checked)
+            {
+                Guid.TryParse(txtClientId.Text, out clientforsecret);
+            }
+            else
+            {
+                Guid.TryParse(txtClientId.Text, out clientforuser);
+            }
         }
 
         private void txtInput_TextChanged(object sender, EventArgs e)
