@@ -139,7 +139,7 @@ namespace Rappen.XTB.PAC.Helpers
         public string RuleDescription => Rule.ToString();
         public Category Category => Rule.PrimaryCategory;
         public Component Component => Rule.Component;
-        public string Location => (Member ?? Module ?? Type ?? FilePath.ToString()) + (StartLine != null && StartLine > 0 ? $" (Line {StartLine})" : "");
+        public string Location => (Member ?? Module ?? Type ?? FilePath.ToString());
 
         #endregion Public Properties
         
