@@ -50,6 +50,12 @@ namespace Rappen.XTB.PAC.Helpers
             var authUrl = $"https://login.microsoftonline.com/{tenantId}/oauth2/token";
             var response = client.PostAsync(authUrl, body).GetAwaiter().GetResult();
             var responseString = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+            if (!response.IsSuccessStatusCode)
+            {
+                dynamic respdata = new JavaScriptSerializer().Deserialize<dynamic>(responseString);
+                var error = respdata["error_description"];
+                throw new Exception(response.ReasonPhrase + "\n" + error);
+            }
             var token = responseString.Split(new string[] { "\"access_token\":\"" }, StringSplitOptions.RemoveEmptyEntries)[1];
             token = token.Split(new string[] { "\"}" }, StringSplitOptions.RemoveEmptyEntries)[0];
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
