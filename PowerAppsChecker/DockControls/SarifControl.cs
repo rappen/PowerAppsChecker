@@ -70,6 +70,19 @@ namespace Rappen.XTB.PAC.DockControls
             text.Visible = label.Visible;
         }
 
+        private void AlignFilters()
+        {
+            var offset = -dgResults.HorizontalScrollingOffset;
+            foreach (var col in dgResults.Columns.Cast<DataGridViewColumn>())
+            {
+                if (splitter.Panel1.Controls.Cast<Control>().FirstOrDefault(c => c is ComboBox && c.Tag?.ToString() == col.Name) is ComboBox cb)
+                {
+                    cb.Left = offset + col.Width - cb.Width + 1;
+                    offset += col.Width;
+                }
+            }
+        }
+
         private void btnOpenSarif_Click(object sender, EventArgs e)
         {
             using (var od = new OpenFileDialog
@@ -111,6 +124,36 @@ namespace Rappen.XTB.PAC.DockControls
                     MessageBox.Show($"{sd.FileName} saved!");
                 }
             }
+        }
+
+        private void cbFilter_DropDown(object sender, EventArgs e)
+        {
+            if (!(sender is ComboBox cb) || !(cb.Tag is string colname) || !(dgResults.Columns[colname] is DataGridViewColumn col))
+            {
+                return;
+            }
+            var x = cb.Location.X;
+            var w = cb.Size.Width;
+            var colw = col.Width;
+            cb.Left = x - colw + w;
+            cb.Width = colw;
+        }
+
+        private void cbFilter_DropDownClosed(object sender, EventArgs e)
+        {
+            if (!(sender is ComboBox cb) || !string.IsNullOrWhiteSpace(cb.Text) || !(cb.Tag is string colname) || !(dgResults.Columns[colname] is DataGridViewColumn col))
+            {
+                return;
+            }
+            var x = cb.Location.X;
+            var colw = col.Width;
+            cb.Left = x + colw - 19;
+            cb.Width = 19;
+        }
+
+        private void cbFilter_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            FilterResults();
         }
 
         private void CheckAnalysisStatus()
@@ -167,6 +210,41 @@ namespace Rappen.XTB.PAC.DockControls
         private void dgResults_CellEnter(object sender, DataGridViewCellEventArgs e)
         {
             SetDetailInfo(dgResults.Rows[e.RowIndex].DataBoundItem as FlattenedSarifResult);
+        }
+
+        private void dgResults_ColumnWidthChanged(object sender, DataGridViewColumnEventArgs e)
+        {
+            AlignFilters();
+        }
+
+        private void dgResults_Scroll(object sender, ScrollEventArgs e)
+        {
+            AlignFilters();
+        }
+
+        private List<ComboBox> FilterComboBoxes()
+        {
+            return splitter.Panel1.Controls.Cast<Control>().Where(c => c is ComboBox cb && cb.Tag.ToString().StartsWith("col")).Select(c => c as ComboBox).ToList();
+        }
+
+        private void FilterResults()
+        {
+            if (dgResults.DataSource == null)
+            {
+                return;
+            }
+            CurrencyManager currencyManager = (CurrencyManager)BindingContext[dgResults.DataSource];
+            currencyManager.SuspendBinding();
+            foreach (var row in dgResults.Rows.Cast<DataGridViewRow>())
+            {
+                var visible = true;
+                foreach (var cb in FilterComboBoxes())
+                {
+                    visible = visible && (string.IsNullOrWhiteSpace(cb.Text) || cb.Text == row.Cells[cb.Tag.ToString()].Value.ToString());
+                }
+                row.Visible = visible;
+            }
+            currencyManager.ResumeBinding();
         }
 
         private void GetResultFile(AnalysisStatus status)
@@ -232,6 +310,7 @@ namespace Rappen.XTB.PAC.DockControls
             }
             var flatresults = FlattenedSarifResult.GetFlattenedResults(result.Runs[0], pac.scopeControl.Rules);
             SetCounts(flatresults);
+            SetFilters(flatresults);
             dgResults.DataSource = flatresults;
             dgResults.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
             dgArtifacts.DataSource = result.Runs[0].Artifacts.Select(a => new Helpers.Artifact(a)).ToList();
@@ -267,6 +346,7 @@ namespace Rappen.XTB.PAC.DockControls
             txtStatusUrl.Text = "";
             SetStatus("", 0);
             txtResultFile.Text = "";
+            FilterComboBoxes().ForEach(ResetFilter);
             if (dgResults.DataSource != null)
             {
                 var cols = dgResults.Columns.Cast<DataGridViewColumn>().ToArray();
@@ -280,6 +360,12 @@ namespace Rappen.XTB.PAC.DockControls
                 .ToList()
                 .ForEach(t => t.Text = "-");
             SetDetailInfo(null);
+        }
+
+        private void ResetFilter(ComboBox cb)
+        {
+            cb.Items.Clear();
+            cb.Items.Add("");
         }
 
         private void SaveSarifToFile(string filename)
@@ -326,20 +412,34 @@ namespace Rappen.XTB.PAC.DockControls
             txtCategory.Text = result.Category.ToString();
             txtIssue.Text = result.Message;
             txtFix.Text = result.Rule.HowToFix?.Summary;
-            txtType.Text = result.Component.ToString();
+            txtComponent.Text = result.Component.ToString();
             txtLocation.Text = result.FilePath.ToString();
-            txtModule.Text = result.Module;
             txtLine.Text = result.StartLine > 0 ? result.StartLine.ToString() : string.Empty;
+            txtType.Text = result.Type;
+            txtModule.Text = result.Module;
+            txtMember.Text = result.Member;
             txtSnippet.Text = result.Snippet?.Replace("\n", "\r\n");
             linkFix.Links[0].LinkData = result.Rule?.GuidanceUrl?.Replace("client=PAChecker", "client=Rappen.XTB.PAC");
             FixDetailVisibility(txtIssue, lblIssue);
             FixDetailVisibility(txtFix, lblFix);
-            FixDetailVisibility(txtType, lblType);
+            FixDetailVisibility(txtComponent, lblComponent);
             FixDetailVisibility(txtLocation, lblLocation);
-            FixDetailVisibility(txtModule, lblModule);
             FixDetailVisibility(txtLine, lblLine);
+            FixDetailVisibility(txtType, lblType);
+            FixDetailVisibility(txtModule, lblModule);
+            FixDetailVisibility(txtMember, lblMember);
             FixDetailVisibility(txtSnippet, lblSnippet);
             splitter.Panel2.ResumeLayout();
+        }
+
+        private void SetFilters(List<FlattenedSarifResult> flatresults)
+        {
+            FilterComboBoxes().ForEach(ResetFilter);
+            cbSeverity.Items.AddRange(flatresults.Select(r => r.Severity).Distinct().OrderBy(s => s).ToArray());
+            cbRule.Items.AddRange(flatresults.Select(r => r.RuleDescription).Distinct().OrderBy(r => r).ToArray());
+            cbCategory.Items.AddRange(flatresults.Select(r => r.Category.ToString()).Distinct().OrderBy(r => r).ToArray());
+            cbComponent.Items.AddRange(flatresults.Select(r => r.Component.ToString()).Distinct().OrderBy(r => r).ToArray());
+            cbLocation.Items.AddRange(flatresults.Select(r => r.Location).Distinct().OrderBy(r => r).ToArray());
         }
 
         private void SetSarif(string sarif)

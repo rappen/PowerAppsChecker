@@ -33,6 +33,11 @@
             this.tabControlResults = new System.Windows.Forms.TabControl();
             this.tabResults = new System.Windows.Forms.TabPage();
             this.splitter = new System.Windows.Forms.SplitContainer();
+            this.cbLocation = new System.Windows.Forms.ComboBox();
+            this.cbComponent = new System.Windows.Forms.ComboBox();
+            this.cbCategory = new System.Windows.Forms.ComboBox();
+            this.cbRule = new System.Windows.Forms.ComboBox();
+            this.cbSeverity = new System.Windows.Forms.ComboBox();
             this.dgResults = new System.Windows.Forms.DataGridView();
             this.colSeverity = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colRule = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -57,14 +62,18 @@
             this.txtResultCountHigh = new System.Windows.Forms.TextBox();
             this.txtSnippet = new System.Windows.Forms.Label();
             this.lblSnippet = new System.Windows.Forms.Label();
-            this.txtLine = new System.Windows.Forms.Label();
-            this.lblLine = new System.Windows.Forms.Label();
+            this.txtMember = new System.Windows.Forms.Label();
+            this.lblMember = new System.Windows.Forms.Label();
             this.txtModule = new System.Windows.Forms.Label();
             this.lblModule = new System.Windows.Forms.Label();
-            this.txtLocation = new System.Windows.Forms.Label();
-            this.lblLocation = new System.Windows.Forms.Label();
             this.txtType = new System.Windows.Forms.Label();
             this.lblType = new System.Windows.Forms.Label();
+            this.txtLine = new System.Windows.Forms.Label();
+            this.lblLine = new System.Windows.Forms.Label();
+            this.txtLocation = new System.Windows.Forms.Label();
+            this.lblLocation = new System.Windows.Forms.Label();
+            this.txtComponent = new System.Windows.Forms.Label();
+            this.lblComponent = new System.Windows.Forms.Label();
             this.linkFix = new System.Windows.Forms.LinkLabel();
             this.txtFix = new System.Windows.Forms.Label();
             this.lblFix = new System.Windows.Forms.Label();
@@ -136,7 +145,7 @@
             this.tabControlResults.Location = new System.Drawing.Point(0, 0);
             this.tabControlResults.Name = "tabControlResults";
             this.tabControlResults.SelectedIndex = 0;
-            this.tabControlResults.Size = new System.Drawing.Size(934, 486);
+            this.tabControlResults.Size = new System.Drawing.Size(1032, 486);
             this.tabControlResults.TabIndex = 10;
             // 
             // tabResults
@@ -145,7 +154,7 @@
             this.tabResults.Location = new System.Drawing.Point(4, 22);
             this.tabResults.Name = "tabResults";
             this.tabResults.Padding = new System.Windows.Forms.Padding(3);
-            this.tabResults.Size = new System.Drawing.Size(926, 460);
+            this.tabResults.Size = new System.Drawing.Size(1024, 460);
             this.tabResults.TabIndex = 0;
             this.tabResults.Text = "Results";
             this.tabResults.UseVisualStyleBackColor = true;
@@ -158,6 +167,11 @@
             // 
             // splitter.Panel1
             // 
+            this.splitter.Panel1.Controls.Add(this.cbLocation);
+            this.splitter.Panel1.Controls.Add(this.cbComponent);
+            this.splitter.Panel1.Controls.Add(this.cbCategory);
+            this.splitter.Panel1.Controls.Add(this.cbRule);
+            this.splitter.Panel1.Controls.Add(this.cbSeverity);
             this.splitter.Panel1.Controls.Add(this.dgResults);
             this.splitter.Panel1.Controls.Add(this.panTop);
             // 
@@ -166,14 +180,18 @@
             this.splitter.Panel2.AutoScroll = true;
             this.splitter.Panel2.Controls.Add(this.txtSnippet);
             this.splitter.Panel2.Controls.Add(this.lblSnippet);
-            this.splitter.Panel2.Controls.Add(this.txtLine);
-            this.splitter.Panel2.Controls.Add(this.lblLine);
+            this.splitter.Panel2.Controls.Add(this.txtMember);
+            this.splitter.Panel2.Controls.Add(this.lblMember);
             this.splitter.Panel2.Controls.Add(this.txtModule);
             this.splitter.Panel2.Controls.Add(this.lblModule);
-            this.splitter.Panel2.Controls.Add(this.txtLocation);
-            this.splitter.Panel2.Controls.Add(this.lblLocation);
             this.splitter.Panel2.Controls.Add(this.txtType);
             this.splitter.Panel2.Controls.Add(this.lblType);
+            this.splitter.Panel2.Controls.Add(this.txtLine);
+            this.splitter.Panel2.Controls.Add(this.lblLine);
+            this.splitter.Panel2.Controls.Add(this.txtLocation);
+            this.splitter.Panel2.Controls.Add(this.lblLocation);
+            this.splitter.Panel2.Controls.Add(this.txtComponent);
+            this.splitter.Panel2.Controls.Add(this.lblComponent);
             this.splitter.Panel2.Controls.Add(this.linkFix);
             this.splitter.Panel2.Controls.Add(this.txtFix);
             this.splitter.Panel2.Controls.Add(this.lblFix);
@@ -187,10 +205,79 @@
             this.splitter.Panel2.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
             this.splitter.Panel2.SizeChanged += new System.EventHandler(this.splitContainer1_Panel2_SizeChanged);
             this.splitter.Panel2MinSize = 0;
-            this.splitter.Size = new System.Drawing.Size(920, 454);
-            this.splitter.SplitterDistance = 618;
+            this.splitter.Size = new System.Drawing.Size(1018, 454);
+            this.splitter.SplitterDistance = 683;
             this.splitter.SplitterWidth = 8;
             this.splitter.TabIndex = 3;
+            // 
+            // cbLocation
+            // 
+            this.cbLocation.BackColor = System.Drawing.SystemColors.Window;
+            this.cbLocation.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbLocation.FormattingEnabled = true;
+            this.cbLocation.Location = new System.Drawing.Point(614, 62);
+            this.cbLocation.Name = "cbLocation";
+            this.cbLocation.Size = new System.Drawing.Size(18, 21);
+            this.cbLocation.TabIndex = 6;
+            this.cbLocation.Tag = "colLocation";
+            this.cbLocation.DropDown += new System.EventHandler(this.cbFilter_DropDown);
+            this.cbLocation.SelectedIndexChanged += new System.EventHandler(this.cbFilter_SelectedIndexChanged);
+            this.cbLocation.DropDownClosed += new System.EventHandler(this.cbFilter_DropDownClosed);
+            // 
+            // cbComponent
+            // 
+            this.cbComponent.BackColor = System.Drawing.SystemColors.Window;
+            this.cbComponent.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbComponent.FormattingEnabled = true;
+            this.cbComponent.Location = new System.Drawing.Point(414, 62);
+            this.cbComponent.Name = "cbComponent";
+            this.cbComponent.Size = new System.Drawing.Size(18, 21);
+            this.cbComponent.TabIndex = 5;
+            this.cbComponent.Tag = "colComponent";
+            this.cbComponent.DropDown += new System.EventHandler(this.cbFilter_DropDown);
+            this.cbComponent.SelectedIndexChanged += new System.EventHandler(this.cbFilter_SelectedIndexChanged);
+            this.cbComponent.DropDownClosed += new System.EventHandler(this.cbFilter_DropDownClosed);
+            // 
+            // cbCategory
+            // 
+            this.cbCategory.BackColor = System.Drawing.SystemColors.Window;
+            this.cbCategory.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbCategory.FormattingEnabled = true;
+            this.cbCategory.Location = new System.Drawing.Point(313, 62);
+            this.cbCategory.Name = "cbCategory";
+            this.cbCategory.Size = new System.Drawing.Size(18, 21);
+            this.cbCategory.TabIndex = 4;
+            this.cbCategory.Tag = "colCategory";
+            this.cbCategory.DropDown += new System.EventHandler(this.cbFilter_DropDown);
+            this.cbCategory.SelectedIndexChanged += new System.EventHandler(this.cbFilter_SelectedIndexChanged);
+            this.cbCategory.DropDownClosed += new System.EventHandler(this.cbFilter_DropDownClosed);
+            // 
+            // cbRule
+            // 
+            this.cbRule.BackColor = System.Drawing.SystemColors.Window;
+            this.cbRule.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbRule.FormattingEnabled = true;
+            this.cbRule.Location = new System.Drawing.Point(213, 62);
+            this.cbRule.Name = "cbRule";
+            this.cbRule.Size = new System.Drawing.Size(18, 21);
+            this.cbRule.TabIndex = 3;
+            this.cbRule.Tag = "colRule";
+            this.cbRule.DropDown += new System.EventHandler(this.cbFilter_DropDown);
+            this.cbRule.SelectedIndexChanged += new System.EventHandler(this.cbFilter_SelectedIndexChanged);
+            this.cbRule.DropDownClosed += new System.EventHandler(this.cbFilter_DropDownClosed);
+            // 
+            // cbSeverity
+            // 
+            this.cbSeverity.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbSeverity.FormattingEnabled = true;
+            this.cbSeverity.Location = new System.Drawing.Point(63, 62);
+            this.cbSeverity.Name = "cbSeverity";
+            this.cbSeverity.Size = new System.Drawing.Size(18, 21);
+            this.cbSeverity.TabIndex = 0;
+            this.cbSeverity.Tag = "colSeverity";
+            this.cbSeverity.DropDown += new System.EventHandler(this.cbFilter_DropDown);
+            this.cbSeverity.SelectedIndexChanged += new System.EventHandler(this.cbFilter_SelectedIndexChanged);
+            this.cbSeverity.DropDownClosed += new System.EventHandler(this.cbFilter_DropDownClosed);
             // 
             // dgResults
             // 
@@ -210,10 +297,12 @@
             this.dgResults.Name = "dgResults";
             this.dgResults.ReadOnly = true;
             this.dgResults.RowHeadersVisible = false;
-            this.dgResults.Size = new System.Drawing.Size(618, 393);
+            this.dgResults.Size = new System.Drawing.Size(683, 393);
             this.dgResults.TabIndex = 1;
             this.dgResults.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgResults_CellDoubleClick);
             this.dgResults.CellEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgResults_CellEnter);
+            this.dgResults.ColumnWidthChanged += new System.Windows.Forms.DataGridViewColumnEventHandler(this.dgResults_ColumnWidthChanged);
+            this.dgResults.Scroll += new System.Windows.Forms.ScrollEventHandler(this.dgResults_Scroll);
             // 
             // colSeverity
             // 
@@ -270,7 +359,7 @@
             this.panTop.Dock = System.Windows.Forms.DockStyle.Top;
             this.panTop.Location = new System.Drawing.Point(0, 0);
             this.panTop.Name = "panTop";
-            this.panTop.Size = new System.Drawing.Size(618, 61);
+            this.panTop.Size = new System.Drawing.Size(683, 61);
             this.panTop.TabIndex = 2;
             // 
             // picDetailOpen
@@ -278,7 +367,7 @@
             this.picDetailOpen.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.picDetailOpen.Cursor = System.Windows.Forms.Cursors.Hand;
             this.picDetailOpen.Image = ((System.Drawing.Image)(resources.GetObject("picDetailOpen.Image")));
-            this.picDetailOpen.Location = new System.Drawing.Point(597, 9);
+            this.picDetailOpen.Location = new System.Drawing.Point(662, 9);
             this.picDetailOpen.Name = "picDetailOpen";
             this.picDetailOpen.Size = new System.Drawing.Size(16, 16);
             this.picDetailOpen.TabIndex = 46;
@@ -294,7 +383,7 @@
             this.panStatus.Controls.Add(this.label12);
             this.panStatus.Location = new System.Drawing.Point(317, 10);
             this.panStatus.Name = "panStatus";
-            this.panStatus.Size = new System.Drawing.Size(276, 43);
+            this.panStatus.Size = new System.Drawing.Size(341, 43);
             this.panStatus.TabIndex = 45;
             // 
             // progAnalysis
@@ -304,7 +393,7 @@
             this.progAnalysis.BackColor = System.Drawing.SystemColors.Window;
             this.progAnalysis.Location = new System.Drawing.Point(108, 16);
             this.progAnalysis.Name = "progAnalysis";
-            this.progAnalysis.Size = new System.Drawing.Size(165, 20);
+            this.progAnalysis.Size = new System.Drawing.Size(230, 20);
             this.progAnalysis.TabIndex = 39;
             // 
             // txtStatus
@@ -442,12 +531,13 @@
             // 
             // txtSnippet
             // 
+            this.txtSnippet.AutoSize = true;
             this.txtSnippet.Dock = System.Windows.Forms.DockStyle.Top;
-            this.txtSnippet.Location = new System.Drawing.Point(10, 354);
+            this.txtSnippet.Location = new System.Drawing.Point(10, 426);
             this.txtSnippet.MaximumSize = new System.Drawing.Size(280, 200);
             this.txtSnippet.Name = "txtSnippet";
             this.txtSnippet.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
-            this.txtSnippet.Size = new System.Drawing.Size(280, 18);
+            this.txtSnippet.Size = new System.Drawing.Size(47, 18);
             this.txtSnippet.TabIndex = 44;
             this.txtSnippet.Text = "-snippet-";
             // 
@@ -456,41 +546,42 @@
             this.lblSnippet.AutoSize = true;
             this.lblSnippet.Dock = System.Windows.Forms.DockStyle.Top;
             this.lblSnippet.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.lblSnippet.Location = new System.Drawing.Point(10, 336);
+            this.lblSnippet.Location = new System.Drawing.Point(10, 408);
             this.lblSnippet.Name = "lblSnippet";
             this.lblSnippet.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
             this.lblSnippet.Size = new System.Drawing.Size(43, 18);
             this.lblSnippet.TabIndex = 43;
             this.lblSnippet.Text = "Snippet";
             // 
-            // txtLine
+            // txtMember
             // 
-            this.txtLine.AutoSize = true;
-            this.txtLine.Dock = System.Windows.Forms.DockStyle.Top;
-            this.txtLine.Location = new System.Drawing.Point(10, 318);
-            this.txtLine.Name = "txtLine";
-            this.txtLine.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
-            this.txtLine.Size = new System.Drawing.Size(29, 18);
-            this.txtLine.TabIndex = 53;
-            this.txtLine.Text = "-line-";
+            this.txtMember.AutoSize = true;
+            this.txtMember.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txtMember.Location = new System.Drawing.Point(10, 390);
+            this.txtMember.MaximumSize = new System.Drawing.Size(280, 200);
+            this.txtMember.Name = "txtMember";
+            this.txtMember.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
+            this.txtMember.Size = new System.Drawing.Size(50, 18);
+            this.txtMember.TabIndex = 59;
+            this.txtMember.Text = "-member-";
             // 
-            // lblLine
+            // lblMember
             // 
-            this.lblLine.AutoSize = true;
-            this.lblLine.Dock = System.Windows.Forms.DockStyle.Top;
-            this.lblLine.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.lblLine.Location = new System.Drawing.Point(10, 300);
-            this.lblLine.Name = "lblLine";
-            this.lblLine.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
-            this.lblLine.Size = new System.Drawing.Size(27, 18);
-            this.lblLine.TabIndex = 52;
-            this.lblLine.Text = "Line";
+            this.lblMember.AutoSize = true;
+            this.lblMember.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lblMember.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.lblMember.Location = new System.Drawing.Point(10, 372);
+            this.lblMember.Name = "lblMember";
+            this.lblMember.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
+            this.lblMember.Size = new System.Drawing.Size(45, 18);
+            this.lblMember.TabIndex = 58;
+            this.lblMember.Text = "Member";
             // 
             // txtModule
             // 
             this.txtModule.AutoSize = true;
             this.txtModule.Dock = System.Windows.Forms.DockStyle.Top;
-            this.txtModule.Location = new System.Drawing.Point(10, 282);
+            this.txtModule.Location = new System.Drawing.Point(10, 354);
             this.txtModule.MaximumSize = new System.Drawing.Size(280, 0);
             this.txtModule.Name = "txtModule";
             this.txtModule.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
@@ -503,12 +594,59 @@
             this.lblModule.AutoSize = true;
             this.lblModule.Dock = System.Windows.Forms.DockStyle.Top;
             this.lblModule.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.lblModule.Location = new System.Drawing.Point(10, 264);
+            this.lblModule.Location = new System.Drawing.Point(10, 336);
             this.lblModule.Name = "lblModule";
             this.lblModule.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
             this.lblModule.Size = new System.Drawing.Size(42, 18);
             this.lblModule.TabIndex = 50;
             this.lblModule.Text = "Module";
+            // 
+            // txtType
+            // 
+            this.txtType.AutoSize = true;
+            this.txtType.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txtType.Location = new System.Drawing.Point(10, 318);
+            this.txtType.MaximumSize = new System.Drawing.Size(280, 0);
+            this.txtType.Name = "txtType";
+            this.txtType.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
+            this.txtType.Size = new System.Drawing.Size(33, 18);
+            this.txtType.TabIndex = 55;
+            this.txtType.Text = "-type-";
+            // 
+            // lblType
+            // 
+            this.lblType.AutoSize = true;
+            this.lblType.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lblType.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.lblType.Location = new System.Drawing.Point(10, 300);
+            this.lblType.Name = "lblType";
+            this.lblType.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
+            this.lblType.Size = new System.Drawing.Size(31, 18);
+            this.lblType.TabIndex = 54;
+            this.lblType.Text = "Type";
+            // 
+            // txtLine
+            // 
+            this.txtLine.AutoSize = true;
+            this.txtLine.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txtLine.Location = new System.Drawing.Point(10, 282);
+            this.txtLine.Name = "txtLine";
+            this.txtLine.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
+            this.txtLine.Size = new System.Drawing.Size(29, 18);
+            this.txtLine.TabIndex = 53;
+            this.txtLine.Text = "-line-";
+            // 
+            // lblLine
+            // 
+            this.lblLine.AutoSize = true;
+            this.lblLine.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lblLine.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.lblLine.Location = new System.Drawing.Point(10, 264);
+            this.lblLine.Name = "lblLine";
+            this.lblLine.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
+            this.lblLine.Size = new System.Drawing.Size(27, 18);
+            this.lblLine.TabIndex = 52;
+            this.lblLine.Text = "Line";
             // 
             // txtLocation
             // 
@@ -530,32 +668,33 @@
             this.lblLocation.Location = new System.Drawing.Point(10, 228);
             this.lblLocation.Name = "lblLocation";
             this.lblLocation.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
-            this.lblLocation.Size = new System.Drawing.Size(48, 18);
+            this.lblLocation.Size = new System.Drawing.Size(23, 18);
             this.lblLocation.TabIndex = 48;
-            this.lblLocation.Text = "Location";
+            this.lblLocation.Text = "File";
             // 
-            // txtType
+            // txtComponent
             // 
-            this.txtType.AutoSize = true;
-            this.txtType.Dock = System.Windows.Forms.DockStyle.Top;
-            this.txtType.Location = new System.Drawing.Point(10, 210);
-            this.txtType.Name = "txtType";
-            this.txtType.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
-            this.txtType.Size = new System.Drawing.Size(33, 18);
-            this.txtType.TabIndex = 55;
-            this.txtType.Text = "-type-";
+            this.txtComponent.AutoSize = true;
+            this.txtComponent.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txtComponent.Location = new System.Drawing.Point(10, 210);
+            this.txtComponent.MaximumSize = new System.Drawing.Size(280, 0);
+            this.txtComponent.Name = "txtComponent";
+            this.txtComponent.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
+            this.txtComponent.Size = new System.Drawing.Size(66, 18);
+            this.txtComponent.TabIndex = 61;
+            this.txtComponent.Text = "-component-";
             // 
-            // lblType
+            // lblComponent
             // 
-            this.lblType.AutoSize = true;
-            this.lblType.Dock = System.Windows.Forms.DockStyle.Top;
-            this.lblType.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.lblType.Location = new System.Drawing.Point(10, 192);
-            this.lblType.Name = "lblType";
-            this.lblType.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
-            this.lblType.Size = new System.Drawing.Size(31, 18);
-            this.lblType.TabIndex = 54;
-            this.lblType.Text = "Type";
+            this.lblComponent.AutoSize = true;
+            this.lblComponent.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lblComponent.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.lblComponent.Location = new System.Drawing.Point(10, 192);
+            this.lblComponent.Name = "lblComponent";
+            this.lblComponent.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
+            this.lblComponent.Size = new System.Drawing.Size(61, 18);
+            this.lblComponent.TabIndex = 60;
+            this.lblComponent.Text = "Component";
             // 
             // linkFix
             // 
@@ -573,11 +712,12 @@
             // 
             // txtFix
             // 
+            this.txtFix.AutoSize = true;
             this.txtFix.Dock = System.Windows.Forms.DockStyle.Top;
             this.txtFix.Location = new System.Drawing.Point(10, 161);
             this.txtFix.MaximumSize = new System.Drawing.Size(280, 200);
             this.txtFix.Name = "txtFix";
-            this.txtFix.Size = new System.Drawing.Size(280, 13);
+            this.txtFix.Size = new System.Drawing.Size(23, 13);
             this.txtFix.TabIndex = 46;
             this.txtFix.Text = "-fix-";
             // 
@@ -595,12 +735,13 @@
             // 
             // txtIssue
             // 
+            this.txtIssue.AutoSize = true;
             this.txtIssue.Dock = System.Windows.Forms.DockStyle.Top;
             this.txtIssue.Location = new System.Drawing.Point(10, 125);
             this.txtIssue.MaximumSize = new System.Drawing.Size(280, 200);
             this.txtIssue.Name = "txtIssue";
             this.txtIssue.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
-            this.txtIssue.Size = new System.Drawing.Size(280, 18);
+            this.txtIssue.Size = new System.Drawing.Size(37, 18);
             this.txtIssue.TabIndex = 42;
             this.txtIssue.Text = "-issue-";
             // 
@@ -669,7 +810,7 @@
             this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel2.Location = new System.Drawing.Point(10, 0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(284, 35);
+            this.panel2.Size = new System.Drawing.Size(317, 35);
             this.panel2.TabIndex = 38;
             // 
             // lblDetailHeader
@@ -688,7 +829,7 @@
             this.picDetailClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.picDetailClose.Cursor = System.Windows.Forms.Cursors.Hand;
             this.picDetailClose.Image = ((System.Drawing.Image)(resources.GetObject("picDetailClose.Image")));
-            this.picDetailClose.Location = new System.Drawing.Point(265, 9);
+            this.picDetailClose.Location = new System.Drawing.Point(298, 9);
             this.picDetailClose.Name = "picDetailClose";
             this.picDetailClose.Size = new System.Drawing.Size(16, 16);
             this.picDetailClose.TabIndex = 36;
@@ -702,7 +843,7 @@
             this.tabSarif.Location = new System.Drawing.Point(4, 22);
             this.tabSarif.Name = "tabSarif";
             this.tabSarif.Padding = new System.Windows.Forms.Padding(3);
-            this.tabSarif.Size = new System.Drawing.Size(926, 460);
+            this.tabSarif.Size = new System.Drawing.Size(1024, 460);
             this.tabSarif.TabIndex = 1;
             this.tabSarif.Text = "SARIF File";
             this.tabSarif.UseVisualStyleBackColor = true;
@@ -715,7 +856,7 @@
             this.txtSarif.Location = new System.Drawing.Point(3, 47);
             this.txtSarif.Name = "txtSarif";
             this.txtSarif.ReadOnly = true;
-            this.txtSarif.Size = new System.Drawing.Size(920, 410);
+            this.txtSarif.Size = new System.Drawing.Size(1018, 410);
             this.txtSarif.TabIndex = 0;
             this.txtSarif.Text = "";
             this.txtSarif.WordWrap = false;
@@ -729,14 +870,14 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(3, 3);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(920, 44);
+            this.panel1.Size = new System.Drawing.Size(1018, 44);
             this.panel1.TabIndex = 1;
             // 
             // btnOpenSarif
             // 
             this.btnOpenSarif.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnOpenSarif.BackColor = System.Drawing.SystemColors.Window;
-            this.btnOpenSarif.Location = new System.Drawing.Point(759, 10);
+            this.btnOpenSarif.Location = new System.Drawing.Point(857, 10);
             this.btnOpenSarif.Name = "btnOpenSarif";
             this.btnOpenSarif.Size = new System.Drawing.Size(75, 23);
             this.btnOpenSarif.TabIndex = 46;
@@ -752,7 +893,7 @@
             this.txtResultFile.Location = new System.Drawing.Point(98, 12);
             this.txtResultFile.Name = "txtResultFile";
             this.txtResultFile.ReadOnly = true;
-            this.txtResultFile.Size = new System.Drawing.Size(655, 20);
+            this.txtResultFile.Size = new System.Drawing.Size(753, 20);
             this.txtResultFile.TabIndex = 40;
             // 
             // label13
@@ -768,7 +909,7 @@
             // 
             this.btnSaveSarif.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnSaveSarif.BackColor = System.Drawing.SystemColors.Window;
-            this.btnSaveSarif.Location = new System.Drawing.Point(840, 10);
+            this.btnSaveSarif.Location = new System.Drawing.Point(938, 10);
             this.btnSaveSarif.Name = "btnSaveSarif";
             this.btnSaveSarif.Size = new System.Drawing.Size(75, 23);
             this.btnSaveSarif.TabIndex = 41;
@@ -798,7 +939,7 @@
             this.tabTech.Controls.Add(this.txtRunCorrId);
             this.tabTech.Location = new System.Drawing.Point(4, 22);
             this.tabTech.Name = "tabTech";
-            this.tabTech.Size = new System.Drawing.Size(926, 460);
+            this.tabTech.Size = new System.Drawing.Size(1024, 460);
             this.tabTech.TabIndex = 2;
             this.tabTech.Text = "Analysis Details";
             this.tabTech.UseVisualStyleBackColor = true;
@@ -982,7 +1123,7 @@
             this.tabFiles.Controls.Add(this.dgArtifacts);
             this.tabFiles.Location = new System.Drawing.Point(4, 22);
             this.tabFiles.Name = "tabFiles";
-            this.tabFiles.Size = new System.Drawing.Size(926, 460);
+            this.tabFiles.Size = new System.Drawing.Size(1024, 460);
             this.tabFiles.TabIndex = 3;
             this.tabFiles.Text = "Analyzed Files";
             this.tabFiles.UseVisualStyleBackColor = true;
@@ -1000,7 +1141,7 @@
             this.dgArtifacts.ReadOnly = true;
             this.dgArtifacts.RowHeadersVisible = false;
             this.dgArtifacts.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgArtifacts.Size = new System.Drawing.Size(926, 460);
+            this.dgArtifacts.Size = new System.Drawing.Size(1024, 460);
             this.dgArtifacts.TabIndex = 0;
             // 
             // tmStatus
@@ -1013,7 +1154,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Window;
-            this.ClientSize = new System.Drawing.Size(934, 486);
+            this.ClientSize = new System.Drawing.Size(1032, 486);
             this.CloseButton = false;
             this.CloseButtonVisible = false;
             this.Controls.Add(this.tabControlResults);
@@ -1129,5 +1270,14 @@
         private System.Windows.Forms.Label txtCategory;
         private System.Windows.Forms.Label lblCategory;
         private System.Windows.Forms.PictureBox picDetailOpen;
+        private System.Windows.Forms.ComboBox cbSeverity;
+        private System.Windows.Forms.ComboBox cbRule;
+        private System.Windows.Forms.ComboBox cbLocation;
+        private System.Windows.Forms.ComboBox cbComponent;
+        private System.Windows.Forms.ComboBox cbCategory;
+        private System.Windows.Forms.Label txtMember;
+        private System.Windows.Forms.Label lblMember;
+        private System.Windows.Forms.Label txtComponent;
+        private System.Windows.Forms.Label lblComponent;
     }
 }
