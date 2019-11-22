@@ -142,7 +142,7 @@ namespace Rappen.XTB.PAC.Helpers
         public string Location => (Module ?? Type ?? FilePath.ToString());
 
         #endregion Public Properties
-        
+
         #region Public Methods
 
         public static List<FlattenedSarifResult> GetFlattenedResults(Run run, List<Rule> rules)
@@ -178,6 +178,19 @@ namespace Rappen.XTB.PAC.Helpers
                     StartLine = location.PhysicalLocation?.Region?.StartLine,
                     EndLine = location.PhysicalLocation?.Region?.EndLine
                 }).ToList();
+        }
+
+        public string GetProperty(string name)
+        {
+            switch (name)
+            {
+                case "Severity": return Severity;
+                case "Rule": return RuleDescription;
+                case "Category": return Category.ToString();
+                case "Component": return Component.ToString();
+                case "Location": return Location;
+                default: throw new ArgumentOutOfRangeException("name", name, "Unknown property");
+            }
         }
 
         #endregion Public Methods

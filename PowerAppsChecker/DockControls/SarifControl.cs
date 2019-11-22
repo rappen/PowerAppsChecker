@@ -245,6 +245,7 @@ namespace Rappen.XTB.PAC.DockControls
                 row.Visible = visible;
             }
             currencyManager.ResumeBinding();
+            SetFilters();
         }
 
         private void GetResultFile(AnalysisStatus status)
@@ -440,6 +441,28 @@ namespace Rappen.XTB.PAC.DockControls
             cbCategory.Items.AddRange(flatresults.Select(r => r.Category.ToString()).Distinct().OrderBy(r => r).ToArray());
             cbComponent.Items.AddRange(flatresults.Select(r => r.Component.ToString()).Distinct().OrderBy(r => r).ToArray());
             cbLocation.Items.AddRange(flatresults.Select(r => r.Location).Distinct().OrderBy(r => r).ToArray());
+        }
+
+        private void SetFilters()
+        {
+            FilterComboBoxes().ForEach(SetFilter);
+        }
+
+        private void SetFilter(ComboBox cb)
+        {
+            if (string.IsNullOrWhiteSpace(cb.Text))
+            {
+                ResetFilter(cb);
+                cb.Items.AddRange(dgResults.Rows
+                    .Cast<DataGridViewRow>()
+                    .Where(r => r.Visible)
+                    .Select(r => r.DataBoundItem as FlattenedSarifResult)
+                    .Where(r => r != null)
+                    .Select(r => r.GetProperty(cb.Tag.ToString().Replace("col", "")))
+                    .Distinct()
+                    .OrderBy(s => s)
+                    .ToArray());
+            }
         }
 
         private void SetSarif(string sarif)
