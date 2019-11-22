@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Windows.Forms;
 
 namespace Rappen.XTB.PAC.Helpers
 {
@@ -90,6 +91,17 @@ namespace Rappen.XTB.PAC.Helpers
         {
             File = artifact.Location.Uri.ToString();
             Size = artifact.Length;
+        }
+    }
+
+    public class FilterItem
+    {
+        public string Name;
+        public int Count;
+
+        public override string ToString()
+        {
+            return $"{Name} ({Count})";
         }
     }
 

@@ -215,7 +215,7 @@
             this.cbLocation.BackColor = System.Drawing.SystemColors.Window;
             this.cbLocation.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbLocation.FormattingEnabled = true;
-            this.cbLocation.Location = new System.Drawing.Point(614, 62);
+            this.cbLocation.Location = new System.Drawing.Point(614, 47);
             this.cbLocation.Name = "cbLocation";
             this.cbLocation.Size = new System.Drawing.Size(18, 21);
             this.cbLocation.TabIndex = 6;
@@ -229,7 +229,7 @@
             this.cbComponent.BackColor = System.Drawing.SystemColors.Window;
             this.cbComponent.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbComponent.FormattingEnabled = true;
-            this.cbComponent.Location = new System.Drawing.Point(414, 62);
+            this.cbComponent.Location = new System.Drawing.Point(414, 47);
             this.cbComponent.Name = "cbComponent";
             this.cbComponent.Size = new System.Drawing.Size(18, 21);
             this.cbComponent.TabIndex = 5;
@@ -243,7 +243,7 @@
             this.cbCategory.BackColor = System.Drawing.SystemColors.Window;
             this.cbCategory.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbCategory.FormattingEnabled = true;
-            this.cbCategory.Location = new System.Drawing.Point(313, 62);
+            this.cbCategory.Location = new System.Drawing.Point(313, 47);
             this.cbCategory.Name = "cbCategory";
             this.cbCategory.Size = new System.Drawing.Size(18, 21);
             this.cbCategory.TabIndex = 4;
@@ -257,7 +257,7 @@
             this.cbRule.BackColor = System.Drawing.SystemColors.Window;
             this.cbRule.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbRule.FormattingEnabled = true;
-            this.cbRule.Location = new System.Drawing.Point(213, 62);
+            this.cbRule.Location = new System.Drawing.Point(213, 47);
             this.cbRule.Name = "cbRule";
             this.cbRule.Size = new System.Drawing.Size(18, 21);
             this.cbRule.TabIndex = 3;
@@ -270,7 +270,7 @@
             // 
             this.cbSeverity.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbSeverity.FormattingEnabled = true;
-            this.cbSeverity.Location = new System.Drawing.Point(63, 62);
+            this.cbSeverity.Location = new System.Drawing.Point(63, 47);
             this.cbSeverity.Name = "cbSeverity";
             this.cbSeverity.Size = new System.Drawing.Size(18, 21);
             this.cbSeverity.TabIndex = 0;
@@ -293,11 +293,11 @@
             this.colComponent,
             this.colLocation});
             this.dgResults.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgResults.Location = new System.Drawing.Point(0, 61);
+            this.dgResults.Location = new System.Drawing.Point(0, 46);
             this.dgResults.Name = "dgResults";
             this.dgResults.ReadOnly = true;
             this.dgResults.RowHeadersVisible = false;
-            this.dgResults.Size = new System.Drawing.Size(683, 393);
+            this.dgResults.Size = new System.Drawing.Size(683, 408);
             this.dgResults.TabIndex = 1;
             this.dgResults.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgResults_CellDoubleClick);
             this.dgResults.CellEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgResults_CellEnter);
@@ -359,7 +359,7 @@
             this.panTop.Dock = System.Windows.Forms.DockStyle.Top;
             this.panTop.Location = new System.Drawing.Point(0, 0);
             this.panTop.Name = "panTop";
-            this.panTop.Size = new System.Drawing.Size(683, 61);
+            this.panTop.Size = new System.Drawing.Size(683, 46);
             this.panTop.TabIndex = 2;
             // 
             // picDetailOpen
@@ -381,7 +381,7 @@
             this.panStatus.Controls.Add(this.progAnalysis);
             this.panStatus.Controls.Add(this.txtStatus);
             this.panStatus.Controls.Add(this.label12);
-            this.panStatus.Location = new System.Drawing.Point(317, 10);
+            this.panStatus.Location = new System.Drawing.Point(317, 2);
             this.panStatus.Name = "panStatus";
             this.panStatus.Size = new System.Drawing.Size(341, 43);
             this.panStatus.TabIndex = 45;
@@ -417,7 +417,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(268, 12);
+            this.label5.Location = new System.Drawing.Point(268, 4);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(25, 13);
             this.label5.TabIndex = 8;
@@ -427,7 +427,7 @@
             // 
             this.txtResultCountInfo.BackColor = System.Drawing.SystemColors.Window;
             this.txtResultCountInfo.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.txtResultCountInfo.Location = new System.Drawing.Point(248, 26);
+            this.txtResultCountInfo.Location = new System.Drawing.Point(248, 18);
             this.txtResultCountInfo.Name = "txtResultCountInfo";
             this.txtResultCountInfo.ReadOnly = true;
             this.txtResultCountInfo.Size = new System.Drawing.Size(63, 20);
@@ -440,7 +440,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(205, 12);
+            this.label4.Location = new System.Drawing.Point(205, 4);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(27, 13);
             this.label4.TabIndex = 6;
@@ -449,7 +449,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(134, 12);
+            this.label3.Location = new System.Drawing.Point(134, 4);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(44, 13);
             this.label3.TabIndex = 4;
@@ -458,7 +458,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(81, 12);
+            this.label2.Location = new System.Drawing.Point(81, 4);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(29, 13);
             this.label2.TabIndex = 2;
@@ -468,7 +468,7 @@
             // 
             this.txtResultCountLow.BackColor = System.Drawing.SystemColors.Window;
             this.txtResultCountLow.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.txtResultCountLow.Location = new System.Drawing.Point(186, 26);
+            this.txtResultCountLow.Location = new System.Drawing.Point(186, 18);
             this.txtResultCountLow.Name = "txtResultCountLow";
             this.txtResultCountLow.ReadOnly = true;
             this.txtResultCountLow.Size = new System.Drawing.Size(63, 20);
@@ -481,7 +481,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(14, 12);
+            this.label1.Location = new System.Drawing.Point(14, 4);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(38, 13);
             this.label1.TabIndex = 0;
@@ -491,7 +491,7 @@
             // 
             this.txtResultCountCritical.BackColor = System.Drawing.SystemColors.Window;
             this.txtResultCountCritical.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.txtResultCountCritical.Location = new System.Drawing.Point(0, 26);
+            this.txtResultCountCritical.Location = new System.Drawing.Point(0, 18);
             this.txtResultCountCritical.Name = "txtResultCountCritical";
             this.txtResultCountCritical.ReadOnly = true;
             this.txtResultCountCritical.Size = new System.Drawing.Size(63, 20);
@@ -505,7 +505,7 @@
             // 
             this.txtResultCountMedium.BackColor = System.Drawing.SystemColors.Window;
             this.txtResultCountMedium.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.txtResultCountMedium.Location = new System.Drawing.Point(124, 26);
+            this.txtResultCountMedium.Location = new System.Drawing.Point(124, 18);
             this.txtResultCountMedium.Name = "txtResultCountMedium";
             this.txtResultCountMedium.ReadOnly = true;
             this.txtResultCountMedium.Size = new System.Drawing.Size(63, 20);
@@ -519,7 +519,7 @@
             // 
             this.txtResultCountHigh.BackColor = System.Drawing.SystemColors.Window;
             this.txtResultCountHigh.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.txtResultCountHigh.Location = new System.Drawing.Point(62, 26);
+            this.txtResultCountHigh.Location = new System.Drawing.Point(62, 18);
             this.txtResultCountHigh.Name = "txtResultCountHigh";
             this.txtResultCountHigh.ReadOnly = true;
             this.txtResultCountHigh.Size = new System.Drawing.Size(63, 20);

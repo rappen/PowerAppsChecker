@@ -35,6 +35,18 @@ namespace Rappen.XTB.PAC.DockControls
 
         #endregion Public Constructors
 
+        #region Private Properties
+
+        private List<ComboBox> FilterComboBoxes
+        {
+            get
+            {
+                return splitter.Panel1.Controls.Cast<Control>().Where(c => c is ComboBox cb && cb.Tag.ToString().StartsWith("col")).Select(c => c as ComboBox).ToList();
+            }
+        }
+
+        #endregion Private Properties
+
         #region Internal Methods
 
         internal void Enable(bool enable)
@@ -204,11 +216,19 @@ namespace Rappen.XTB.PAC.DockControls
 
         private void dgResults_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
+            if (e.RowIndex < 0 || e.RowIndex >= dgResults.Rows.Count)
+            {
+                return;
+            }
             SetDetailInfo(dgResults.Rows[e.RowIndex].DataBoundItem as FlattenedSarifResult, true);
         }
 
         private void dgResults_CellEnter(object sender, DataGridViewCellEventArgs e)
         {
+            if (e.RowIndex < 0 || e.RowIndex >= dgResults.Rows.Count)
+            {
+                return;
+            }
             SetDetailInfo(dgResults.Rows[e.RowIndex].DataBoundItem as FlattenedSarifResult);
         }
 
@@ -221,12 +241,6 @@ namespace Rappen.XTB.PAC.DockControls
         {
             AlignFilters();
         }
-
-        private List<ComboBox> FilterComboBoxes()
-        {
-            return splitter.Panel1.Controls.Cast<Control>().Where(c => c is ComboBox cb && cb.Tag.ToString().StartsWith("col")).Select(c => c as ComboBox).ToList();
-        }
-
         private void FilterResults()
         {
             if (dgResults.DataSource == null)
@@ -238,9 +252,10 @@ namespace Rappen.XTB.PAC.DockControls
             foreach (var row in dgResults.Rows.Cast<DataGridViewRow>())
             {
                 var visible = true;
-                foreach (var cb in FilterComboBoxes())
+                foreach (var cb in FilterComboBoxes)
                 {
-                    visible = visible && (string.IsNullOrWhiteSpace(cb.Text) || cb.Text == row.Cells[cb.Tag.ToString()].Value.ToString());
+                    var value = (cb.SelectedItem as FilterItem)?.Name ?? cb.Text;
+                    visible = visible && (string.IsNullOrWhiteSpace(value) || value == row.Cells[cb.Tag.ToString()].Value.ToString());
                 }
                 row.Visible = visible;
             }
@@ -311,9 +326,9 @@ namespace Rappen.XTB.PAC.DockControls
             }
             var flatresults = FlattenedSarifResult.GetFlattenedResults(result.Runs[0], pac.scopeControl.Rules);
             SetCounts(flatresults);
-            SetFilters(flatresults);
             dgResults.DataSource = flatresults;
             dgResults.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
+            SetFilters();
             dgArtifacts.DataSource = result.Runs[0].Artifacts.Select(a => new Helpers.Artifact(a)).ToList();
             dgArtifacts.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
             if (result.Runs[0].Invocations.Count == 1)
@@ -347,7 +362,7 @@ namespace Rappen.XTB.PAC.DockControls
             txtStatusUrl.Text = "";
             SetStatus("", 0);
             txtResultFile.Text = "";
-            FilterComboBoxes().ForEach(ResetFilter);
+            FilterComboBoxes.ForEach(ResetFilter);
             if (dgResults.DataSource != null)
             {
                 var cols = dgResults.Columns.Cast<DataGridViewColumn>().ToArray();
@@ -433,36 +448,27 @@ namespace Rappen.XTB.PAC.DockControls
             splitter.Panel2.ResumeLayout();
         }
 
-        private void SetFilters(List<FlattenedSarifResult> flatresults)
-        {
-            FilterComboBoxes().ForEach(ResetFilter);
-            cbSeverity.Items.AddRange(flatresults.Select(r => r.Severity).Distinct().OrderBy(s => s).ToArray());
-            cbRule.Items.AddRange(flatresults.Select(r => r.RuleDescription).Distinct().OrderBy(r => r).ToArray());
-            cbCategory.Items.AddRange(flatresults.Select(r => r.Category.ToString()).Distinct().OrderBy(r => r).ToArray());
-            cbComponent.Items.AddRange(flatresults.Select(r => r.Component.ToString()).Distinct().OrderBy(r => r).ToArray());
-            cbLocation.Items.AddRange(flatresults.Select(r => r.Location).Distinct().OrderBy(r => r).ToArray());
-        }
-
-        private void SetFilters()
-        {
-            FilterComboBoxes().ForEach(SetFilter);
-        }
-
         private void SetFilter(ComboBox cb)
         {
             if (string.IsNullOrWhiteSpace(cb.Text))
             {
                 ResetFilter(cb);
+                var propname = cb.Tag.ToString().Replace("col", "");
                 cb.Items.AddRange(dgResults.Rows
                     .Cast<DataGridViewRow>()
                     .Where(r => r.Visible)
                     .Select(r => r.DataBoundItem as FlattenedSarifResult)
                     .Where(r => r != null)
-                    .Select(r => r.GetProperty(cb.Tag.ToString().Replace("col", "")))
-                    .Distinct()
-                    .OrderBy(s => s)
+                    .GroupBy(r => r.GetProperty(propname))
+                    .Select(g => new FilterItem { Name = g.Key, Count = g.Count() })
+                    .OrderBy(i => i.Name)
                     .ToArray());
             }
+        }
+
+        private void SetFilters()
+        {
+            FilterComboBoxes.ForEach(SetFilter);
         }
 
         private void SetSarif(string sarif)
