@@ -140,27 +140,21 @@ namespace Rappen.XTB.PAC.DockControls
 
         private void cbFilter_DropDown(object sender, EventArgs e)
         {
-            if (!(sender is ComboBox cb) || !(cb.Tag is string colname) || !(dgResults.Columns[colname] is DataGridViewColumn col))
+            if (!(sender is ComboBox cb))
             {
                 return;
             }
-            var x = cb.Location.X;
-            var w = cb.Size.Width;
-            var colw = col.Width;
-            cb.Left = x - colw + w;
-            cb.Width = colw;
+            SetFilterExpandedWidth(cb);
         }
 
         private void cbFilter_DropDownClosed(object sender, EventArgs e)
         {
-            if (!(sender is ComboBox cb) || !string.IsNullOrWhiteSpace(cb.Text) || !(cb.Tag is string colname) || !(dgResults.Columns[colname] is DataGridViewColumn col))
+            if (!(sender is ComboBox cb))
             {
                 return;
             }
-            var x = cb.Location.X;
-            var colw = col.Width;
-            cb.Left = x + colw - 19;
-            cb.Width = 19;
+            SetFilterCollapsedWidth(cb);
+            dgResults.Focus();
         }
 
         private void cbFilter_SelectedIndexChanged(object sender, EventArgs e)
@@ -188,6 +182,7 @@ namespace Rappen.XTB.PAC.DockControls
                 {
                     if (args.Error != null)
                     {
+                        panAnalyzing.Visible = false;
                         MessageBox.Show(args.Error.Message);
                     }
                     else if (args.Result is AnalysisStatus status)
@@ -196,6 +191,7 @@ namespace Rappen.XTB.PAC.DockControls
                         SetStatus(status.Status, status.Progress);
                         if (status.Progress >= 100)
                         {
+                            panAnalyzing.Visible = false;
                             SetCounts(status);
                             if (status.ResultFileUris != null && status.ResultFileUris.Length > 0)
                             {
@@ -241,6 +237,7 @@ namespace Rappen.XTB.PAC.DockControls
         {
             AlignFilters();
         }
+
         private void FilterResults()
         {
             if (dgResults.DataSource == null)
@@ -368,6 +365,8 @@ namespace Rappen.XTB.PAC.DockControls
                 var cols = dgResults.Columns.Cast<DataGridViewColumn>().ToArray();
                 dgResults.DataSource = null;
                 dgResults.Columns.AddRange(cols);
+                var i = 0;
+                dgResults.Columns.Cast<DataGridViewColumn>().ToList().ForEach(c => c.DisplayIndex = i++);
             }
             panTop.Controls
                 .Cast<Control>()
@@ -382,6 +381,7 @@ namespace Rappen.XTB.PAC.DockControls
         {
             cb.Items.Clear();
             cb.Items.Add("");
+            SetFilterCollapsedWidth(cb);
         }
 
         private void SaveSarifToFile(string filename)
@@ -464,6 +464,30 @@ namespace Rappen.XTB.PAC.DockControls
                     .OrderBy(i => i.Name)
                     .ToArray());
             }
+        }
+
+        private void SetFilterCollapsedWidth(ComboBox cb)
+        {
+            if (!string.IsNullOrWhiteSpace(cb.Text) || !(cb.Tag is string colname) || !(dgResults.Columns[colname] is DataGridViewColumn col))
+            {
+                return;
+            }
+            var colx = dgResults.Columns.Cast<DataGridViewColumn>().Where(c => c.DisplayIndex <= col.DisplayIndex).Sum(c => c.Width);
+            cb.Left = colx - 18;
+            cb.Width = 19;
+        }
+
+        private void SetFilterExpandedWidth(ComboBox cb)
+        {
+            if (!(cb.Tag is string colname) || !(dgResults.Columns[colname] is DataGridViewColumn col))
+            {
+                return;
+            }
+            var x = cb.Location.X;
+            var w = cb.Size.Width;
+            var colw = col.Width;
+            cb.Left = x - colw + w;
+            cb.Width = colw;
         }
 
         private void SetFilters()

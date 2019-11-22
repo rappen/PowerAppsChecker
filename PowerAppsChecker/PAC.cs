@@ -279,6 +279,7 @@ namespace Rappen.XTB.PAC
                 return;
             }
             Enable(false);
+            sarifControl.panAnalyzing.Visible = true;
             WorkAsync(new WorkAsyncInfo
             {
                 Message = $"Sending {analysisargs.SolutionNames} for analysis",
@@ -300,6 +301,7 @@ namespace Rappen.XTB.PAC
                     {
                         if (response.StatusCode != System.Net.HttpStatusCode.Accepted)
                         {
+                            sarifControl.panAnalyzing.Visible = false;
                             LogError("SendAnalysis:\r\n{0}", response);
                             MessageBox.Show($"Status: {response.StatusCode}\r\n{response.ReasonPhrase}\r\nSee XrmToolBox log for details.", "Send for Analysis", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }

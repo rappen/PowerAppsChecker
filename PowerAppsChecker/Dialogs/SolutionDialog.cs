@@ -37,9 +37,9 @@ namespace Rappen.XTB.PAC.Dialogs
             solutions = new List<Solution>();
             if (ShowDialog(pac) == DialogResult.OK)
             {
-                return SelectSolutions();
+                SelectSolutions();
             }
-            return null;
+            return solutions;
         }
 
         #endregion Public Methods
@@ -170,10 +170,9 @@ namespace Rappen.XTB.PAC.Dialogs
             CheckInputs();
         }
 
-        private List<Solution> SelectSolutions()
+        private void SelectSolutions()
         {
             AddSelectedSolution();
-            return solutions;
         }
 
         #endregion Private Methods

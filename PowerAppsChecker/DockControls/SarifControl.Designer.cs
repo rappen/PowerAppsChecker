@@ -1,4 +1,6 @@
-﻿namespace Rappen.XTB.PAC.DockControls
+﻿using System.Drawing;
+
+namespace Rappen.XTB.PAC.DockControls
 {
     partial class SarifControl
     {
@@ -33,6 +35,10 @@
             this.tabControlResults = new System.Windows.Forms.TabControl();
             this.tabResults = new System.Windows.Forms.TabPage();
             this.splitter = new System.Windows.Forms.SplitContainer();
+            this.panAnalyzing = new System.Windows.Forms.Panel();
+            this.panAnalyzing2 = new System.Windows.Forms.Panel();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.label6 = new System.Windows.Forms.Label();
             this.cbLocation = new System.Windows.Forms.ComboBox();
             this.cbComponent = new System.Windows.Forms.ComboBox();
             this.cbCategory = new System.Windows.Forms.ComboBox();
@@ -121,6 +127,9 @@
             this.splitter.Panel1.SuspendLayout();
             this.splitter.Panel2.SuspendLayout();
             this.splitter.SuspendLayout();
+            this.panAnalyzing.SuspendLayout();
+            this.panAnalyzing2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgResults)).BeginInit();
             this.panTop.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picDetailOpen)).BeginInit();
@@ -167,6 +176,7 @@
             // 
             // splitter.Panel1
             // 
+            this.splitter.Panel1.Controls.Add(this.panAnalyzing);
             this.splitter.Panel1.Controls.Add(this.cbLocation);
             this.splitter.Panel1.Controls.Add(this.cbComponent);
             this.splitter.Panel1.Controls.Add(this.cbCategory);
@@ -209,6 +219,56 @@
             this.splitter.SplitterDistance = 683;
             this.splitter.SplitterWidth = 8;
             this.splitter.TabIndex = 3;
+            // 
+            // panAnalyzing
+            // 
+            this.panAnalyzing.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.panAnalyzing.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(66)))), ((int)(((byte)(173)))));
+            this.panAnalyzing.Controls.Add(this.panAnalyzing2);
+            this.panAnalyzing.Location = new System.Drawing.Point(49, 110);
+            this.panAnalyzing.Name = "panAnalyzing";
+            this.panAnalyzing.Size = new System.Drawing.Size(580, 300);
+            this.panAnalyzing.TabIndex = 8;
+            this.panAnalyzing.Visible = false;
+            // 
+            // panAnalyzing2
+            // 
+            this.panAnalyzing2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.panAnalyzing2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(116)))), ((int)(((byte)(39)))), ((int)(((byte)(117)))));
+            this.panAnalyzing2.Controls.Add(this.pictureBox1);
+            this.panAnalyzing2.Controls.Add(this.label6);
+            this.panAnalyzing2.Location = new System.Drawing.Point(10, 10);
+            this.panAnalyzing2.Name = "panAnalyzing2";
+            this.panAnalyzing2.Size = new System.Drawing.Size(560, 280);
+            this.panAnalyzing2.TabIndex = 7;
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.pictureBox1.BackColor = System.Drawing.Color.Purple;
+            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
+            this.pictureBox1.Location = new System.Drawing.Point(186, 49);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(180, 100);
+            this.pictureBox1.TabIndex = 1;
+            this.pictureBox1.TabStop = false;
+            // 
+            // label6
+            // 
+            this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label6.ForeColor = System.Drawing.Color.Yellow;
+            this.label6.Location = new System.Drawing.Point(0, 208);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(560, 59);
+            this.label6.TabIndex = 0;
+            this.label6.Text = "Power Apps Checker is analyzing...";
+            this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // cbLocation
             // 
@@ -1171,6 +1231,9 @@
             this.splitter.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitter)).EndInit();
             this.splitter.ResumeLayout(false);
+            this.panAnalyzing.ResumeLayout(false);
+            this.panAnalyzing2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgResults)).EndInit();
             this.panTop.ResumeLayout(false);
             this.panTop.PerformLayout();
@@ -1279,5 +1342,9 @@
         private System.Windows.Forms.Label lblMember;
         private System.Windows.Forms.Label txtComponent;
         private System.Windows.Forms.Label lblComponent;
+        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Panel panAnalyzing2;
+        internal System.Windows.Forms.Panel panAnalyzing;
     }
 }
