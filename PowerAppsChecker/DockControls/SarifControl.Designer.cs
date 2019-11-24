@@ -1221,6 +1221,7 @@ namespace Rappen.XTB.PAC.DockControls
             this.Controls.Add(this.tabControlResults);
             this.DockAreas = ((WeifenLuo.WinFormsUI.Docking.DockAreas)((WeifenLuo.WinFormsUI.Docking.DockAreas.Float | WeifenLuo.WinFormsUI.Docking.DockAreas.Document)));
             this.HideOnClose = true;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimizeBox = false;
             this.Name = "SarifControl";
             this.TabText = "SARIF analyzer";

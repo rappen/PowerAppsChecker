@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Power Apps Checker for XrmToolBox")]
+[assembly: AssemblyTitle("Power Apps Checker")]
 [assembly: AssemblyDescription("Check your Power Apps solutions, Canvas Apps and Power Automate flows before they hit the build pipeline!")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Jonas Rapp, Sweden")]

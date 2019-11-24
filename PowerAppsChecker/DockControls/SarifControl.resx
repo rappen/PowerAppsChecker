@@ -117,6 +117,21 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <metadata name="colSeverity.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="colRule.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="colCategory.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="colComponent.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="colLocation.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="pictureBox1.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -3395,4 +3410,23 @@
   <metadata name="tmStatus.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>117, 17</value>
   </metadata>
+  <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        AAABAAEAEBAAAAEAGABoAwAAFgAAACgAAAAQAAAAIAAAAAEAGAAAAAAAAAAAACABAAAgAQAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAADJ1cr09vQAAAAAAAAAAAAAAAD8/f3Bz8IAAAAAAAAAAAAAAAAAAAAAAAD+//69
+        371UgleEtobv9/AAAAAAAAAAAADs8e1Md0+q1av8/vwAAAAAAAD5+vmxxrKQyZHJ5MkAAADz+fOXzJml
+        y6bU3tQAAAAAAAAAAADa7dqPyJCrx6zv8+/n7OdKeU38/fwAAAAAAAAAAAAAAACovqmGpogAAAAAAAAA
+        AAAAAAD+//5ijWXN2c4AAACbz54AAAAAAAD8/fwAAAAAAADi8uO83r0AAAAAAAD8/fwAAAAAAACg0qH6
+        /foAAACbz54AAAAAAADk6eQAAAAAAADi8uO83r0AAAAAAADj6OQAAAAAAACg0qH6/fr3+Pd3p3oAAAAA
+        AAAAAAAAAAAAAADL3MylxKcAAAAAAAAAAAAAAAAAAACGsYjn7efp7uptjW/+//4AAAAAAAAAAADR6dF4
+        qXpunXHA4MEAAAAAAAD9/v2w2bFmkWjS3NMAAAAAAAAAAAAAAACUrJaJvovR6dEAAAAAAADh8OGMxI56
+        mnySypTu9+4AAAAAAAAAAAAAAAAAAAAAAAB3o3rm6+YAAAAAAAAAAAAAAAD2+PaUq5X9/v0AAAAAAAAA
+        AAAAAAAAAAAAAAAAAACe0KEAAAAAAAD6+/rw8vAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AACe0KEAAAAAAAD9/f34+fgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABplWzc5NwAAAAA
+        AAAAAAAAAADx9PF2lXj8/fwAAAAAAAAAAAAAAAAAAAAAAAAAAACvwbCUxZa43bn+//4AAADJ5cqQx5Gh
+        t6P+/v4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADN5856q3xyoHS83rwAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAADZ4drH1MgAAAAAAAAAAAAAAAAAAAAAAAAAAADzzwAAwcMAAAhw
+        AAAeeAAAtmwAALZsAAA+fAAAHDAAAPGDAADzxwAA9n8AAPZ/AADzxwAA8IcAAPw/AAD+fwAA
+</value>
+  </data>
 </root>

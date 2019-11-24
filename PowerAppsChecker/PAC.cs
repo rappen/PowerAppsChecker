@@ -16,7 +16,7 @@ using XrmToolBox.Extensibility.Interfaces;
 
 namespace Rappen.XTB.PAC
 {
-    public partial class PAC : PluginControlBase, IGitHubPlugin, IPayPalPlugin, IAboutPlugin
+    public partial class PAC : PluginControlBase, IGitHubPlugin, IPayPalPlugin, IHelpPlugin, IAboutPlugin
     {
 
         #region Internal Fields
@@ -102,6 +102,8 @@ namespace Rappen.XTB.PAC
                 return path;
             }
         }
+
+        public string HelpUrl => "https://powerappschecker.com/";
 
         #endregion Internal Properties
 

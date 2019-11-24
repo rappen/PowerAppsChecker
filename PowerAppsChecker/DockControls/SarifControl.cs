@@ -100,6 +100,7 @@ namespace Rappen.XTB.PAC.DockControls
             using (var od = new OpenFileDialog
             {
                 CheckPathExists = true,
+                InitialDirectory = !string.IsNullOrWhiteSpace(txtResultFile.Text) ? Path.GetDirectoryName(txtResultFile.Text) : "",
                 DefaultExt = "sarif",
                 Filter = "SARIF files|*.sarif|All files|*.*",
                 Title = "Open SARIF result file"
@@ -109,6 +110,7 @@ namespace Rappen.XTB.PAC.DockControls
                 {
                     pac.ai.WriteEvent("OpenSarifFile");
                     Reset();
+                    txtResultFile.Text = od.FileName;
                     var sarif = File.ReadAllText(od.FileName);
                     txtSarif.Text = sarif;
                     ParseSarifLog(PACHelper.GetSarifFromString(sarif));
@@ -132,6 +134,7 @@ namespace Rappen.XTB.PAC.DockControls
                 if (sd.ShowDialog() == DialogResult.OK)
                 {
                     pac.ai.WriteEvent("SaveSarifFile");
+                    txtResultFile.Text = sd.FileName;
                     SaveSarifToFile(sd.FileName);
                     MessageBox.Show($"{sd.FileName} saved!");
                 }
