@@ -191,7 +191,7 @@
             // rbLocal
             // 
             this.rbLocal.AutoSize = true;
-            this.rbLocal.Location = new System.Drawing.Point(211, 12);
+            this.rbLocal.Location = new System.Drawing.Point(240, 12);
             this.rbLocal.Name = "rbLocal";
             this.rbLocal.Size = new System.Drawing.Size(70, 17);
             this.rbLocal.TabIndex = 18;
@@ -205,10 +205,10 @@
             this.rbOrg.Checked = true;
             this.rbOrg.Location = new System.Drawing.Point(105, 12);
             this.rbOrg.Name = "rbOrg";
-            this.rbOrg.Size = new System.Drawing.Size(98, 17);
+            this.rbOrg.Size = new System.Drawing.Size(119, 17);
             this.rbOrg.TabIndex = 17;
             this.rbOrg.TabStop = true;
-            this.rbOrg.Text = "CDS/Dynamics";
+            this.rbOrg.Text = "CDS/Dynamics 365";
             this.rbOrg.UseVisualStyleBackColor = true;
             this.rbOrg.CheckedChanged += new System.EventHandler(this.rbSource_CheckedChanged);
             // 

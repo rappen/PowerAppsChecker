@@ -35,6 +35,7 @@ namespace Rappen.XTB.PAC.Dialogs
         public List<Solution> GetSolutions()
         {
             solutions = new List<Solution>();
+            CheckInputs();
             if (ShowDialog(pac) == DialogResult.OK)
             {
                 SelectSolutions();
