@@ -10,7 +10,7 @@
     <iconUrl>https://github.com/rappen/PowerAppsChecker/raw/master/docs/images/PAC-medium.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>
-      Run the Power Apps Checker on your solutions, select a ruleset of specify rule by rule which to validate.      
+      Run the Power Apps Checker for XrmToolBox on your solutions, Canvas Apps and Power Automate flows, select a ruleset of specify rule by rule which to validate.
     </description>
     <summary>Check your Power Apps solutions, Canvas Apps and Power Automate flows before they hit the build pipeline!</summary>
     <releaseNotes>
