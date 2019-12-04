@@ -37,14 +37,13 @@ namespace Rappen.XTB.PAC.Helpers
 
         public static HttpClient GetClient(string region, Guid tenantId, Guid clientId, string clientSec)
         {
-            var resource = string.Format(serviceUrl, region);
             var client = new HttpClient();
             var values = new Dictionary<string, string>
             {
                 { "grant_type", "client_credentials"},
                 { "client_id", clientId.ToString() },
                 { "client_secret", clientSec},
-                { "resource", resource}
+                { "resource", string.Format(serviceUrl, "")}
             };
             var body = new FormUrlEncodedContent(values);
             var authUrl = $"https://login.microsoftonline.com/{tenantId}/oauth2/token";
@@ -66,9 +65,8 @@ namespace Rappen.XTB.PAC.Helpers
 
         public static HttpClient GetClient(string region, Guid clientId)
         {
-            var resource = string.Format(serviceUrl, region);
             // Dummy endpoint just to get unauthorized response
-            var query = $"{resource}/api/status/4799049A-E623-4B2A-818A-3A674E106DE5";
+            var query = $"{string.Format(serviceUrl, region)}/api/status/4799049A-E623-4B2A-818A-3A674E106DE5";
             var client = new HttpClient();
             var request = new HttpRequestMessage(HttpMethod.Get, new Uri(query));
 
@@ -80,7 +78,7 @@ namespace Rappen.XTB.PAC.Helpers
                     var authParams = AuthenticationParameters.CreateFromUnauthorizedResponseAsync(response).GetAwaiter().GetResult();
                     var authContext = new AuthenticationContext(authParams.Authority);
                     var authResult = authContext.AcquireTokenAsync(
-                        resource,
+                        string.Format(serviceUrl, ""),
                         clientId.ToString(),
                         new Uri(redirectUrl),
                         new PlatformParameters(PromptBehavior.Auto)).GetAwaiter().GetResult();
