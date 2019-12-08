@@ -526,6 +526,10 @@ namespace Rappen.XTB.PAC.DockControls
 
         private void txtResultCountInfo_Click(object sender, EventArgs e)
         {
+            if (dgResults.DataSource == null)
+            {
+                return;
+            }
             if (sender is TextBox textbox && textbox.Tag is string tagstr)
             {
                 if (filterSeverity == textbox)
