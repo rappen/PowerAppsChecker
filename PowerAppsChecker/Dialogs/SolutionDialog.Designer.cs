@@ -43,10 +43,15 @@
             this.rbLocal = new System.Windows.Forms.RadioButton();
             this.rbOrg = new System.Windows.Forms.RadioButton();
             this.btnAddSolution = new System.Windows.Forms.Button();
+            this.rbSasUri = new System.Windows.Forms.RadioButton();
+            this.panSasUri = new System.Windows.Forms.Panel();
+            this.label2 = new System.Windows.Forms.Label();
+            this.txtSasUri = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.panLocal.SuspendLayout();
             this.panOrgSolution.SuspendLayout();
             this.panSource.SuspendLayout();
+            this.panSasUri.SuspendLayout();
             this.SuspendLayout();
             // 
             // cbSolution
@@ -111,7 +116,7 @@
             // 
             this.btnCancel.BackColor = System.Drawing.SystemColors.Window;
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(12, 148);
+            this.btnCancel.Location = new System.Drawing.Point(15, 138);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(135, 33);
             this.btnCancel.TabIndex = 35;
@@ -124,7 +129,7 @@
             this.btnOK.BackColor = System.Drawing.SystemColors.Window;
             this.btnOK.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.btnOK.Enabled = false;
-            this.btnOK.Location = new System.Drawing.Point(397, 148);
+            this.btnOK.Location = new System.Drawing.Point(400, 138);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(135, 33);
             this.btnOK.TabIndex = 34;
@@ -135,13 +140,14 @@
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.panSasUri);
             this.groupBox1.Controls.Add(this.panLocal);
             this.groupBox1.Controls.Add(this.panOrgSolution);
             this.groupBox1.Controls.Add(this.panSource);
             this.groupBox1.Controls.Add(this.btnAddSolution);
             this.groupBox1.Location = new System.Drawing.Point(12, 21);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(523, 93);
+            this.groupBox1.Size = new System.Drawing.Size(523, 94);
             this.groupBox1.TabIndex = 36;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Solution";
@@ -170,6 +176,7 @@
             // 
             // panSource
             // 
+            this.panSource.Controls.Add(this.rbSasUri);
             this.panSource.Controls.Add(this.label1);
             this.panSource.Controls.Add(this.rbLocal);
             this.panSource.Controls.Add(this.rbOrg);
@@ -226,6 +233,49 @@
             this.btnAddSolution.Visible = false;
             this.btnAddSolution.Click += new System.EventHandler(this.btnAddSolution_Click);
             // 
+            // rbSasUri
+            // 
+            this.rbSasUri.AutoSize = true;
+            this.rbSasUri.Location = new System.Drawing.Point(327, 12);
+            this.rbSasUri.Name = "rbSasUri";
+            this.rbSasUri.Size = new System.Drawing.Size(62, 17);
+            this.rbSasUri.TabIndex = 19;
+            this.rbSasUri.TabStop = true;
+            this.rbSasUri.Text = "SAS Uri";
+            this.rbSasUri.UseVisualStyleBackColor = true;
+            this.rbSasUri.CheckedChanged += new System.EventHandler(this.rbSource_CheckedChanged);
+            // 
+            // panSasUri
+            // 
+            this.panSasUri.Controls.Add(this.label2);
+            this.panSasUri.Controls.Add(this.txtSasUri);
+            this.panSasUri.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panSasUri.Location = new System.Drawing.Point(3, 102);
+            this.panSasUri.Name = "panSasUri";
+            this.panSasUri.Size = new System.Drawing.Size(517, 26);
+            this.panSasUri.TabIndex = 36;
+            this.panSasUri.Visible = false;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(22, 6);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(20, 13);
+            this.label2.TabIndex = 31;
+            this.label2.Text = "Uri";
+            // 
+            // txtSasUri
+            // 
+            this.txtSasUri.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtSasUri.BackColor = System.Drawing.SystemColors.Window;
+            this.txtSasUri.Location = new System.Drawing.Point(105, 3);
+            this.txtSasUri.Name = "txtSasUri";
+            this.txtSasUri.Size = new System.Drawing.Size(392, 20);
+            this.txtSasUri.TabIndex = 25;
+            this.txtSasUri.TextChanged += new System.EventHandler(this.inputs_Changed);
+            // 
             // SolutionDialog
             // 
             this.AcceptButton = this.btnOK;
@@ -233,7 +283,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Window;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(552, 204);
+            this.ClientSize = new System.Drawing.Size(552, 190);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOK);
@@ -249,6 +299,8 @@
             this.panOrgSolution.PerformLayout();
             this.panSource.ResumeLayout(false);
             this.panSource.PerformLayout();
+            this.panSasUri.ResumeLayout(false);
+            this.panSasUri.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -270,5 +322,9 @@
         private System.Windows.Forms.Panel panLocal;
         private System.Windows.Forms.Panel panOrgSolution;
         private System.Windows.Forms.Button btnAddSolution;
+        private System.Windows.Forms.Panel panSasUri;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox txtSasUri;
+        private System.Windows.Forms.RadioButton rbSasUri;
     }
 }

@@ -18,6 +18,7 @@ namespace Rappen.XTB.PAC
         public string Language { get; set; } = "Default";
         public string SolutionName { get; set; }
         public string SolutionFile { get; set; }
+        public string SolutionUri { get; set; }
         public Guid CorrelationId { get; set; }
         public string UploadedFile { get; set; }
         public string FileExclusions { get; set; }

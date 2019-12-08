@@ -103,12 +103,14 @@ namespace Rappen.XTB.PAC.Dialogs
                 }
             }
             txtFilename.Text = settings.SolutionFile;
+            txtSasUri.Text = settings.SolutionUri;
         }
 
         internal void SettingsGetFromUI(Settings settings)
         {
             settings.SolutionName = cbSolution.SelectedEntity != null ? cbSolution.SelectedEntity["uniquename"].ToString() : null;
             settings.SolutionFile = txtFilename.Text;
+            settings.SolutionUri = txtSasUri.Text;
         }
 
         #endregion Internal Methods
@@ -121,7 +123,8 @@ namespace Rappen.XTB.PAC.Dialogs
             {
                 UniqueName = rbOrg.Checked ? cbSolution.SelectedEntity["uniquename"].ToString() : null,
                 Version = rbOrg.Checked ? new Version(cbSolution.SelectedEntity["version"].ToString()) : null,
-                LocalFilePath = rbLocal.Checked ? txtFilename.Text : null
+                LocalFilePath = rbLocal.Checked ? txtFilename.Text : null,
+                UploadUrl = rbSasUri.Checked ? new Uri(txtSasUri.Text) : null
             });
         }
 
@@ -150,13 +153,14 @@ namespace Rappen.XTB.PAC.Dialogs
         private void CheckInputs()
         {
             rbOrg.Enabled = pac.Service != null;
-            if (!rbOrg.Enabled)
+            if (!rbOrg.Enabled && rbOrg.Checked)
             {
                 rbLocal.Checked = true;
             }
             btnOK.Enabled =
                 (rbOrg.Checked && cbSolution.SelectedEntity != null) ||
-                (rbLocal.Checked && File.Exists(txtFilename.Text));
+                (rbLocal.Checked && File.Exists(txtFilename.Text)) ||
+                (rbSasUri.Checked && !string.IsNullOrWhiteSpace(txtSasUri.Text));
         }
 
         private void inputs_Changed(object sender, EventArgs e)
@@ -168,6 +172,7 @@ namespace Rappen.XTB.PAC.Dialogs
         {
             panOrgSolution.Visible = rbOrg.Checked;
             panLocal.Visible = rbLocal.Checked;
+            panSasUri.Visible = rbSasUri.Checked;
             CheckInputs();
         }
 
