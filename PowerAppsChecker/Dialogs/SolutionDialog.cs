@@ -72,7 +72,7 @@ namespace Rappen.XTB.PAC.Dialogs
                 {
                     if (args.Error != null)
                     {
-                        MessageBox.Show(args.Error.Message);
+                        pac.ShowError(args.Error);
                     }
                     else if (args.Result is EntityCollection solutions)
                     {

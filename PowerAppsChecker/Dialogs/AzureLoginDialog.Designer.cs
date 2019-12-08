@@ -45,11 +45,12 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.picClient = new System.Windows.Forms.PictureBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
             this.picRegion = new System.Windows.Forms.PictureBox();
             this.cbRegion = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
             this.btnCancel = new System.Windows.Forms.Button();
+            this.label6 = new System.Windows.Forms.Label();
+            this.txtRegionUrl = new System.Windows.Forms.TextBox();
             this.panClientSecret.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picSecret)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picTenant)).BeginInit();
@@ -225,7 +226,8 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.textBox1);
+            this.groupBox2.Controls.Add(this.txtRegionUrl);
+            this.groupBox2.Controls.Add(this.label6);
             this.groupBox2.Controls.Add(this.picRegion);
             this.groupBox2.Controls.Add(this.cbRegion);
             this.groupBox2.Controls.Add(this.label5);
@@ -235,20 +237,6 @@
             this.groupBox2.TabIndex = 4;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Power Apps Checker Service";
-            // 
-            // textBox1
-            // 
-            this.textBox1.BackColor = System.Drawing.SystemColors.Window;
-            this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox1.Location = new System.Drawing.Point(108, 50);
-            this.textBox1.Multiline = true;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(255, 34);
-            this.textBox1.TabIndex = 29;
-            this.textBox1.Text = "Geography must match the geo for the client entered above. If uncertain, chose De" +
-    "fault.";
             // 
             // picRegion
             // 
@@ -277,7 +265,9 @@
             "India",
             "Canada",
             "South America",
-            "United Kingdom"});
+            "United Kingdom",
+            "France",
+            "[Custom]"});
             this.cbRegion.Location = new System.Drawing.Point(108, 26);
             this.cbRegion.Name = "cbRegion";
             this.cbRegion.Size = new System.Drawing.Size(255, 21);
@@ -303,6 +293,23 @@
             this.btnCancel.TabIndex = 6;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = false;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(25, 56);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(20, 13);
+            this.label6.TabIndex = 0;
+            this.label6.Text = "Url";
+            // 
+            // txtRegionUrl
+            // 
+            this.txtRegionUrl.Enabled = false;
+            this.txtRegionUrl.Location = new System.Drawing.Point(108, 53);
+            this.txtRegionUrl.Name = "txtRegionUrl";
+            this.txtRegionUrl.Size = new System.Drawing.Size(255, 20);
+            this.txtRegionUrl.TabIndex = 1;
             // 
             // AzureLoginDialog
             // 
@@ -356,7 +363,8 @@
         private System.Windows.Forms.PictureBox picSecret;
         private System.Windows.Forms.PictureBox picClient;
         private System.Windows.Forms.PictureBox picTenant;
-        private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Button btnCancel;
+        private System.Windows.Forms.TextBox txtRegionUrl;
+        private System.Windows.Forms.Label label6;
     }
 }

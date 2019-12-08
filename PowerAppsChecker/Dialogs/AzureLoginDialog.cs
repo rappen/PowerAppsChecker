@@ -11,6 +11,7 @@ namespace Rappen.XTB.PAC.Dialogs
     {
         #region Private Fields
 
+        private const string serviceUrl = "https://{0}api.advisor.powerapps.com";
         private readonly PAC pac;
         private Guid clientforsecret;
         private Guid clientforuser;
@@ -52,6 +53,7 @@ namespace Rappen.XTB.PAC.Dialogs
             if (!settings.TenantId.Equals(Guid.Empty)) txtTenantId.Text = settings.TenantId.ToString();
             if (!string.IsNullOrEmpty(settings.ClientSecret)) txtClientSec.Text = settings.ClientSecret;
             if (!string.IsNullOrEmpty(settings.Region)) cbRegion.SelectedIndex = cbRegion.Items.IndexOf(settings.Region);
+            txtRegionUrl.Text = settings.ServiceUrl;
             CheckInputs();
         }
 
@@ -66,6 +68,7 @@ namespace Rappen.XTB.PAC.Dialogs
             settings.ClientIdForSecret = clientforsecret;
             settings.ClientSecret = txtClientSec.Text;
             settings.Region = cbRegion.Text;
+            settings.ServiceUrl = txtRegionUrl.Text;
         }
 
         #endregion Internal Methods
@@ -75,10 +78,12 @@ namespace Rappen.XTB.PAC.Dialogs
         private void cbRegion_SelectedIndexChanged(object sender, EventArgs e)
         {
             CheckInputs();
+            txtRegionUrl.Enabled = cbRegion.Text == "[Custom]";
         }
 
         private void CheckInputs()
         {
+            txtRegionUrl.Text = GetServiceUrl();
             btnConnectPAC.Enabled =
                 Guid.TryParse(txtClientId.Text, out var clientId) &&
                 cbRegion.SelectedItem != null &&
@@ -93,47 +98,58 @@ namespace Rappen.XTB.PAC.Dialogs
             }
             if (!Guid.TryParse(txtClientId.Text, out var clientId))
             {
-                MessageBox.Show("Bad Client Guid");
+                pac.ShowError("Bad Client Guid");
                 return null;
             }
             if (cbRegion.SelectedItem == null)
             {
-                MessageBox.Show("Select Region");
+                pac.ShowError("Select Region");
                 return null;
             }
-            var region = cbRegion.Text == "Default" ? "" : cbRegion.Text.Replace(" ", "").ToLowerInvariant() + ".";
+            string url = GetServiceUrl();
             try
             {
                 if (rbSecret.Checked)
                 {
                     if (!Guid.TryParse(txtTenantId.Text, out var tenantId))
                     {
-                        MessageBox.Show("Bad Tenant Guid");
+                        pac.ShowError("Bad Tenant Guid");
                         return null;
                     }
                     var clientSec = txtClientSec.Text;
-                    var clientregion = new Tuple<HttpClient, string>(PACHelper.GetClient(region, tenantId, clientId, clientSec), region);
-                    if (clientregion.Item1 != null)
+                    var clientandurl = new Tuple<HttpClient, string>(PACHelper.GetClient(tenantId, clientId, clientSec), url);
+                    if (clientandurl.Item1 != null)
                     {
                         pac.ai.WriteEvent($"Connect CS {cbRegion.Text}");
                     }
-                    return clientregion;
+                    return clientandurl;
                 }
                 else
                 {
-                    var clientregion = new Tuple<HttpClient, string>(PACHelper.GetClient(region, clientId), region);
-                    if (clientregion.Item1 != null)
+                    var clientandurl = new Tuple<HttpClient, string>(PACHelper.GetClient(url, clientId), url);
+                    if (clientandurl.Item1 != null)
                     {
                         pac.ai.WriteEvent($"Connect UP {cbRegion.Text}");
                     }
-                    return clientregion;
+                    return clientandurl;
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                pac.ShowError(ex, "Connect");
                 return null;
             }
+        }
+
+        private string GetServiceUrl()
+        {
+            if (cbRegion.Text == "[Custom]")
+            {
+                return txtRegionUrl.Text;
+            }
+            var region = cbRegion.Text == "Default" ? "" : cbRegion.Text.Replace(" ", "").ToLowerInvariant() + ".";
+            var url = string.Format(serviceUrl, region);
+            return url;
         }
 
         private void MethodSwitch()

@@ -14,6 +14,7 @@ namespace Rappen.XTB.PAC
         public Guid ClientIdForSecret { get; set; }
         public string ClientSecret { get; set; }
         public string Region { get; set; } = "Default";
+        public string ServiceUrl { get; set; }
         public string SolutionName { get; set; }
         public string SolutionFile { get; set; }
         public Guid CorrelationId { get; set; }

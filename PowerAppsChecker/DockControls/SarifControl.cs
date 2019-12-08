@@ -136,7 +136,7 @@ namespace Rappen.XTB.PAC.DockControls
                     pac.ai.WriteEvent("SaveSarifFile");
                     txtResultFile.Text = sd.FileName;
                     SaveSarifToFile(sd.FileName);
-                    MessageBox.Show($"{sd.FileName} saved!");
+                    MessageBox.Show($"{sd.FileName} saved!", "Save", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
         }
@@ -186,7 +186,7 @@ namespace Rappen.XTB.PAC.DockControls
                     if (args.Error != null)
                     {
                         panAnalyzing.Visible = false;
-                        MessageBox.Show(args.Error.Message);
+                        pac.ShowError(args.Error);
                     }
                     else if (args.Result is AnalysisStatus status)
                     {
@@ -286,7 +286,7 @@ namespace Rappen.XTB.PAC.DockControls
                     {
                         if (args.Error != null)
                         {
-                            MessageBox.Show(args.Error.Message);
+                            pac.ShowError(args.Error);
                         }
                         else if (args.Result is List<string> results && results.Count > 0)
                         {

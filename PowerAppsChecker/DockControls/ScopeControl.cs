@@ -82,13 +82,13 @@ namespace Rappen.XTB.PAC.DockControls
                 Message = "Loading rulesets",
                 Work = (worker, args) =>
                 {
-                    args.Result = PACHelper.GetRuleSets(pac.PACRegion);
+                    args.Result = PACHelper.GetRuleSets(pac.PACServiceUrl);
                 },
                 PostWorkCallBack = (args) =>
                 {
                     if (args.Error != null)
                     {
-                        MessageBox.Show(args.Error.Message);
+                        pac.ShowError(args.Error);
                     }
                     else if (args.Result is RuleSet[] rulesetlist)
                     {
@@ -146,13 +146,13 @@ namespace Rappen.XTB.PAC.DockControls
                 Message = "Loading rules",
                 Work = (worker, args) =>
                 {
-                    args.Result = PACHelper.GetRules(pac.PACRegion);
+                    args.Result = PACHelper.GetRules(pac.PACServiceUrl);
                 },
                 PostWorkCallBack = (args) =>
                 {
                     if (args.Error != null)
                     {
-                        MessageBox.Show(args.Error.Message);
+                        pac.ShowError(args.Error);
                     }
                     else if (args.Result is Rule[] rulelist)
                     {
@@ -179,13 +179,13 @@ namespace Rappen.XTB.PAC.DockControls
                 Message = $"Loading rules for {ruleset.Name}",
                 Work = (worker, args) =>
                 {
-                    args.Result = PACHelper.GetRules(pac.PACRegion, ruleset.Id);
+                    args.Result = PACHelper.GetRules(pac.PACServiceUrl, ruleset.Id);
                 },
                 PostWorkCallBack = (args) =>
                 {
                     if (args.Error != null)
                     {
-                        MessageBox.Show(args.Error.Message);
+                        pac.ShowError(args.Error);
                     }
                     else if (args.Result is Helpers.Rule[] rulelist)
                     {

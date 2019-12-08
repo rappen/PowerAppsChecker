@@ -230,6 +230,7 @@
     </Compile>
     <Compile Include="PACHelper.cs" />
     <Compile Include="PACHelperTypes.cs" />
+    <Compile Include="PACInnerException.cs" />
     <Compile Include="PACPlugin.cs" />
     <Compile Include="PAC.cs">
       <SubType>UserControl</SubType>

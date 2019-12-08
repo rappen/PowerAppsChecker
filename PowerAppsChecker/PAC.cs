@@ -35,7 +35,7 @@ namespace Rappen.XTB.PAC
         private readonly AzureLoginDialog azureLogin;
         private readonly SolutionDialog solutionSelector;
         private HttpClient pacclient;
-        private string pacregion;
+        private string pacserviceurl = "https://api.advisor.powerapps.com";
         private List<Solution> solutions;
         private Solution LastExportTry;
         private Solution LastUploadTry;
@@ -77,18 +77,18 @@ namespace Rappen.XTB.PAC
             {
                 if (pacclient == null)
                 {
-                    var clientregion = azureLogin.GetPACClient();
-                    if (clientregion != null)
+                    var clientandurl = azureLogin.GetPACClient();
+                    if (clientandurl != null)
                     {
-                        pacclient = clientregion.Item1;
-                        pacregion = clientregion.Item2;
+                        pacclient = clientandurl.Item1;
+                        pacserviceurl = clientandurl.Item2;
                     }
                 }
                 return pacclient;
             }
         }
 
-        internal string PACRegion => pacregion;
+        internal string PACServiceUrl => pacserviceurl;
 
         internal string WorkingFolder
         {
@@ -200,7 +200,7 @@ namespace Rappen.XTB.PAC
         {
             if (LastExportTry == solution)
             {
-                MessageBox.Show($"Failed to export {solution}");
+                ShowError($"Failed to export {solution}");
                 return;
             }
             LastExportTry = solution;
@@ -224,7 +224,7 @@ namespace Rappen.XTB.PAC
                 {
                     if (args.Error != null)
                     {
-                        MessageBox.Show(args.Error.Message);
+                        ShowError(args.Error);
                     }
                     else if (args.Result is ExportSolutionResponse resp)
                     {
@@ -291,13 +291,13 @@ namespace Rappen.XTB.PAC
                     var a = args.Argument as dynamic;
                     var client = a.client as HttpClient;
                     var aa = a.analysisargs as AnalysisArgs;
-                    args.Result = client.SendAnalysis(pacregion, aa);
+                    args.Result = client.SendAnalysis(pacserviceurl, aa);
                 },
                 PostWorkCallBack = (args) =>
                 {
                     if (args.Error != null)
                     {
-                        MessageBox.Show(args.Error.Message);
+                        ShowError(args.Error);
                     }
                     else if (args.Result is HttpResponseMessage response)
                     {
@@ -305,7 +305,7 @@ namespace Rappen.XTB.PAC
                         {
                             sarifControl.panAnalyzing.Visible = false;
                             LogError("SendAnalysis:\r\n{0}", response);
-                            MessageBox.Show($"Status: {response.StatusCode}\r\n{response.ReasonPhrase}\r\nSee XrmToolBox log for details.", "Send for Analysis", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            ShowError($"Status: {response.StatusCode}\r\n{response.ReasonPhrase}\r\nSee XrmToolBox log for details.", "Send for Analysis");
                         }
                         else
                         {
@@ -337,7 +337,7 @@ namespace Rappen.XTB.PAC
         {
             if (LastUploadTry == solution)
             {
-                MessageBox.Show($"Failed to upload {solution}");
+                ShowError($"Failed to upload {solution}", "Upload");
                 return;
             }
             LastUploadTry = solution;
@@ -358,13 +358,13 @@ namespace Rappen.XTB.PAC
                     var client = a.client as HttpClient;
                     var corr = a.corr as Guid?;
                     var file = a.file as string;
-                    args.Result = client.UploadSolution(PACRegion, (Guid)corr, file);
+                    args.Result = client.UploadSolution(PACServiceUrl, (Guid)corr, file);
                 },
                 PostWorkCallBack = (args) =>
                 {
                     if (args.Error != null)
                     {
-                        MessageBox.Show(args.Error.Message);
+                        ShowError(args.Error);
                     }
                     else if (args.Result is string bloburl)
                     {
@@ -374,6 +374,24 @@ namespace Rappen.XTB.PAC
                     SendAnalysis(analysisargs);
                 }
             });
+        }
+
+        internal void ShowError(string error, string caption = null)
+        {
+            ShowError(new PACInnerException(error), caption);
+        }
+
+        internal void ShowError(Exception error, string caption=null)
+        {
+            LogError(error.ToString());
+            if (error.InnerException != null)
+            {
+                ShowError(error.InnerException);
+            }
+            else
+            {
+                MessageBox.Show(error.Message, caption ?? "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         #endregion Private Methods

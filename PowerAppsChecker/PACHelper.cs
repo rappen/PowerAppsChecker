@@ -17,7 +17,7 @@ namespace Rappen.XTB.PAC.Helpers
     {
         #region Private Fields
 
-        private const string serviceUrl = "https://{0}api.advisor.powerapps.com";
+        private const string resourceUrl = "https://api.advisor.powerapps.com";
         private const string redirectUrl = "urn:ietf:wg:oauth:2.0:oob";
 
         #endregion Private Fields
@@ -35,15 +35,15 @@ namespace Rappen.XTB.PAC.Helpers
             return jss.Deserialize<AnalysisStatus>(status);
         }
 
-        public static HttpClient GetClient(string region, Guid tenantId, Guid clientId, string clientSec)
+        public static HttpClient GetClient(Guid tenantId, Guid clientId, string clientSec)
         {
             var client = new HttpClient();
             var values = new Dictionary<string, string>
             {
                 { "grant_type", "client_credentials"},
                 { "client_id", clientId.ToString() },
-                { "client_secret", clientSec},
-                { "resource", string.Format(serviceUrl, "")}
+                { "client_secret", clientSec },
+                { "resource", resourceUrl }
             };
             var body = new FormUrlEncodedContent(values);
             var authUrl = $"https://login.microsoftonline.com/{tenantId}/oauth2/token";
@@ -63,10 +63,10 @@ namespace Rappen.XTB.PAC.Helpers
             return client;
         }
 
-        public static HttpClient GetClient(string region, Guid clientId)
+        public static HttpClient GetClient(string serviceUrl, Guid clientId)
         {
             // Dummy endpoint just to get unauthorized response
-            var query = $"{string.Format(serviceUrl, region)}/api/status/4799049A-E623-4B2A-818A-3A674E106DE5";
+            var query = $"{serviceUrl}/api/status/4799049A-E623-4B2A-818A-3A674E106DE5";
             var client = new HttpClient();
             var request = new HttpRequestMessage(HttpMethod.Get, new Uri(query));
 
@@ -78,7 +78,7 @@ namespace Rappen.XTB.PAC.Helpers
                     var authParams = AuthenticationParameters.CreateFromUnauthorizedResponseAsync(response).GetAwaiter().GetResult();
                     var authContext = new AuthenticationContext(authParams.Authority);
                     var authResult = authContext.AcquireTokenAsync(
-                        string.Format(serviceUrl, ""),
+                        resourceUrl,
                         clientId.ToString(),
                         new Uri(redirectUrl),
                         new PlatformParameters(PromptBehavior.Auto)).GetAwaiter().GetResult();
@@ -102,11 +102,11 @@ namespace Rappen.XTB.PAC.Helpers
             return unzipped;
         }
 
-        public static Rule[] GetRules(string region, Guid? rulesetid = null)
+        public static Rule[] GetRules(string serviceUrl, Guid? rulesetid = null)
         {
             using (var client = new HttpClient())
             {
-                var url = $"{string.Format(serviceUrl, region)}/api/rule";
+                var url = $"{serviceUrl}/api/rule";
                 if (rulesetid != null)
                 {
                     url += $"?ruleset={rulesetid}";
@@ -117,11 +117,11 @@ namespace Rappen.XTB.PAC.Helpers
             }
         }
 
-        public static RuleSet[] GetRuleSets(string region)
+        public static RuleSet[] GetRuleSets(string serviceUrl)
         {
             using (var client = new HttpClient())
             {
-                var rulesets = client.GetAsync($"{string.Format(serviceUrl, region)}/api/ruleset").GetAwaiter().GetResult().Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                var rulesets = client.GetAsync($"{serviceUrl}/api/ruleset").GetAwaiter().GetResult().Content.ReadAsStringAsync().GetAwaiter().GetResult();
                 var jss = new JavaScriptSerializer();
                 return jss.Deserialize<RuleSet[]>(rulesets);
             }
@@ -133,13 +133,13 @@ namespace Rappen.XTB.PAC.Helpers
             return JsonConvert.DeserializeObject<SarifLog>(resultstring);
         }
 
-        public static HttpResponseMessage SendAnalysis(this HttpClient client, string region, AnalysisArgs args)
+        public static HttpResponseMessage SendAnalysis(this HttpClient client, string serviceUrl, AnalysisArgs args)
         {
             if (client == null)
             {
                 return null;
             }
-            var apiUrl = $"{string.Format(serviceUrl, region)}/api/analyze";
+            var apiUrl = $"{serviceUrl}/api/analyze";
             var values = new Dictionary<string, string>
             {
                 { "sasUriList", $"[{string.Join(", ", args.Solutions.Select(s => $"\"{s.UploadUrl}\""))}]"},
@@ -187,13 +187,13 @@ namespace Rappen.XTB.PAC.Helpers
             }
         }
 
-        public static string UploadSolution(this HttpClient client, string region, Guid corrid, string filepath)
+        public static string UploadSolution(this HttpClient client, string serviceUrl, Guid corrid, string filepath)
         {
             if (client == null)
             {
                 return null;
             }
-            var apiUrl = $"{string.Format(serviceUrl, region)}/api/upload";
+            var apiUrl = $"{serviceUrl}/api/upload";
             var file = File.ReadAllBytes(filepath);
             var filename = Path.GetFileName(filepath);
             client.DefaultRequestHeaders.Add("x-ms-correlation-id", corrid.ToString());
