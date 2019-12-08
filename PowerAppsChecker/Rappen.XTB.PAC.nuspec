@@ -14,7 +14,14 @@
     </description>
     <summary>Check your Power Apps solutions, Canvas Apps and Power Automate flows before they hit the build pipeline!</summary>
     <releaseNotes>
-First release.
+Latest release:
+
+#3 Possible to use custom SAS Uri for solution to analyze (now not required to upload file to PAC Service)
+#5 Add new geo for France
+#6 Allowing custom geo / service endpoint
+#4 Possible to select language for rules and results
+#7 Clicking Severity counter before analysis caused exception - fixed
+Selecting PAC Service Geo bug fixed (only Default worked until now)
     </releaseNotes>
     <copyright>Copyright 2019 Jonas Rapp</copyright>
     <tags>XrmToolBox Plugins PowerAppsChecker</tags>
