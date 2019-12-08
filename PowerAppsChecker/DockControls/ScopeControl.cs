@@ -137,7 +137,7 @@ namespace Rappen.XTB.PAC.DockControls
             }
         }
 
-        private void LoadRules()
+        internal void LoadRules()
         {
             pac.Enable(false);
             var enabled = true;
@@ -146,7 +146,7 @@ namespace Rappen.XTB.PAC.DockControls
                 Message = "Loading rules",
                 Work = (worker, args) =>
                 {
-                    args.Result = PACHelper.GetRules(pac.PACServiceUrl);
+                    args.Result = PACHelper.GetRules(pac.PACServiceUrl, pac.PACLanguage);
                 },
                 PostWorkCallBack = (args) =>
                 {
@@ -179,7 +179,7 @@ namespace Rappen.XTB.PAC.DockControls
                 Message = $"Loading rules for {ruleset.Name}",
                 Work = (worker, args) =>
                 {
-                    args.Result = PACHelper.GetRules(pac.PACServiceUrl, ruleset.Id);
+                    args.Result = PACHelper.GetRules(pac.PACServiceUrl, pac.PACLanguage, ruleset.Id);
                 },
                 PostWorkCallBack = (args) =>
                 {

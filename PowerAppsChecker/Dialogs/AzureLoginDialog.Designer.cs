@@ -45,12 +45,14 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.picClient = new System.Windows.Forms.PictureBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.txtRegionUrl = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
             this.picRegion = new System.Windows.Forms.PictureBox();
             this.cbRegion = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
             this.btnCancel = new System.Windows.Forms.Button();
-            this.label6 = new System.Windows.Forms.Label();
-            this.txtRegionUrl = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.cbLanguage = new System.Windows.Forms.ComboBox();
             this.panClientSecret.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picSecret)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picTenant)).BeginInit();
@@ -65,7 +67,7 @@
             this.btnConnectPAC.BackColor = System.Drawing.SystemColors.Window;
             this.btnConnectPAC.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.btnConnectPAC.Enabled = false;
-            this.btnConnectPAC.Location = new System.Drawing.Point(297, 292);
+            this.btnConnectPAC.Location = new System.Drawing.Point(297, 314);
             this.btnConnectPAC.Name = "btnConnectPAC";
             this.btnConnectPAC.Size = new System.Drawing.Size(135, 33);
             this.btnConnectPAC.TabIndex = 5;
@@ -226,6 +228,8 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.cbLanguage);
+            this.groupBox2.Controls.Add(this.label7);
             this.groupBox2.Controls.Add(this.txtRegionUrl);
             this.groupBox2.Controls.Add(this.label6);
             this.groupBox2.Controls.Add(this.picRegion);
@@ -233,10 +237,27 @@
             this.groupBox2.Controls.Add(this.label5);
             this.groupBox2.Location = new System.Drawing.Point(12, 180);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(420, 94);
+            this.groupBox2.Size = new System.Drawing.Size(420, 116);
             this.groupBox2.TabIndex = 4;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Power Apps Checker Service";
+            // 
+            // txtRegionUrl
+            // 
+            this.txtRegionUrl.Enabled = false;
+            this.txtRegionUrl.Location = new System.Drawing.Point(108, 53);
+            this.txtRegionUrl.Name = "txtRegionUrl";
+            this.txtRegionUrl.Size = new System.Drawing.Size(255, 20);
+            this.txtRegionUrl.TabIndex = 1;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(25, 56);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(20, 13);
+            this.label6.TabIndex = 0;
+            this.label6.Text = "Url";
             // 
             // picRegion
             // 
@@ -287,29 +308,30 @@
             // 
             this.btnCancel.BackColor = System.Drawing.SystemColors.Window;
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(12, 292);
+            this.btnCancel.Location = new System.Drawing.Point(12, 314);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(135, 33);
             this.btnCancel.TabIndex = 6;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = false;
             // 
-            // label6
+            // label7
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(25, 56);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(20, 13);
-            this.label6.TabIndex = 0;
-            this.label6.Text = "Url";
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(25, 83);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(55, 13);
+            this.label7.TabIndex = 29;
+            this.label7.Text = "Language";
             // 
-            // txtRegionUrl
+            // cbLanguage
             // 
-            this.txtRegionUrl.Enabled = false;
-            this.txtRegionUrl.Location = new System.Drawing.Point(108, 53);
-            this.txtRegionUrl.Name = "txtRegionUrl";
-            this.txtRegionUrl.Size = new System.Drawing.Size(255, 20);
-            this.txtRegionUrl.TabIndex = 1;
+            this.cbLanguage.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbLanguage.FormattingEnabled = true;
+            this.cbLanguage.Location = new System.Drawing.Point(108, 80);
+            this.cbLanguage.Name = "cbLanguage";
+            this.cbLanguage.Size = new System.Drawing.Size(255, 21);
+            this.cbLanguage.TabIndex = 30;
             // 
             // AzureLoginDialog
             // 
@@ -318,7 +340,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Window;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(449, 337);
+            this.ClientSize = new System.Drawing.Size(449, 360);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
@@ -328,7 +350,7 @@
             this.MinimizeBox = false;
             this.Name = "AzureLoginDialog";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Azure Login";
+            this.Text = "Service Settings";
             this.panClientSecret.ResumeLayout(false);
             this.panClientSecret.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picSecret)).EndInit();
@@ -366,5 +388,7 @@
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.TextBox txtRegionUrl;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.ComboBox cbLanguage;
+        private System.Windows.Forms.Label label7;
     }
 }

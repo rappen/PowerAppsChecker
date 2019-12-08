@@ -8,6 +8,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Windows.Forms;
 using XrmToolBox.Extensibility;
 
@@ -429,7 +430,7 @@ namespace Rappen.XTB.PAC.DockControls
             lblDetailHeader.Text = $"Details - {result.Severity}";
             txtRule.Text = result.Rule.Code;
             txtCategory.Text = result.Category.ToString();
-            txtIssue.Text = result.Message;
+            txtIssue.Text = Encoding.UTF8.GetString(Encoding.Default.GetBytes(result.Message));
             txtFix.Text = result.Rule.HowToFix?.Summary;
             txtComponent.Text = result.Component.ToString();
             txtLocation.Text = result.FilePath.ToString();

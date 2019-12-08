@@ -30,7 +30,7 @@ namespace Rappen.XTB.PAC.Dialogs
 
         #region Public Methods
 
-        public Tuple<HttpClient, string> GetPACClient()
+        public Tuple<HttpClient, string, string> GetPACClient()
         {
             if (ShowDialog(pac) == DialogResult.OK)
             {
@@ -54,6 +54,9 @@ namespace Rappen.XTB.PAC.Dialogs
             if (!string.IsNullOrEmpty(settings.ClientSecret)) txtClientSec.Text = settings.ClientSecret;
             if (!string.IsNullOrEmpty(settings.Region)) cbRegion.SelectedIndex = cbRegion.Items.IndexOf(settings.Region);
             txtRegionUrl.Text = settings.ServiceUrl;
+            cbLanguage.Items.Clear();
+            cbLanguage.Items.AddRange(settings.Languages.ToArray());
+            if (!string.IsNullOrEmpty(settings.Language)) cbLanguage.SelectedIndex = cbLanguage.Items.IndexOf(settings.Language);
             CheckInputs();
         }
 
@@ -69,6 +72,7 @@ namespace Rappen.XTB.PAC.Dialogs
             settings.ClientSecret = txtClientSec.Text;
             settings.Region = cbRegion.Text;
             settings.ServiceUrl = txtRegionUrl.Text;
+            settings.Language = cbLanguage.Text;
         }
 
         #endregion Internal Methods
@@ -90,7 +94,7 @@ namespace Rappen.XTB.PAC.Dialogs
                 (rbUser.Checked || (Guid.TryParse(txtTenantId.Text, out var tenantId) && !string.IsNullOrEmpty(txtClientSec.Text)));
         }
 
-        private Tuple<HttpClient, string> ConnectPAChecker(bool silent = false)
+        private Tuple<HttpClient, string, string> ConnectPAChecker(bool silent = false)
         {
             if (silent && !(Guid.TryParse(txtTenantId.Text, out Guid t) && Guid.TryParse(txtClientId.Text, out Guid c) && !string.IsNullOrWhiteSpace(txtClientSec.Text)))
             {
@@ -106,7 +110,8 @@ namespace Rappen.XTB.PAC.Dialogs
                 pac.ShowError("Select Region");
                 return null;
             }
-            string url = GetServiceUrl();
+            var url = GetServiceUrl();
+            var lang = GetLanguage();
             try
             {
                 if (rbSecret.Checked)
@@ -117,7 +122,7 @@ namespace Rappen.XTB.PAC.Dialogs
                         return null;
                     }
                     var clientSec = txtClientSec.Text;
-                    var clientandurl = new Tuple<HttpClient, string>(PACHelper.GetClient(tenantId, clientId, clientSec), url);
+                    var clientandurl = new Tuple<HttpClient, string, string>(PACHelper.GetClient(tenantId, clientId, clientSec), url, lang);
                     if (clientandurl.Item1 != null)
                     {
                         pac.ai.WriteEvent($"Connect CS {cbRegion.Text}");
@@ -126,7 +131,7 @@ namespace Rappen.XTB.PAC.Dialogs
                 }
                 else
                 {
-                    var clientandurl = new Tuple<HttpClient, string>(PACHelper.GetClient(url, clientId), url);
+                    var clientandurl = new Tuple<HttpClient, string, string>(PACHelper.GetClient(url, clientId), url, lang);
                     if (clientandurl.Item1 != null)
                     {
                         pac.ai.WriteEvent($"Connect UP {cbRegion.Text}");
@@ -150,6 +155,11 @@ namespace Rappen.XTB.PAC.Dialogs
             var region = cbRegion.Text == "Default" ? "" : cbRegion.Text.Replace(" ", "").ToLowerInvariant() + ".";
             var url = string.Format(serviceUrl, region);
             return url;
+        }
+
+        private string GetLanguage()
+        {
+            return cbLanguage.Text;
         }
 
         private void MethodSwitch()

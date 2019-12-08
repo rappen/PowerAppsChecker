@@ -102,11 +102,15 @@ namespace Rappen.XTB.PAC.Helpers
             return unzipped;
         }
 
-        public static Rule[] GetRules(string serviceUrl, Guid? rulesetid = null)
+        public static Rule[] GetRules(string serviceUrl, string language, Guid? rulesetid = null)
         {
             using (var client = new HttpClient())
             {
-                var url = $"{serviceUrl}/api/rule";
+                if (!string.IsNullOrEmpty(language))
+                {
+                    client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue(language));
+                }
+                var url = $"{serviceUrl ?? resourceUrl}/api/rule";
                 if (rulesetid != null)
                 {
                     url += $"?ruleset={rulesetid}";
@@ -121,7 +125,7 @@ namespace Rappen.XTB.PAC.Helpers
         {
             using (var client = new HttpClient())
             {
-                var rulesets = client.GetAsync($"{serviceUrl}/api/ruleset").GetAwaiter().GetResult().Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                var rulesets = client.GetAsync($"{serviceUrl ?? resourceUrl}/api/ruleset").GetAwaiter().GetResult().Content.ReadAsStringAsync().GetAwaiter().GetResult();
                 var jss = new JavaScriptSerializer();
                 return jss.Deserialize<RuleSet[]>(rulesets);
             }
@@ -133,7 +137,7 @@ namespace Rappen.XTB.PAC.Helpers
             return JsonConvert.DeserializeObject<SarifLog>(resultstring);
         }
 
-        public static HttpResponseMessage SendAnalysis(this HttpClient client, string serviceUrl, AnalysisArgs args)
+        public static HttpResponseMessage SendAnalysis(this HttpClient client, string serviceUrl, string language, AnalysisArgs args)
         {
             if (client == null)
             {
@@ -160,6 +164,10 @@ namespace Rappen.XTB.PAC.Helpers
             var body = new StringContent(bodystr, Encoding.UTF8);
             client.DefaultRequestHeaders.Add("x-ms-correlation-id", args.CorrId.ToString());
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            if (!string.IsNullOrEmpty(language))
+            {
+                client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue(language));
+            }
             return client.PostAsync(apiUrl, body).GetAwaiter().GetResult();
         }
 

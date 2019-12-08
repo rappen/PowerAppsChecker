@@ -36,6 +36,7 @@ namespace Rappen.XTB.PAC
         private readonly SolutionDialog solutionSelector;
         private HttpClient pacclient;
         private string pacserviceurl = "https://api.advisor.powerapps.com";
+        private string paclanguage;
         private List<Solution> solutions;
         private Solution LastExportTry;
         private Solution LastUploadTry;
@@ -77,11 +78,12 @@ namespace Rappen.XTB.PAC
             {
                 if (pacclient == null)
                 {
-                    var clientandurl = azureLogin.GetPACClient();
-                    if (clientandurl != null)
+                    var pacinfo = azureLogin.GetPACClient();
+                    if (pacinfo != null)
                     {
-                        pacclient = clientandurl.Item1;
-                        pacserviceurl = clientandurl.Item2;
+                        pacclient = pacinfo.Item1;
+                        pacserviceurl = pacinfo.Item2;
+                        paclanguage = pacinfo.Item3;
                     }
                 }
                 return pacclient;
@@ -89,6 +91,8 @@ namespace Rappen.XTB.PAC
         }
 
         internal string PACServiceUrl => pacserviceurl;
+
+        internal string PACLanguage => paclanguage;
 
         internal string WorkingFolder
         {
@@ -160,8 +164,13 @@ namespace Rappen.XTB.PAC
 
         private void btnConnectPAC_Click(object sender, EventArgs e)
         {
+            var oldlang = paclanguage;
             pacclient = null;
-            var a = PACClient;
+            var a = PACClient;  // Getter method will prompt and reauthenticate
+            if (oldlang != paclanguage)
+            {
+                scopeControl.LoadRules();
+            }
         }
 
         private void btnSelectSolutions_Click(object sender, EventArgs e)
@@ -291,7 +300,7 @@ namespace Rappen.XTB.PAC
                     var a = args.Argument as dynamic;
                     var client = a.client as HttpClient;
                     var aa = a.analysisargs as AnalysisArgs;
-                    args.Result = client.SendAnalysis(pacserviceurl, aa);
+                    args.Result = client.SendAnalysis(pacserviceurl, paclanguage, aa);
                 },
                 PostWorkCallBack = (args) =>
                 {
@@ -319,6 +328,8 @@ namespace Rappen.XTB.PAC
 
         private void SettingsApplyToUI(Settings settings)
         {
+            pacserviceurl = settings.ServiceUrl;
+            paclanguage = settings.Language;
             scopeControl.txtExclusions.Text = settings.FileExclusions;
             azureLogin.SettingsApplyToUI(settings);
             solutionSelector.SettingsApplyToUI(settings);
