@@ -249,6 +249,7 @@ namespace Rappen.XTB.PAC.DockControls
         private void lvRules_ItemChecked(object sender, ItemCheckedEventArgs e)
         {
             UpdateRuleCounts();
+            pac.Enable(true);
         }
 
         private void lvRules_SelectedIndexChanged(object sender, EventArgs e)
