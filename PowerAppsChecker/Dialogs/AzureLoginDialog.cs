@@ -1,4 +1,5 @@
-﻿using Rappen.XTB.PAC.Helpers;
+﻿using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using Rappen.XTB.PAC.Helpers;
 using System;
 using System.Diagnostics;
 using System.Net.Http;
@@ -30,7 +31,7 @@ namespace Rappen.XTB.PAC.Dialogs
 
         #region Public Methods
 
-        public Tuple<HttpClient, string, string> GetPACClient()
+        public PACClientInfo GetPACClientInfo()
         {
             if (ShowDialog(pac) == DialogResult.OK)
             {
@@ -94,13 +95,14 @@ namespace Rappen.XTB.PAC.Dialogs
                 (rbUser.Checked || (Guid.TryParse(txtTenantId.Text, out var tenantId) && !string.IsNullOrEmpty(txtClientSec.Text)));
         }
 
-        private Tuple<HttpClient, string, string> ConnectPAChecker(bool silent = false)
+        private PACClientInfo ConnectPAChecker()
         {
-            if (silent && !(Guid.TryParse(txtTenantId.Text, out Guid t) && Guid.TryParse(txtClientId.Text, out Guid c) && !string.IsNullOrWhiteSpace(txtClientSec.Text)))
+            var clientinfo = new PACClientInfo
             {
-                return null;
-            }
-            if (!Guid.TryParse(txtClientId.Text, out var clientId))
+                ServiceUrl = GetServiceUrl(),
+                Language = GetLanguage()
+            };
+            if (!Guid.TryParse(txtClientId.Text, out clientinfo.ClientId))
             {
                 pac.ShowError("Bad Client Guid");
                 return null;
@@ -110,33 +112,20 @@ namespace Rappen.XTB.PAC.Dialogs
                 pac.ShowError("Select Region");
                 return null;
             }
-            var url = GetServiceUrl();
-            var lang = GetLanguage();
             try
             {
                 if (rbSecret.Checked)
                 {
-                    if (!Guid.TryParse(txtTenantId.Text, out var tenantId))
+                    if (!Guid.TryParse(txtTenantId.Text, out clientinfo.TenantId))
                     {
                         pac.ShowError("Bad Tenant Guid");
                         return null;
                     }
-                    var clientSec = txtClientSec.Text;
-                    var clientandurl = new Tuple<HttpClient, string, string>(PACHelper.GetClient(tenantId, clientId, clientSec), url, lang);
-                    if (clientandurl.Item1 != null)
-                    {
-                        pac.ai.WriteEvent($"Connect CS {cbRegion.Text}");
-                    }
-                    return clientandurl;
+                    clientinfo.ClientSec = txtClientSec.Text;
                 }
-                else
+                if (PACHelper.GetClient(clientinfo, PromptBehavior.SelectAccount) != null)
                 {
-                    var clientandurl = new Tuple<HttpClient, string, string>(PACHelper.GetClient(url, clientId), url, lang);
-                    if (clientandurl.Item1 != null)
-                    {
-                        pac.ai.WriteEvent($"Connect UP {cbRegion.Text}");
-                    }
-                    return clientandurl;
+                    pac.ai.WriteEvent($"Connect OK {cbRegion.Text}");
                 }
             }
             catch (Exception ex)
@@ -144,6 +133,7 @@ namespace Rappen.XTB.PAC.Dialogs
                 pac.ShowError(ex, "Connect");
                 return null;
             }
+            return clientinfo;
         }
 
         private string GetServiceUrl()

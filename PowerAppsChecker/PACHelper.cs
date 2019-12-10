@@ -24,8 +24,9 @@ namespace Rappen.XTB.PAC.Helpers
 
         #region Public Methods
 
-        public static AnalysisStatus GetAnalysisStatus(this HttpClient client, string statusurl)
+        public static AnalysisStatus GetAnalysisStatus(PACClientInfo clientinfo, string statusurl)
         {
+            var client = GetClient(clientinfo, PromptBehavior.Auto);
             if (client == null)
             {
                 return null;
@@ -35,18 +36,46 @@ namespace Rappen.XTB.PAC.Helpers
             return jss.Deserialize<AnalysisStatus>(status);
         }
 
-        public static HttpClient GetClient(Guid tenantId, Guid clientId, string clientSec)
+        public static HttpClient GetClient(PACClientInfo clientInfo, PromptBehavior behavior)
+        {
+            if (clientInfo.ClientId.Equals(Guid.Empty))
+            {
+                throw new ArgumentNullException("clientId");
+            }
+            if (string.IsNullOrEmpty(clientInfo.Token))
+            {
+                if (!clientInfo.TenantId.Equals(Guid.Empty) && !string.IsNullOrEmpty(clientInfo.ClientSec))
+                {
+                    clientInfo.Token = GetApplicationClientToken(clientInfo);
+                }
+                else if (!string.IsNullOrEmpty(clientInfo.ServiceUrl))
+                {
+                    clientInfo.Token = GetInteractiveClientToken(clientInfo, behavior);
+                }
+            }
+            if (!string.IsNullOrEmpty(clientInfo.Token))
+            {
+                var client = new HttpClient();
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", clientInfo.Token);
+                client.DefaultRequestHeaders.Add("accept", "application/json,application/x-ms-sarif-v2");
+                client.DefaultRequestHeaders.Add("x-ms-tenant-id", clientInfo.TenantId.ToString());
+                return client;
+            }
+            throw new ArgumentException("Not enough parameters to connect PAC Client");
+        }
+
+        private static string GetApplicationClientToken(PACClientInfo clientInfo)
         {
             var client = new HttpClient();
             var values = new Dictionary<string, string>
             {
                 { "grant_type", "client_credentials"},
-                { "client_id", clientId.ToString() },
-                { "client_secret", clientSec },
+                { "client_id", clientInfo.ClientId.ToString() },
+                { "client_secret", clientInfo.ClientSec },
                 { "resource", resourceUrl }
             };
             var body = new FormUrlEncodedContent(values);
-            var authUrl = $"https://login.microsoftonline.com/{tenantId}/oauth2/token";
+            var authUrl = $"https://login.microsoftonline.com/{clientInfo.TenantId}/oauth2/token";
             var response = client.PostAsync(authUrl, body).GetAwaiter().GetResult();
             var responseString = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
             if (!response.IsSuccessStatusCode)
@@ -57,17 +86,14 @@ namespace Rappen.XTB.PAC.Helpers
             }
             var token = responseString.Split(new string[] { "\"access_token\":\"" }, StringSplitOptions.RemoveEmptyEntries)[1];
             token = token.Split(new string[] { "\"}" }, StringSplitOptions.RemoveEmptyEntries)[0];
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            client.DefaultRequestHeaders.Add("accept", "application/json,application/x-ms-sarif-v2");
-            client.DefaultRequestHeaders.Add("x-ms-tenant-id", tenantId.ToString());
-            return client;
+            return token;
         }
 
-        public static HttpClient GetClient(string serviceUrl, Guid clientId)
+        private static string GetInteractiveClientToken(PACClientInfo clientInfo, PromptBehavior behavior)
         {
             // Dummy endpoint just to get unauthorized response
-            var query = $"{serviceUrl}/api/status/4799049A-E623-4B2A-818A-3A674E106DE5";
             var client = new HttpClient();
+            var query = $"{clientInfo.ServiceUrl}/api/status/4799049A-E623-4B2A-818A-3A674E106DE5";
             var request = new HttpRequestMessage(HttpMethod.Get, new Uri(query));
 
             using (var response = client.SendAsync(request).GetAwaiter().GetResult())
@@ -79,12 +105,10 @@ namespace Rappen.XTB.PAC.Helpers
                     var authContext = new AuthenticationContext(authParams.Authority);
                     var authResult = authContext.AcquireTokenAsync(
                         resourceUrl,
-                        clientId.ToString(),
+                        clientInfo.ClientId.ToString(),
                         new Uri(redirectUrl),
-                        new PlatformParameters(PromptBehavior.Auto)).GetAwaiter().GetResult();
-                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authResult.AccessToken);
-                    client.DefaultRequestHeaders.Add("accept", "application/json,application/x-ms-sarif-v2");
-                    return client;
+                        new PlatformParameters(behavior)).GetAwaiter().GetResult();
+                    return authResult.AccessToken;
                 }
                 else
                 {
@@ -137,13 +161,14 @@ namespace Rappen.XTB.PAC.Helpers
             return JsonConvert.DeserializeObject<SarifLog>(resultstring);
         }
 
-        public static HttpResponseMessage SendAnalysis(this HttpClient client, string serviceUrl, string language, AnalysisArgs args)
+        public static HttpResponseMessage SendAnalysis(PACClientInfo clientinfo, AnalysisArgs args)
         {
+            var client = GetClient(clientinfo, PromptBehavior.Auto);
             if (client == null)
             {
                 return null;
             }
-            var apiUrl = $"{serviceUrl}/api/analyze";
+            var apiUrl = $"{clientinfo.ServiceUrl}/api/analyze";
             var values = new Dictionary<string, string>
             {
                 { "sasUriList", $"[{string.Join(", ", args.Solutions.Select(s => $"\"{s.UploadUrl}\""))}]"},
@@ -164,9 +189,9 @@ namespace Rappen.XTB.PAC.Helpers
             var body = new StringContent(bodystr, Encoding.UTF8);
             client.DefaultRequestHeaders.Add("x-ms-correlation-id", args.CorrId.ToString());
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            if (!string.IsNullOrEmpty(language))
+            if (!string.IsNullOrEmpty(clientinfo.Language))
             {
-                client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue(language));
+                client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue(clientinfo.Language));
             }
             return client.PostAsync(apiUrl, body).GetAwaiter().GetResult();
         }
@@ -195,13 +220,14 @@ namespace Rappen.XTB.PAC.Helpers
             }
         }
 
-        public static string UploadSolution(this HttpClient client, string serviceUrl, Guid corrid, string filepath)
+        public static string UploadSolution(PACClientInfo clientinfo, Guid corrid, string filepath)
         {
+            var client = GetClient(clientinfo, PromptBehavior.Auto);
             if (client == null)
             {
                 return null;
             }
-            var apiUrl = $"{serviceUrl}/api/upload";
+            var apiUrl = $"{clientinfo.ServiceUrl}/api/upload";
             var file = File.ReadAllBytes(filepath);
             var filename = Path.GetFileName(filepath);
             client.DefaultRequestHeaders.Add("x-ms-correlation-id", corrid.ToString());

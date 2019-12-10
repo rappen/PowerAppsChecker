@@ -174,13 +174,13 @@ namespace Rappen.XTB.PAC.DockControls
             pac.WorkAsync(new WorkAsyncInfo
             {
                 Message = "Checking analysis status",
-                AsyncArgument = new { client = pac.PACClient, url = txtStatusUrl.Text },
+                AsyncArgument = new { clientinfo = pac.PACClientInfo, url = txtStatusUrl.Text },
                 Work = (worker, args) =>
                 {
                     var a = args.Argument as dynamic;
-                    var client = a.client as HttpClient;
+                    var clientinfo = a.clientinfo as PACClientInfo;
                     var url = a.url as string;
-                    args.Result = client.GetAnalysisStatus(url);
+                    args.Result = PACHelper.GetAnalysisStatus(clientinfo, url);
                 },
                 PostWorkCallBack = (args) =>
                 {

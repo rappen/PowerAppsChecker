@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis.Sarif;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Xrm.Sdk;
 using System;
 using System.Collections.Generic;
@@ -37,6 +38,16 @@ namespace Rappen.XTB.PAC.Helpers
         Medium = 3,
         High = 4,
         Critical = 5
+    }
+
+    public class PACClientInfo
+    {
+        public string ServiceUrl = "https://api.advisor.powerapps.com";
+        public Guid ClientId;
+        public Guid TenantId;
+        public string ClientSec;
+        public string Token;
+        public string Language;
     }
 
     public class AnalysisArgs

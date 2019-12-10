@@ -1,5 +1,6 @@
 ﻿using McTools.Xrm.Connection;
 using Microsoft.Crm.Sdk.Messages;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Xrm.Sdk;
 using Rappen.XTB.PAC.Dialogs;
 using Rappen.XTB.PAC.DockControls;
@@ -34,9 +35,7 @@ namespace Rappen.XTB.PAC
         private const string aiKey = "eed73022-2444-45fd-928b-5eebd8fa46a6";    // jonas@rappen.net tenant, XrmToolBox
         private readonly AzureLoginDialog azureLogin;
         private readonly SolutionDialog solutionSelector;
-        private HttpClient pacclient;
-        private string pacserviceurl = "https://api.advisor.powerapps.com";
-        private string paclanguage;
+        private PACClientInfo pacclientinfo;
         private List<Solution> solutions;
         private Solution LastExportTry;
         private Solution LastUploadTry;
@@ -72,27 +71,17 @@ namespace Rappen.XTB.PAC
 
         #region Internal Properties
 
-        internal HttpClient PACClient
+        internal PACClientInfo PACClientInfo
         {
             get
             {
-                if (pacclient == null)
+                if (pacclientinfo == null || pacclientinfo.ClientId.Equals(Guid.Empty))
                 {
-                    var pacinfo = azureLogin.GetPACClient();
-                    if (pacinfo != null)
-                    {
-                        pacclient = pacinfo.Item1;
-                        pacserviceurl = pacinfo.Item2;
-                        paclanguage = pacinfo.Item3;
-                    }
+                    pacclientinfo = azureLogin.GetPACClientInfo();
                 }
-                return pacclient;
+                return pacclientinfo;
             }
         }
-
-        internal string PACServiceUrl => pacserviceurl;
-
-        internal string PACLanguage => paclanguage;
 
         internal string WorkingFolder
         {
@@ -156,20 +145,16 @@ namespace Rappen.XTB.PAC
 
         private void btnAnalyze_Click(object sender, EventArgs e)
         {
-            ai.WriteEvent("Analyze");
-            LastExportTry = null;
-            LastUploadTry = null;
-            SendAnalysis(GetAnalysisArgs());
+            Analyze();
         }
 
         private void btnConnectPAC_Click(object sender, EventArgs e)
         {
-            var oldlang = paclanguage;
-            pacclient = null;
-            var a = PACClient;  // Getter method will prompt and reauthenticate
-            if (oldlang != paclanguage)
+            var clientinfo = azureLogin.GetPACClientInfo();
+            if (clientinfo != null)
             {
-                scopeControl.LoadRules();
+                pacclientinfo = clientinfo;
+                scopeControl.SetUrlAndLanguage(pacclientinfo.ServiceUrl, pacclientinfo.Language);
             }
         }
 
@@ -204,6 +189,18 @@ namespace Rappen.XTB.PAC
         #endregion Event handlers
 
         #region Private Methods
+
+        private void Analyze()
+        {
+            ai.WriteEvent("Analyze");
+            LastExportTry = null;
+            LastUploadTry = null;
+            if (pacclientinfo != null)
+            {
+                pacclientinfo.Token = null;
+            }
+            SendAnalysis(GetAnalysisArgs());
+        }
 
         private void ExportSolution(AnalysisArgs analysisargs, Solution solution)
         {
@@ -284,8 +281,8 @@ namespace Rappen.XTB.PAC
                 UploadSolutionFile(analysisargs, notuploaded);
                 return;
             }
-            var pacclient = PACClient;
-            if (pacclient == null)
+            var pci = PACClientInfo;
+            if (pci == null)
             {
                 return;
             }
@@ -294,13 +291,13 @@ namespace Rappen.XTB.PAC
             WorkAsync(new WorkAsyncInfo
             {
                 Message = $"Sending {analysisargs.SolutionNames} for analysis",
-                AsyncArgument = new { client = pacclient, analysisargs },
+                AsyncArgument = new { clientinfo = pci, analysisargs },
                 Work = (worker, args) =>
                 {
                     var a = args.Argument as dynamic;
-                    var client = a.client as HttpClient;
+                    var clientinfo = a.clientinfo as PACClientInfo;
                     var aa = a.analysisargs as AnalysisArgs;
-                    args.Result = client.SendAnalysis(pacserviceurl, paclanguage, aa);
+                    args.Result = PACHelper.SendAnalysis(clientinfo, aa);
                 },
                 PostWorkCallBack = (args) =>
                 {
@@ -328,8 +325,7 @@ namespace Rappen.XTB.PAC
 
         private void SettingsApplyToUI(Settings settings)
         {
-            pacserviceurl = settings.ServiceUrl;
-            paclanguage = settings.Language;
+            scopeControl.SetUrlAndLanguage(settings.ServiceUrl, settings.Language);
             scopeControl.txtExclusions.Text = settings.FileExclusions;
             azureLogin.SettingsApplyToUI(settings);
             solutionSelector.SettingsApplyToUI(settings);
@@ -352,8 +348,8 @@ namespace Rappen.XTB.PAC
                 return;
             }
             LastUploadTry = solution;
-            var pacclient = PACClient;
-            if (pacclient == null)
+            var pci = PACClientInfo;
+            if (pci == null)
             {
                 return;
             }
@@ -362,14 +358,14 @@ namespace Rappen.XTB.PAC
             WorkAsync(new WorkAsyncInfo
             {
                 Message = $"Uploading {solution.LocalFileName}",
-                AsyncArgument = new { client = pacclient, corr = corrid, file = solution.LocalFilePath },
+                AsyncArgument = new { clientinfo = pci, corr = corrid, file = solution.LocalFilePath },
                 Work = (worker, args) =>
                 {
                     var a = args.Argument as dynamic;
-                    var client = a.client as HttpClient;
+                    var clientinfo = a.clientinfo as PACClientInfo;
                     var corr = a.corr as Guid?;
                     var file = a.file as string;
-                    args.Result = client.UploadSolution(PACServiceUrl, (Guid)corr, file);
+                    args.Result = PACHelper.UploadSolution(clientinfo, (Guid)corr, file);
                 },
                 PostWorkCallBack = (args) =>
                 {
@@ -392,7 +388,7 @@ namespace Rappen.XTB.PAC
             ShowError(new PACInnerException(error), caption);
         }
 
-        internal void ShowError(Exception error, string caption=null)
+        internal void ShowError(Exception error, string caption = null)
         {
             LogError(error.ToString());
             if (error.InnerException != null)

@@ -14,6 +14,8 @@ namespace Rappen.XTB.PAC.DockControls
         #region Private Fields
 
         private readonly PAC pac;
+        private string language;
+        private string serviceUrl;
 
         #endregion Private Fields
 
@@ -29,6 +31,8 @@ namespace Rappen.XTB.PAC.DockControls
         public ScopeControl(PAC pac)
         {
             this.pac = pac;
+            serviceUrl = new PACClientInfo().ServiceUrl;
+            language = null;
             InitializeComponent();
             originalSize = Size;
         }
@@ -82,7 +86,7 @@ namespace Rappen.XTB.PAC.DockControls
                 Message = "Loading rulesets",
                 Work = (worker, args) =>
                 {
-                    args.Result = PACHelper.GetRuleSets(pac.PACServiceUrl);
+                    args.Result = PACHelper.GetRuleSets(serviceUrl);
                 },
                 PostWorkCallBack = (args) =>
                 {
@@ -106,9 +110,30 @@ namespace Rappen.XTB.PAC.DockControls
             txtSolutions.Text = string.Join(", ", solutions.Select(s => s.ToString()));
         }
 
+        internal void SetUrlAndLanguage(string url, string language)
+        {
+            serviceUrl = url;
+            var oldlang = this.language;
+            this.language = language;
+            if (language != oldlang)
+            {
+                LoadRules();
+            }
+        }
+
         #endregion Internal Methods
 
         #region Private Methods
+
+        private static Rule RuleFromListItem(ListViewItem item)
+        {
+            if (item.Tag is Rule rule)
+            {
+                rule.Include = item.Checked;
+                return rule;
+            }
+            return null;
+        }
 
         private bool AddRules(Rule[] rules)
         {
@@ -137,7 +162,20 @@ namespace Rappen.XTB.PAC.DockControls
             }
         }
 
-        internal void LoadRules()
+        private void linkExclusions_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Process.Start("https://docs.microsoft.com/en-us/powerapps/developer/common-data-service/checker/webapi/analyze#body");
+        }
+
+        private void linkRuleId_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (lvRules.SelectedItems.Count > 0 && lvRules.SelectedItems[0].Tag is Rule rule)
+            {
+                Process.Start(rule.GuidanceUrl.Replace("client=PAChecker", "client=Rappen.XTB.PAC"));
+            }
+        }
+
+        private void LoadRules()
         {
             pac.Enable(false);
             var enabled = true;
@@ -146,7 +184,7 @@ namespace Rappen.XTB.PAC.DockControls
                 Message = "Loading rules",
                 Work = (worker, args) =>
                 {
-                    args.Result = PACHelper.GetRules(pac.PACServiceUrl, pac.PACLanguage);
+                    args.Result = PACHelper.GetRules(serviceUrl, language);
                 },
                 PostWorkCallBack = (args) =>
                 {
@@ -179,7 +217,7 @@ namespace Rappen.XTB.PAC.DockControls
                 Message = $"Loading rules for {ruleset.Name}",
                 Work = (worker, args) =>
                 {
-                    args.Result = PACHelper.GetRules(pac.PACServiceUrl, pac.PACLanguage, ruleset.Id);
+                    args.Result = PACHelper.GetRules(serviceUrl, language, ruleset.Id);
                 },
                 PostWorkCallBack = (args) =>
                 {
@@ -218,25 +256,6 @@ namespace Rappen.XTB.PAC.DockControls
             SetRuleDetails();
         }
 
-        private void SetRuleDetails()
-        {
-            lblCatSev.Text = rbGroupSeverity.Checked ? "Category" : "Severity";
-            if (lvRules.SelectedItems.Count > 0 && lvRules.SelectedItems[0].Tag is Helpers.Rule rule)
-            {
-                linkRuleId.Text = rule.Code;
-                //linkRuleId.LinkArea = new LinkArea(rule.Code.Length + 1, 9);
-                lblCatSevValue.Text = rbGroupSeverity.Checked ? rule.PrimaryCategory.ToString() : rule.Severity.ToString();
-                txtRuleDescr.Text = rule.Summary;
-            }
-            else
-            {
-                linkRuleId.Text = "";
-                lblCatSevValue.Text = "";
-                txtRuleDescr.Text = "";
-            }
-            pac.Enable(true);
-        }
-
         private void rbGroupBy_CheckedChanged(object sender, EventArgs e)
         {
             if (((RadioButton)sender).Checked)
@@ -269,15 +288,24 @@ namespace Rappen.XTB.PAC.DockControls
             };
             return item;
         }
-        
-        private static Rule RuleFromListItem(ListViewItem item)
+
+        private void SetRuleDetails()
         {
-            if (item.Tag is Rule rule)
+            lblCatSev.Text = rbGroupSeverity.Checked ? "Category" : "Severity";
+            if (lvRules.SelectedItems.Count > 0 && lvRules.SelectedItems[0].Tag is Helpers.Rule rule)
             {
-                rule.Include = item.Checked;
-                return rule;
+                linkRuleId.Text = rule.Code;
+                //linkRuleId.LinkArea = new LinkArea(rule.Code.Length + 1, 9);
+                lblCatSevValue.Text = rbGroupSeverity.Checked ? rule.PrimaryCategory.ToString() : rule.Severity.ToString();
+                txtRuleDescr.Text = rule.Summary;
             }
-            return null;
+            else
+            {
+                linkRuleId.Text = "";
+                lblCatSevValue.Text = "";
+                txtRuleDescr.Text = "";
+            }
+            pac.Enable(true);
         }
 
         private void UpdateRuleCounts()
@@ -296,18 +324,5 @@ namespace Rappen.XTB.PAC.DockControls
         }
 
         #endregion Private Methods
-
-        private void linkExclusions_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            Process.Start("https://docs.microsoft.com/en-us/powerapps/developer/common-data-service/checker/webapi/analyze#body");
-        }
-
-        private void linkRuleId_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            if (lvRules.SelectedItems.Count > 0 && lvRules.SelectedItems[0].Tag is Rule rule)
-            {
-                Process.Start(rule.GuidanceUrl.Replace("client=PAChecker", "client=Rappen.XTB.PAC"));
-            }
-        }
     }
 }
