@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Jonas Rapp, Sweden")]
 [assembly: AssemblyProduct("PoewrAppsChecker")]
-[assembly: AssemblyCopyright("Copyright © Jonas Rapp 2019")]
+[assembly: AssemblyCopyright("Copyright © Jonas Rapp 2019-2025")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
