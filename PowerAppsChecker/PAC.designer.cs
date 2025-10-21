@@ -35,6 +35,7 @@
             this.btnSelectSolutions = new System.Windows.Forms.ToolStripButton();
             this.btnAnalyze = new System.Windows.Forms.ToolStripButton();
             this.tslByJonas = new System.Windows.Forms.ToolStripLabel();
+            this.tsbSupporting = new System.Windows.Forms.ToolStripButton();
             this.toolStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -43,23 +44,24 @@
             this.dockContainer.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.dockContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dockContainer.DocumentStyle = WeifenLuo.WinFormsUI.Docking.DocumentStyle.DockingWindow;
-            this.dockContainer.Location = new System.Drawing.Point(0, 31);
+            this.dockContainer.Location = new System.Drawing.Point(0, 39);
             this.dockContainer.Name = "dockContainer";
-            this.dockContainer.Size = new System.Drawing.Size(747, 335);
+            this.dockContainer.Size = new System.Drawing.Size(747, 327);
             this.dockContainer.TabIndex = 25;
             // 
             // toolStrip
             // 
             this.toolStrip.BackColor = System.Drawing.SystemColors.Window;
-            this.toolStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
+            this.toolStrip.ImageScalingSize = new System.Drawing.Size(32, 32);
             this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnConnectPAC,
             this.btnSelectSolutions,
             this.btnAnalyze,
-            this.tslByJonas});
+            this.tslByJonas,
+            this.tsbSupporting});
             this.toolStrip.Location = new System.Drawing.Point(0, 0);
             this.toolStrip.Name = "toolStrip";
-            this.toolStrip.Size = new System.Drawing.Size(747, 31);
+            this.toolStrip.Size = new System.Drawing.Size(747, 39);
             this.toolStrip.TabIndex = 27;
             // 
             // btnConnectPAC
@@ -67,7 +69,7 @@
             this.btnConnectPAC.Image = ((System.Drawing.Image)(resources.GetObject("btnConnectPAC.Image")));
             this.btnConnectPAC.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnConnectPAC.Name = "btnConnectPAC";
-            this.btnConnectPAC.Size = new System.Drawing.Size(105, 28);
+            this.btnConnectPAC.Size = new System.Drawing.Size(113, 36);
             this.btnConnectPAC.Text = "Connect PAC";
             this.btnConnectPAC.Click += new System.EventHandler(this.btnConnectPAC_Click);
             // 
@@ -96,9 +98,22 @@
             this.tslByJonas.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tslByJonas.IsLink = true;
             this.tslByJonas.Name = "tslByJonas";
-            this.tslByJonas.Size = new System.Drawing.Size(106, 28);
+            this.tslByJonas.Size = new System.Drawing.Size(114, 36);
             this.tslByJonas.Text = "by Jonas Rapp";
             this.tslByJonas.Click += new System.EventHandler(this.tslByJonas_Click);
+            // 
+            // tsbSupporting
+            // 
+            this.tsbSupporting.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.tsbSupporting.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbSupporting.Image = global::Rappen.XTB.PAC.Properties.Resources.Supporting_icon;
+            this.tsbSupporting.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.tsbSupporting.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbSupporting.Name = "tsbSupporting";
+            this.tsbSupporting.Size = new System.Drawing.Size(56, 36);
+            this.tsbSupporting.ToolTipText = "We all support these free, open-source tools - either\r\nas a company, personally, " +
+    "or by contribution.";
+            this.tsbSupporting.Click += new System.EventHandler(this.tsbSupporting_Click);
             // 
             // PAC
             // 
@@ -127,5 +142,6 @@
         private System.Windows.Forms.ToolStripButton btnConnectPAC;
         private System.Windows.Forms.ToolStripButton btnSelectSolutions;
         private System.Windows.Forms.ToolStripLabel tslByJonas;
+        private System.Windows.Forms.ToolStripButton tsbSupporting;
     }
 }

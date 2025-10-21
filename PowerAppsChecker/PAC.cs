@@ -3,6 +3,7 @@ using Rappen.XTB.Helpers;
 using Rappen.XTB.PAC.Dialogs;
 using Rappen.XTB.PAC.DockControls;
 using Rappen.XTB.PAC.Helpers;
+using Rappen.XTB.PAC.Properties;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -187,6 +188,30 @@ namespace Rappen.XTB.PAC
             }
             ResetDockLayout();
             scopeControl.LoadRuleSets();
+            Supporting.ShowIf(this, false, true, ai2);
+            if (Supporting.IsEnabled(this))
+            {
+                tsbSupporting.Visible = true;
+                var supptype = Supporting.IsSupporting(this);
+                switch (supptype)
+                {
+                    case SupportType.Company:
+                        tsbSupporting.Image = Resources.We_Support_icon;
+                        break;
+
+                    case SupportType.Personal:
+                        tsbSupporting.Image = Resources.I_Support_icon;
+                        break;
+
+                    case SupportType.Contribute:
+                        tsbSupporting.Image = Resources.I_Contribute_icon;
+                        break;
+                }
+            }
+            else
+            {
+                tsbSupporting.Visible = false;
+            }
         }
 
         private void btnAnalyze_Click(object sender, EventArgs e)
@@ -214,6 +239,11 @@ namespace Rappen.XTB.PAC
         private void tslByJonas_Click(object sender, EventArgs e)
         {
             ShowAboutDialog();
+        }
+
+        private void tsbSupporting_Click(object sender, EventArgs e)
+        {
+            Supporting.ShowIf(this, true, false, ai2);
         }
 
         #endregion Event handlers
