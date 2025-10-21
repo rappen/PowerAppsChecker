@@ -399,7 +399,6 @@ if $(ConfigurationName) == Debug (
   move /Y Rappen.XTB.PAC.dll Plugins
   move /Y "Sarif*.dll" Plugins\Rappen.XTB.PAC
   move /Y "CsvHelper.dll" Plugins\Rappen.XTB.PAC
-rem  del "System.Collections.Immutable.dll"
 )</PostBuildEvent>
   </PropertyGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

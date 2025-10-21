@@ -1,6 +1,4 @@
-﻿using McTools.Xrm.Connection;
-using Microsoft.Crm.Sdk.Messages;
-using Microsoft.Xrm.Sdk;
+﻿using Microsoft.Crm.Sdk.Messages;
 using Rappen.XTB.Helpers;
 using Rappen.XTB.PAC.Dialogs;
 using Rappen.XTB.PAC.DockControls;
@@ -111,7 +109,8 @@ namespace Rappen.XTB.PAC
         public override void ClosingPlugin(PluginCloseInfo info)
         {
             SettingsManager.Instance.Save(GetType(), SettingsGetFromUI(), ConnectionDetail?.ConnectionName);
-            base.ClosingPlugin(info);
+            //base.ClosingPlugin(info);
+            Log("Close", ai2: true);
         }
 
         public void ShowAboutDialog()
@@ -122,16 +121,16 @@ namespace Rappen.XTB.PAC
             }
         }
 
-        public override void UpdateConnection(IOrganizationService newService, ConnectionDetail detail, string actionName, object parameter)
-        {
-            base.UpdateConnection(newService, detail, actionName, parameter);
-            if (SettingsManager.Instance.TryLoad(GetType(), out Settings settings, detail.ConnectionName))
-            {
-                SettingsApplyToUI(settings);
-            }
-            solutionSelector.LoadSolutions(settings);
-            Enable(true);
-        }
+        //public override void UpdateConnection(IOrganizationService newService, ConnectionDetail detail, string actionName, object parameter)
+        //{
+        //    base.UpdateConnection(newService, detail, actionName, parameter);
+        //    if (SettingsManager.Instance.TryLoad(GetType(), out Settings settings, detail.ConnectionName))
+        //    {
+        //        SettingsApplyToUI(settings);
+        //    }
+        //    solutionSelector.LoadSolutions(settings);
+        //    Enable(true);
+        //}
 
         #endregion Public Methods
 
@@ -168,6 +167,28 @@ namespace Rappen.XTB.PAC
 
         #region Event handlers
 
+        private void PAC_ConnectionUpdated(object sender, ConnectionUpdatedEventArgs e)
+        {
+            Log($"Connected: {e.ConnectionDetail?.WebApplicationUrl}", ai2: true);
+            if (SettingsManager.Instance.TryLoad(GetType(), out Settings settings, e.ConnectionDetail?.ConnectionName))
+            {
+                SettingsApplyToUI(settings);
+            }
+            solutionSelector.LoadSolutions(settings);
+            Enable(true);
+        }
+
+        private void PAC_Load(object sender, EventArgs e)
+        {
+            Log("Load", ai2: true);
+            if (SettingsManager.Instance.TryLoad(GetType(), out Settings settings, ConnectionDetail?.ConnectionName))
+            {
+                SettingsApplyToUI(settings);
+            }
+            ResetDockLayout();
+            scopeControl.LoadRuleSets();
+        }
+
         private void btnAnalyze_Click(object sender, EventArgs e)
         {
             Analyze();
@@ -190,22 +211,6 @@ namespace Rappen.XTB.PAC
             Enable(true);
         }
 
-        private void PAC_Load(object sender, EventArgs e)
-        {
-            Log("Load", ai2: true);
-            if (SettingsManager.Instance.TryLoad(GetType(), out Settings settings, ConnectionDetail?.ConnectionName))
-            {
-                SettingsApplyToUI(settings);
-            }
-            ResetDockLayout();
-            scopeControl.LoadRuleSets();
-        }
-
-        private void PAC_OnCloseTool(object sender, EventArgs e)
-        {
-            Log("Close", ai2: true);
-        }
-
         private void tslByJonas_Click(object sender, EventArgs e)
         {
             ShowAboutDialog();
@@ -225,7 +230,6 @@ namespace Rappen.XTB.PAC
 
         private void Analyze()
         {
-            Log("Analyze", ai2: true);
             LastExportTry = null;
             LastUploadTry = null;
             if (pacclientinfo != null)
@@ -242,9 +246,11 @@ namespace Rappen.XTB.PAC
                 ShowError($"Failed to export {solution}");
                 return;
             }
+            Log($"Export: {solution}");
             LastExportTry = solution;
             Enable(false);
             var solname = solution.UniqueName;
+            var sw = System.Diagnostics.Stopwatch.StartNew();
             WorkAsync(new WorkAsyncInfo
             {
                 Message = $"Exporting {solname}",
@@ -261,6 +267,7 @@ namespace Rappen.XTB.PAC
                 },
                 PostWorkCallBack = (args) =>
                 {
+                    sw.Stop();
                     if (args.Error != null)
                     {
                         ShowError(args.Error);
@@ -278,6 +285,7 @@ namespace Rappen.XTB.PAC
                         }
                         File.WriteAllBytes(fullpath, exportXml);
                         solution.LocalFilePath = fullpath;
+                        Log($"Exported to {fullpath}", exportXml.Length, sw.ElapsedMilliseconds);
                     }
                     Enable(true);
                     SendAnalysis(analysisargs);
@@ -319,8 +327,10 @@ namespace Rappen.XTB.PAC
             {
                 return;
             }
+            Log($"Analyze: {analysisargs.SolutionNames}");
             Enable(false);
             sarifControl.panAnalyzing.Visible = true;
+            var sw = System.Diagnostics.Stopwatch.StartNew();
             WorkAsync(new WorkAsyncInfo
             {
                 Message = $"Sending {analysisargs.SolutionNames} for analysis",
@@ -334,12 +344,14 @@ namespace Rappen.XTB.PAC
                 },
                 PostWorkCallBack = (args) =>
                 {
+                    sw.Stop();
                     if (args.Error != null)
                     {
                         ShowError(args.Error);
                     }
                     else if (args.Result is HttpResponseMessage response)
                     {
+                        Log($"Analysed: {response.StatusCode}", null, sw.ElapsedMilliseconds);
                         if (response.StatusCode != System.Net.HttpStatusCode.Accepted)
                         {
                             sarifControl.panAnalyzing.Visible = false;
@@ -389,6 +401,7 @@ namespace Rappen.XTB.PAC
                 ShowError($"Failed to upload {solution}", "Upload");
                 return;
             }
+            Log($"Upload: {solution.LocalFilePath}");
             LastUploadTry = solution;
             var pci = PACClientInfo;
             if (pci == null)
@@ -397,6 +410,7 @@ namespace Rappen.XTB.PAC
             }
             Enable(false);
             var corrid = Guid.NewGuid();
+            var sw = System.Diagnostics.Stopwatch.StartNew();
             WorkAsync(new WorkAsyncInfo
             {
                 Message = $"Uploading {solution.LocalFileName}",
@@ -411,6 +425,7 @@ namespace Rappen.XTB.PAC
                 },
                 PostWorkCallBack = (args) =>
                 {
+                    sw.Stop();
                     if (args.Error != null)
                     {
                         ShowError(args.Error);
@@ -419,6 +434,7 @@ namespace Rappen.XTB.PAC
                     {
                         solution.UploadUrl = new Uri(bloburl);
                     }
+                    Log($"Uploaded {solution.LocalFileName}", null, sw.ElapsedMilliseconds);
                     Enable(true);
                     SendAnalysis(analysisargs);
                 }

@@ -125,7 +125,7 @@ namespace Rappen.XTB.PAC.Dialogs
                 }
                 if (PACHelper.GetClient(clientinfo, PromptBehavior.SelectAccount) != null)
                 {
-                    pac.Log($"Connect OK {cbRegion.Text}", ai2: true);
+                    pac.Log($"Connected: {clientinfo.ServiceUrl} ({cbRegion.Text})", ai2: true);
                 }
             }
             catch (Exception ex)

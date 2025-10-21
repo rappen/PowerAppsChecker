@@ -212,7 +212,7 @@ namespace Rappen.XTB.PAC.DockControls
             pac.Enable(false);
             pac.WorkAsync(new WorkAsyncInfo()
             {
-                Message = $"Loading rules for {ruleset.Name} from{clientinfo.Region}{Environment.NewLine}{clientinfo.ServiceUrl}",
+                Message = $"Loading rules for {ruleset.Name} from {clientinfo.Region}{Environment.NewLine}{clientinfo.ServiceUrl}",
                 Work = (worker, args) =>
                 {
                     args.Result = PACHelper.GetRules(pac, clientinfo, ruleset.Id);

@@ -111,7 +111,7 @@
             this.PluginIcon = ((System.Drawing.Icon)(resources.GetObject("$this.PluginIcon")));
             this.Size = new System.Drawing.Size(747, 366);
             this.TabIcon = ((System.Drawing.Image)(resources.GetObject("$this.TabIcon")));
-            this.OnCloseTool += new System.EventHandler(this.PAC_OnCloseTool);
+            this.ConnectionUpdated += new XrmToolBox.Extensibility.PluginControlBase.ConnectionUpdatedHandler(this.PAC_ConnectionUpdated);
             this.Load += new System.EventHandler(this.PAC_Load);
             this.toolStrip.ResumeLayout(false);
             this.toolStrip.PerformLayout();

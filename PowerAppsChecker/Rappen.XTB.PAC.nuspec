@@ -6,7 +6,7 @@
     <title>Power Apps Checker for XrmToolBox</title>
     <authors>Jonas Rapp</authors>
     <owners>rappen</owners>
-    <projectUrl>https://PowerAppsChecker.com</projectUrl>
+    <projectUrl>https://jonasr.app/PAC</projectUrl>
     <iconUrl>https://github.com/rappen/PowerAppsChecker/raw/master/docs/images/PAC-medium1.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>
@@ -15,6 +15,13 @@
     <summary>Check your Power Apps solutions, Canvas Apps and Power Automate flows before they hit the build pipeline!</summary>
     <releaseNotes>
 Latest release:
+
+In 2024 (I believe) Microsoft changed a small part of the rules, which made this tool explode. This release fixes that issue and makes the tool compatible with the latest Power Apps Checker service again.
+
+
+---
+
+Version 1.2019.12.2
 
 #2 Greatly improved authentication mechanism and possibility to switch accounts
 #3 Possible to use custom SAS Uri for solution to analyze (now not required to upload file to PAC Service)
@@ -30,13 +37,16 @@ Version 1.2019.12.1
 
 First release
     </releaseNotes>
-    <copyright>Copyright 2019 Jonas Rapp</copyright>
+    <copyright>Copyright Jonas Rapp 2019-2025</copyright>
     <tags>XrmToolBox Plugins PowerAppsChecker</tags>
     <dependencies>
-      <dependency id="XrmToolBox" version="1.2019.11.35" />
+      <dependency id="XrmToolBox" version="1.2025.7.71" />
     </dependencies>
   </metadata>
   <files>
-    <file src="bin\Release\Rappen.XTB.PAC.dll" target="lib\net452\Plugins" />
+    <file src="bin\Release\Rappen.XTB.PAC.dll" target="lib\net48\Plugins" />
+    <file src="bin\Release\CsvHelper.dll" target="lib\net48\Plugins\Rappen.XTB.PAC" />
+    <file src="bin\Release\Sarif.dll" target="lib\net48\Plugins\Rappen.XTB.PAC" />
+    <file src="bin\Release\Sarif.Converters.dll" target="lib\net48\Plugins\Rappen.XTB.PAC" />
   </files>
 </package>
