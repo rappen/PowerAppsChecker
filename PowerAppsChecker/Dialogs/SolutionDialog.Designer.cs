@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.cbSolution = new xrmtb.XrmToolBox.Controls.Controls.CDSDataComboBox();
+            this.cbSolution = new Rappen.XTB.Helpers.Controls.XRMColumnLookup();
             this.label7 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.btnOpenFile = new System.Windows.Forms.Button();
@@ -307,7 +307,7 @@
 
         #endregion
 
-        private xrmtb.XrmToolBox.Controls.Controls.CDSDataComboBox cbSolution;
+        private Rappen.XTB.Helpers.Controls.XRMColumnLookup cbSolution;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button btnOpenFile;

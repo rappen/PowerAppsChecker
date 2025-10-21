@@ -1,18 +1,17 @@
 ﻿using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
+using Rappen.XTB.Helpers.ControlItems;
 using Rappen.XTB.PAC.Helpers;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
-using xrmtb.XrmToolBox.Controls.Controls;
 using XrmToolBox.Extensibility;
 
 namespace Rappen.XTB.PAC.Dialogs
 {
     public partial class SolutionDialog : Form
     {
-
         #region Private Fields
 
         private readonly PAC pac;
@@ -54,7 +53,7 @@ namespace Rappen.XTB.PAC.Dialogs
             {
                 return;
             }
-            cbSolution.OrganizationService = pac.Service;
+            cbSolution.Service = pac.Service;
             pac.WorkAsync(new WorkAsyncInfo
             {
                 Message = "Loading solutions",
@@ -93,7 +92,7 @@ namespace Rappen.XTB.PAC.Dialogs
             {
                 foreach (var solution in cbSolution.Items)
                 {
-                    if (solution is CDSComboBoxItem solitem)
+                    if (solution is EntityItem solitem)
                     {
                         if (solitem.Entity["uniquename"].ToString() == settings.SolutionName)
                         {
@@ -108,7 +107,7 @@ namespace Rappen.XTB.PAC.Dialogs
 
         internal void SettingsGetFromUI(Settings settings)
         {
-            settings.SolutionName = cbSolution.SelectedEntity != null ? cbSolution.SelectedEntity["uniquename"].ToString() : null;
+            settings.SolutionName = cbSolution.SelectedRecord != null ? cbSolution.SelectedRecord["uniquename"].ToString() : null;
             settings.SolutionFile = txtFilename.Text;
             settings.SolutionUri = txtSasUri.Text;
         }
@@ -121,8 +120,8 @@ namespace Rappen.XTB.PAC.Dialogs
         {
             solutions.Add(new Solution
             {
-                UniqueName = rbOrg.Checked ? cbSolution.SelectedEntity["uniquename"].ToString() : null,
-                Version = rbOrg.Checked ? new Version(cbSolution.SelectedEntity["version"].ToString()) : null,
+                UniqueName = rbOrg.Checked ? cbSolution.SelectedRecord["uniquename"].ToString() : null,
+                Version = rbOrg.Checked ? new Version(cbSolution.SelectedRecord["version"].ToString()) : null,
                 LocalFilePath = rbLocal.Checked ? txtFilename.Text : null,
                 UploadUrl = rbSasUri.Checked ? new Uri(txtSasUri.Text) : null
             });
@@ -158,7 +157,7 @@ namespace Rappen.XTB.PAC.Dialogs
                 rbLocal.Checked = true;
             }
             btnOK.Enabled =
-                (rbOrg.Checked && cbSolution.SelectedEntity != null) ||
+                (rbOrg.Checked && cbSolution.SelectedRecord != null) ||
                 (rbLocal.Checked && File.Exists(txtFilename.Text)) ||
                 (rbSasUri.Checked && !string.IsNullOrWhiteSpace(txtSasUri.Text));
         }
@@ -182,6 +181,5 @@ namespace Rappen.XTB.PAC.Dialogs
         }
 
         #endregion Private Methods
-
     }
 }
