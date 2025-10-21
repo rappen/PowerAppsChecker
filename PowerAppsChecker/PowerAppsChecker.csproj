@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\packages\Microsoft.Diagnostics.Tracing.TraceEvent.3.1.26\build\Microsoft.Diagnostics.Tracing.TraceEvent.props" Condition="Exists('..\packages\Microsoft.Diagnostics.Tracing.TraceEvent.3.1.26\build\Microsoft.Diagnostics.Tracing.TraceEvent.props')" />
-  <Import Project="..\packages\ILMerge.3.0.41\build\ILMerge.props" Condition="Exists('..\packages\ILMerge.3.0.41\build\ILMerge.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -11,7 +10,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Rappen.XTB.PAC</RootNamespace>
-    <AssemblyName>Rappen.XTB.PAC.unmerged</AssemblyName>
+    <AssemblyName>Rappen.XTB.PAC</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
@@ -42,9 +41,6 @@
     <Reference Include="Dia2Lib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Diagnostics.Tracing.TraceEvent.3.1.26\lib\netstandard2.0\Dia2Lib.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
-    </Reference>
-    <Reference Include="ILMerge">
-      <HintPath>..\packages\ILMerge.3.0.29\tools\net452\ILMerge.exe</HintPath>
     </Reference>
     <Reference Include="McTools.Xrm.Connection, Version=1.2025.7.63, Culture=neutral, PublicKeyToken=96037217801d9658, processorArchitecture=MSIL">
       <HintPath>..\packages\MscrmTools.Xrm.Connection.1.2025.7.63\lib\net48\McTools.Xrm.Connection.dll</HintPath>
@@ -393,24 +389,23 @@
   <Import Project="..\Rappen.XTB.Helper\Rappen.XTB.Helpers\Rappen.XTB.Helpers.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>ilmerge.exe /target:library /targetplatform:v4,"C:\Windows\Microsoft.NET\Framework\v4.0.30319" "/out:Rappen.XTB.PAC.dll" "$(TargetFileName)" "xrmtb.XrmToolBox.Controls.dll" "Sarif.dll" "Sarif.Converters.dll" "CsvHelper.dll" "System.Collections.Immutable.dll"
+    <PostBuildEvent>rem ilmerge.exe /target:library /targetplatform:v4,"C:\Windows\Microsoft.NET\Framework\v4.0.30319" "/out:Rappen.XTB.PAC.dll" "$(TargetFileName)" "xrmtb.XrmToolBox.Controls.dll" "Sarif.dll" "Sarif.Converters.dll" "CsvHelper.dll" "System.Collections.Immutable.dll"
 
 if $(ConfigurationName) == Debug (
   IF NOT EXIST Plugins mkdir Plugins
+  IF NOT EXIST Plugins\Rappen.XTB.PAC mkdir Plugins\Rappen.XTB.PAC
+  del /Q "Plugins\Rappen.XTB.PAC\*.*"
+  del /Q "Plugins\manifest.json"
   move /Y Rappen.XTB.PAC.dll Plugins
-  del "$(TargetFileName)"
-  del "xrmtb.XrmToolBox.Controls.dll"
-  del "Sarif.dll"
-  del "Sarif.Converters.dll"
-  del "CsvHelper.dll"
-  del "System.Collections.Immutable.dll"
+  move /Y "Sarif*.dll" Plugins\Rappen.XTB.PAC
+  move /Y "CsvHelper.dll" Plugins\Rappen.XTB.PAC
+rem  del "System.Collections.Immutable.dll"
 )</PostBuildEvent>
   </PropertyGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\ILMerge.3.0.41\build\ILMerge.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\ILMerge.3.0.41\build\ILMerge.props'))" />
     <Error Condition="!Exists('..\packages\Microsoft.Diagnostics.Tracing.EventRegister.1.1.28\build\Microsoft.Diagnostics.Tracing.EventRegister.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Diagnostics.Tracing.EventRegister.1.1.28\build\Microsoft.Diagnostics.Tracing.EventRegister.targets'))" />
     <Error Condition="!Exists('..\packages\Microsoft.Web.WebView2.1.0.3351.48\build\Microsoft.Web.WebView2.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Web.WebView2.1.0.3351.48\build\Microsoft.Web.WebView2.targets'))" />
     <Error Condition="!Exists('..\packages\System.ValueTuple.4.6.1\build\net471\System.ValueTuple.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.ValueTuple.4.6.1\build\net471\System.ValueTuple.targets'))" />

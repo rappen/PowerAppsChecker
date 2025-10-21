@@ -126,33 +126,49 @@ namespace Rappen.XTB.PAC.Helpers
             return unzipped;
         }
 
-        public static Rule[] GetRules(string serviceUrl, string language, Guid? rulesetid = null)
+        public static Rule[] GetRules(PAC pac, PACClientInfo clientinfo, Guid? rulesetid = null)
         {
             using (var client = new HttpClient())
             {
-                if (!string.IsNullOrEmpty(language))
+                if (!string.IsNullOrEmpty(clientinfo.Language))
                 {
-                    client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue(language));
+                    client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue(clientinfo.Language));
                 }
-                var url = $"{serviceUrl ?? resourceUrl}/api/rule";
+                var url = $"{clientinfo.ServiceUrl ?? resourceUrl}/api/rule";
                 if (rulesetid != null)
                 {
                     url += $"?ruleset={rulesetid}";
                 }
-                var rules = client.GetAsync(url).GetAwaiter().GetResult().Content.ReadAsStringAsync().GetAwaiter().GetResult();
-                var jss = new JavaScriptSerializer();
-                return jss.Deserialize<Rule[]>(rules);
+                try
+                {
+                    var rules = client.GetAsync(url).GetAwaiter().GetResult().Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                    var jss = new JavaScriptSerializer();
+                    return jss.Deserialize<Rule[]>(rules);
+                }
+                catch (Exception ex)
+                {
+                    pac.SendMessageToStatusBarInternal("Error retrieving rules from Power Apps Checker service: " + ex.Message);
+                }
+                return new Rule[] { };
             }
         }
 
-        public static RuleSet[] GetRuleSets(string serviceUrl)
+        public static RuleSet[] GetRuleSets(PAC pac, string serviceUrl)
         {
             using (var client = new HttpClient())
             {
-                var rulesets = client.GetAsync($"{serviceUrl ?? resourceUrl}/api/ruleset").GetAwaiter().GetResult().Content.ReadAsStringAsync().GetAwaiter().GetResult();
-                var jss = new JavaScriptSerializer();
-                return jss.Deserialize<RuleSet[]>(rulesets);
+                try
+                {
+                    var rulesets = client.GetAsync($"{serviceUrl ?? resourceUrl}/api/ruleset").GetAwaiter().GetResult().Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                    var jss = new JavaScriptSerializer();
+                    return jss.Deserialize<RuleSet[]>(rulesets);
+                }
+                catch (Exception ex)
+                {
+                    pac.SendMessageToStatusBarInternal("Error retrieving rulesets from Power Apps Checker service: " + ex.Message);
+                }
             }
+            return new RuleSet[] { };
         }
 
         public static SarifLog GetSarifFromString(string resultstring)

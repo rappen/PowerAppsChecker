@@ -1,10 +1,9 @@
 ﻿using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using Rappen.XTB.Helpers;
 using Rappen.XTB.PAC.Helpers;
 using System;
 using System.Diagnostics;
-using System.Net.Http;
 using System.Windows.Forms;
-using XrmToolBox.Extensibility;
 
 namespace Rappen.XTB.PAC.Dialogs
 {
@@ -107,13 +106,14 @@ namespace Rappen.XTB.PAC.Dialogs
                 pac.ShowError("Bad Client Guid");
                 return null;
             }
-            if (cbRegion.SelectedItem == null)
+            if (cbRegion.SelectedItem == null || string.IsNullOrWhiteSpace(cbRegion.Text))
             {
                 pac.ShowError("Select Region");
                 return null;
             }
             try
             {
+                clientinfo.Region = cbRegion.Text;
                 if (rbSecret.Checked)
                 {
                     if (!Guid.TryParse(txtTenantId.Text, out clientinfo.TenantId))
@@ -125,7 +125,7 @@ namespace Rappen.XTB.PAC.Dialogs
                 }
                 if (PACHelper.GetClient(clientinfo, PromptBehavior.SelectAccount) != null)
                 {
-                    pac.ai.WriteEvent($"Connect OK {cbRegion.Text}");
+                    pac.Log($"Connect OK {cbRegion.Text}", ai2: true);
                 }
             }
             catch (Exception ex)
@@ -159,24 +159,9 @@ namespace Rappen.XTB.PAC.Dialogs
             CheckInputs();
         }
 
-        private void picClient_Click(object sender, EventArgs e)
+        private void picOpenLink_Click(object sender, EventArgs e)
         {
-            Process.Start("https://docs.microsoft.com/en-us/powershell/powerapps/get-started-powerapps-checker?view=pa-ps-latest#powerapps-checker-authentication-and-authorization");
-        }
-
-        private void picRegion_Click(object sender, EventArgs e)
-        {
-            Process.Start("https://docs.microsoft.com/en-us/powerapps/developer/common-data-service/checker/webapi/overview#determine-a-geography");
-        }
-
-        private void picSecret_Click(object sender, EventArgs e)
-        {
-            Process.Start("https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal#certificates-and-secrets");
-        }
-
-        private void picTenant_Click(object sender, EventArgs e)
-        {
-            Process.Start("https://docs.microsoft.com/en-us/onedrive/find-your-office-365-tenant-id");
+            UrlUtils.OpenUrl(sender);
         }
 
         private void rbMethod_CheckedChanged(object sender, EventArgs e)

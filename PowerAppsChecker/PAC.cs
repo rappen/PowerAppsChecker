@@ -1,7 +1,7 @@
 ﻿using McTools.Xrm.Connection;
 using Microsoft.Crm.Sdk.Messages;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Xrm.Sdk;
+using Rappen.XTB.Helpers;
 using Rappen.XTB.PAC.Dialogs;
 using Rappen.XTB.PAC.DockControls;
 using Rappen.XTB.PAC.Helpers;
@@ -10,31 +10,27 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 using XrmToolBox.Extensibility;
+using XrmToolBox.Extensibility.Args;
 using XrmToolBox.Extensibility.Interfaces;
 
 namespace Rappen.XTB.PAC
 {
-    public partial class PAC : PluginControlBase, IGitHubPlugin, IPayPalPlugin, IHelpPlugin, IAboutPlugin
+    public partial class PAC : PluginControlBase, IGitHubPlugin, IPayPalPlugin, IHelpPlugin, IAboutPlugin, IStatusBarMessenger
     {
-
-        #region Internal Fields
-
-        internal readonly SarifControl sarifControl;
-        internal readonly ScopeControl scopeControl;
-        internal AppInsights ai = new AppInsights(new AiConfig(aiEndpoint, aiKey) { PluginName = "Power Apps Checker" });
-
-        #endregion Internal Fields
-
         #region Private Fields
 
         private const string aiEndpoint = "https://dc.services.visualstudio.com/v2/track";
-        //private const string aiKey = "cc7cb081-b489-421d-bb61-2ee53495c336";    // jonas@rappen.net tenant, TestAI 
-        private const string aiKey = "eed73022-2444-45fd-928b-5eebd8fa46a6";    // jonas@rappen.net tenant, XrmToolBox
+        private const string aiKey1 = "eed73022-2444-45fd-928b-5eebd8fa46a6";    // jonas@rappen.net tenant, XrmToolBox
+        private const string aiKey2 = "d46e9c12-ee8b-4b28-9643-dae62ae7d3d4";    // jonas@jonasr.app, XrmToolBoxTools
+
         private readonly AzureLoginDialog azureLogin;
         private readonly SolutionDialog solutionSelector;
+        private readonly AppInsights ai1 = new AppInsights(aiEndpoint, aiKey1, Assembly.GetExecutingAssembly(), "Power Apps Checker");
+        private readonly AppInsights ai2 = new AppInsights(aiEndpoint, aiKey2, Assembly.GetExecutingAssembly(), "Power Apps Checker");
         private PACClientInfo pacclientinfo;
         private List<Solution> solutions;
         private Solution LastExportTry;
@@ -42,34 +38,10 @@ namespace Rappen.XTB.PAC
 
         #endregion Private Fields
 
-        #region Public Constructors
-
-        public PAC()
-        {
-            InitializeComponent();
-            var theme = new VS2015LightTheme();
-            dockContainer.Theme = theme;
-            scopeControl = new ScopeControl(this);
-            sarifControl = new SarifControl(this);
-            azureLogin = new AzureLoginDialog(this);
-            solutionSelector = new SolutionDialog(this);
-        }
-
-        #endregion Public Constructors
-
-        #region Public Properties
-
-        public string DonationDescription => "Power Apps Checker fan club";
-
-        public string EmailAccount => "jonas@rappen.net";
-
-        public string RepositoryName => "PowerAppsChecker";
-
-        public string UserName => "rappen";
-
-        #endregion Public Properties
-
         #region Internal Properties
+
+        internal readonly SarifControl sarifControl;
+        internal readonly ScopeControl scopeControl;
 
         internal PACClientInfo PACClientInfo
         {
@@ -96,9 +68,43 @@ namespace Rappen.XTB.PAC
             }
         }
 
-        public string HelpUrl => "https://powerappschecker.com/";
-
         #endregion Internal Properties
+
+        #region Public Constructors
+
+        public PAC()
+        {
+            InitializeComponent();
+            UrlUtils.TOOL_NAME = "PowerAppsChecker";
+            var theme = new VS2015LightTheme();
+            dockContainer.Theme = theme;
+            scopeControl = new ScopeControl(this);
+            sarifControl = new SarifControl(this);
+            azureLogin = new AzureLoginDialog(this);
+            solutionSelector = new SolutionDialog(this);
+        }
+
+        #endregion Public Constructors
+
+        #region Public Properties
+
+        public string DonationDescription => "Power Apps Checker fan club";
+
+        public string EmailAccount => "jonas@rappen.net";
+
+        public string RepositoryName => "PowerAppsChecker";
+
+        public string UserName => "rappen";
+
+        public string HelpUrl => "https://jonasr.app/PAC";
+
+        #endregion Public Properties
+
+        #region Public Events
+
+        public event EventHandler<StatusBarMessageEventArgs> SendMessageToStatusBar;
+
+        #endregion Public Events
 
         #region Public Methods
 
@@ -139,6 +145,25 @@ namespace Rappen.XTB.PAC
             sarifControl.Enable(enable);
         }
 
+        internal void Log(string action, double? count = null, double? duration = null, bool ai1 = true, bool ai2 = false)
+        {
+            // Will be done in the WriteEvent when my XTB PR #1409 is accepted, remove this line then
+            LogInfo($"{action}{(count != null ? $" Count: {count}" : "")}{(duration != null ? $" Duration: {duration}" : "")}");
+            if (ai1)
+            {
+                this.ai1.WriteEvent(action, count, duration, HandleAIResult);
+            }
+            if (ai2)
+            {
+                this.ai2.WriteEvent(action, count, duration, HandleAIResult);
+            }
+        }
+
+        internal void SendMessageToStatusBarInternal(string message)
+        {
+            SendMessageToStatusBar?.Invoke(this, new StatusBarMessageEventArgs(message));
+        }
+
         #endregion Internal Methods
 
         #region Event handlers
@@ -154,7 +179,7 @@ namespace Rappen.XTB.PAC
             if (clientinfo != null)
             {
                 pacclientinfo = clientinfo;
-                scopeControl.SetUrlAndLanguage(pacclientinfo.ServiceUrl, pacclientinfo.Language);
+                scopeControl.SetClientInfo(pacclientinfo);
             }
         }
 
@@ -167,7 +192,7 @@ namespace Rappen.XTB.PAC
 
         private void PAC_Load(object sender, EventArgs e)
         {
-            ai.WriteEvent("Load");
+            Log("Load", ai2: true);
             if (SettingsManager.Instance.TryLoad(GetType(), out Settings settings, ConnectionDetail?.ConnectionName))
             {
                 SettingsApplyToUI(settings);
@@ -178,7 +203,7 @@ namespace Rappen.XTB.PAC
 
         private void PAC_OnCloseTool(object sender, EventArgs e)
         {
-            ai.WriteEvent("Close");
+            Log("Close", ai2: true);
         }
 
         private void tslByJonas_Click(object sender, EventArgs e)
@@ -190,9 +215,17 @@ namespace Rappen.XTB.PAC
 
         #region Private Methods
 
+        private void HandleAIResult(string result)
+        {
+            if (!string.IsNullOrEmpty(result))
+            {
+                LogError("Failed to write to Application Insights:\n{0}", result);
+            }
+        }
+
         private void Analyze()
         {
-            ai.WriteEvent("Analyze");
+            Log("Analyze", ai2: true);
             LastExportTry = null;
             LastUploadTry = null;
             if (pacclientinfo != null)
@@ -325,7 +358,16 @@ namespace Rappen.XTB.PAC
 
         private void SettingsApplyToUI(Settings settings)
         {
-            scopeControl.SetUrlAndLanguage(settings.ServiceUrl, settings.Language);
+            var clientinfo = new PACClientInfo
+            {
+                TenantId = settings.TenantId,
+                ClientId = settings.AuthMethod == AuthMethod.User ? settings.ClientIdForUser : settings.ClientIdForSecret,
+                ClientSec = settings.ClientSecret,
+                Region = settings.Region,
+                ServiceUrl = settings.ServiceUrl,
+                Language = settings.Language
+            };
+            scopeControl.SetClientInfo(clientinfo);
             scopeControl.txtExclusions.Text = settings.FileExclusions;
             azureLogin.SettingsApplyToUI(settings);
             solutionSelector.SettingsApplyToUI(settings);

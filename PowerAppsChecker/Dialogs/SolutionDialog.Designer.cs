@@ -36,22 +36,22 @@
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnOK = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.panSasUri = new System.Windows.Forms.Panel();
+            this.label2 = new System.Windows.Forms.Label();
+            this.txtSasUri = new System.Windows.Forms.TextBox();
             this.panLocal = new System.Windows.Forms.Panel();
             this.panOrgSolution = new System.Windows.Forms.Panel();
             this.panSource = new System.Windows.Forms.Panel();
+            this.rbSasUri = new System.Windows.Forms.RadioButton();
             this.label1 = new System.Windows.Forms.Label();
             this.rbLocal = new System.Windows.Forms.RadioButton();
             this.rbOrg = new System.Windows.Forms.RadioButton();
             this.btnAddSolution = new System.Windows.Forms.Button();
-            this.rbSasUri = new System.Windows.Forms.RadioButton();
-            this.panSasUri = new System.Windows.Forms.Panel();
-            this.label2 = new System.Windows.Forms.Label();
-            this.txtSasUri = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
+            this.panSasUri.SuspendLayout();
             this.panLocal.SuspendLayout();
             this.panOrgSolution.SuspendLayout();
             this.panSource.SuspendLayout();
-            this.panSasUri.SuspendLayout();
             this.SuspendLayout();
             // 
             // cbSolution
@@ -61,11 +61,15 @@
             this.cbSolution.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
             this.cbSolution.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
             this.cbSolution.BackColor = System.Drawing.SystemColors.Window;
-            this.cbSolution.DisplayFormat = "{{friendlyname}} ({{uniquename}}) {{version}}";
+            this.cbSolution.Column = null;
+            this.cbSolution.DisplayFormat = "{friendlyname} ({uniquename}) {version}";
             this.cbSolution.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbSolution.Filter = null;
             this.cbSolution.FormattingEnabled = true;
             this.cbSolution.Location = new System.Drawing.Point(105, 3);
             this.cbSolution.Name = "cbSolution";
+            this.cbSolution.RecordHost = null;
+            this.cbSolution.Service = null;
             this.cbSolution.Size = new System.Drawing.Size(392, 21);
             this.cbSolution.TabIndex = 23;
             this.cbSolution.SelectedIndexChanged += new System.EventHandler(this.inputs_Changed);
@@ -152,6 +156,37 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Solution";
             // 
+            // panSasUri
+            // 
+            this.panSasUri.Controls.Add(this.label2);
+            this.panSasUri.Controls.Add(this.txtSasUri);
+            this.panSasUri.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panSasUri.Location = new System.Drawing.Point(3, 102);
+            this.panSasUri.Name = "panSasUri";
+            this.panSasUri.Size = new System.Drawing.Size(517, 26);
+            this.panSasUri.TabIndex = 36;
+            this.panSasUri.Visible = false;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(22, 6);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(20, 13);
+            this.label2.TabIndex = 31;
+            this.label2.Text = "Uri";
+            // 
+            // txtSasUri
+            // 
+            this.txtSasUri.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtSasUri.BackColor = System.Drawing.SystemColors.Window;
+            this.txtSasUri.Location = new System.Drawing.Point(105, 3);
+            this.txtSasUri.Name = "txtSasUri";
+            this.txtSasUri.Size = new System.Drawing.Size(392, 20);
+            this.txtSasUri.TabIndex = 25;
+            this.txtSasUri.TextChanged += new System.EventHandler(this.inputs_Changed);
+            // 
             // panLocal
             // 
             this.panLocal.Controls.Add(this.label6);
@@ -185,6 +220,18 @@
             this.panSource.Name = "panSource";
             this.panSource.Size = new System.Drawing.Size(517, 34);
             this.panSource.TabIndex = 19;
+            // 
+            // rbSasUri
+            // 
+            this.rbSasUri.AutoSize = true;
+            this.rbSasUri.Location = new System.Drawing.Point(327, 12);
+            this.rbSasUri.Name = "rbSasUri";
+            this.rbSasUri.Size = new System.Drawing.Size(62, 17);
+            this.rbSasUri.TabIndex = 19;
+            this.rbSasUri.TabStop = true;
+            this.rbSasUri.Text = "SAS Uri";
+            this.rbSasUri.UseVisualStyleBackColor = true;
+            this.rbSasUri.CheckedChanged += new System.EventHandler(this.rbSource_CheckedChanged);
             // 
             // label1
             // 
@@ -233,49 +280,6 @@
             this.btnAddSolution.Visible = false;
             this.btnAddSolution.Click += new System.EventHandler(this.btnAddSolution_Click);
             // 
-            // rbSasUri
-            // 
-            this.rbSasUri.AutoSize = true;
-            this.rbSasUri.Location = new System.Drawing.Point(327, 12);
-            this.rbSasUri.Name = "rbSasUri";
-            this.rbSasUri.Size = new System.Drawing.Size(62, 17);
-            this.rbSasUri.TabIndex = 19;
-            this.rbSasUri.TabStop = true;
-            this.rbSasUri.Text = "SAS Uri";
-            this.rbSasUri.UseVisualStyleBackColor = true;
-            this.rbSasUri.CheckedChanged += new System.EventHandler(this.rbSource_CheckedChanged);
-            // 
-            // panSasUri
-            // 
-            this.panSasUri.Controls.Add(this.label2);
-            this.panSasUri.Controls.Add(this.txtSasUri);
-            this.panSasUri.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panSasUri.Location = new System.Drawing.Point(3, 102);
-            this.panSasUri.Name = "panSasUri";
-            this.panSasUri.Size = new System.Drawing.Size(517, 26);
-            this.panSasUri.TabIndex = 36;
-            this.panSasUri.Visible = false;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(22, 6);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(20, 13);
-            this.label2.TabIndex = 31;
-            this.label2.Text = "Uri";
-            // 
-            // txtSasUri
-            // 
-            this.txtSasUri.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtSasUri.BackColor = System.Drawing.SystemColors.Window;
-            this.txtSasUri.Location = new System.Drawing.Point(105, 3);
-            this.txtSasUri.Name = "txtSasUri";
-            this.txtSasUri.Size = new System.Drawing.Size(392, 20);
-            this.txtSasUri.TabIndex = 25;
-            this.txtSasUri.TextChanged += new System.EventHandler(this.inputs_Changed);
-            // 
             // SolutionDialog
             // 
             this.AcceptButton = this.btnOK;
@@ -293,14 +297,14 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Select Solution";
             this.groupBox1.ResumeLayout(false);
+            this.panSasUri.ResumeLayout(false);
+            this.panSasUri.PerformLayout();
             this.panLocal.ResumeLayout(false);
             this.panLocal.PerformLayout();
             this.panOrgSolution.ResumeLayout(false);
             this.panOrgSolution.PerformLayout();
             this.panSource.ResumeLayout(false);
             this.panSource.PerformLayout();
-            this.panSasUri.ResumeLayout(false);
-            this.panSasUri.PerformLayout();
             this.ResumeLayout(false);
 
         }

@@ -21,19 +21,23 @@ namespace Rappen.XTB.PAC
         ExportMetadata("BackgroundColor", "#FFFFC0"),
         ExportMetadata("PrimaryFontColor", "#0000C0"),
         ExportMetadata("SecondaryFontColor", "#0000FF")]
-    public class PACPlugin : PluginBase
+    public class PACPlugin : PluginBase, IPayPalPlugin
     {
+        public string DonationDescription => "Power Apps Checker fan club";
+
+        public string EmailAccount => "jonas@rappen.net";
+
         public override IXrmToolBoxPluginControl GetControl()
         {
             return new PAC();
         }
 
         /// <summary>
-        /// Constructor 
+        /// Constructor
         /// </summary>
         public PACPlugin()
         {
-            // If you have external assemblies that you need to load, uncomment the following to 
+            // If you have external assemblies that you need to load, uncomment the following to
             // hook into the event that will fire when an Assembly fails to resolve
             // AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(AssemblyResolveEventHandler);
         }
@@ -41,7 +45,7 @@ namespace Rappen.XTB.PAC
         /// <summary>
         /// Event fired by CLR when an assembly reference fails to load
         /// Assumes that related assemblies will be loaded from a subfolder named the same as the Plugin
-        /// For example, a folder named Sample.XrmToolBox.MyPlugin 
+        /// For example, a folder named Sample.XrmToolBox.MyPlugin
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>

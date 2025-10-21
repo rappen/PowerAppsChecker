@@ -1,11 +1,8 @@
 ﻿using Microsoft.CodeAnalysis.Sarif;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using Microsoft.Xrm.Sdk;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Windows.Forms;
 
 namespace Rappen.XTB.PAC.Helpers
 {
@@ -43,6 +40,7 @@ namespace Rappen.XTB.PAC.Helpers
     public class PACClientInfo
     {
         public string ServiceUrl = "https://api.advisor.powerapps.com";
+        public string Region;
         public Guid ClientId;
         public Guid TenantId;
         public string ClientSec;
@@ -79,7 +77,8 @@ namespace Rappen.XTB.PAC.Helpers
 
         #region Public Constructors
 
-        public AnalysisStatus() { }
+        public AnalysisStatus()
+        { }
 
         #endregion Public Constructors
 
@@ -116,30 +115,6 @@ namespace Rappen.XTB.PAC.Helpers
         }
     }
 
-    public class Fix
-    {
-        #region Public Fields
-
-        public string Summary;
-
-        #endregion Public Fields
-
-        #region Public Constructors
-
-        public Fix() { }
-
-        #endregion Public Constructors
-
-        #region Public Methods
-
-        public override string ToString()
-        {
-            return Summary;
-        }
-
-        #endregion Public Methods
-    }
-
     public class FlattenedSarifResult
     {
         #region Public Fields
@@ -159,10 +134,10 @@ namespace Rappen.XTB.PAC.Helpers
         #region Public Properties
 
         public string Severity { get; set; }
-        public string RuleDescription => Rule.ToString();
-        public Category Category => Rule.PrimaryCategory;
-        public Component Component => Rule.Component;
-        public string Location => (Module ?? Type ?? FilePath.ToString());
+        public string RuleDescription => Rule?.ToString() ?? "<unknown>";
+        public Category Category => Rule?.PrimaryCategory ?? Category.Unknown;
+        public Component Component => Rule?.Component ?? Component.Unknown;
+        public string Location => (Module ?? Type ?? FilePath?.ToString()) ?? "<unknown>";
 
         #endregion Public Properties
 
@@ -228,7 +203,7 @@ namespace Rappen.XTB.PAC.Helpers
         public Component Component => (Component)ComponentType;
         public string Description;
         public string GuidanceUrl;
-        public Fix HowToFix;
+        public string HowToFix;
         public bool Include;
         public Category PrimaryCategory;
         public Severity Severity;
@@ -238,7 +213,8 @@ namespace Rappen.XTB.PAC.Helpers
 
         #region Public Constructors
 
-        public Rule() { }
+        public Rule()
+        { }
 
         #endregion Public Constructors
 
@@ -263,7 +239,8 @@ namespace Rappen.XTB.PAC.Helpers
 
         #region Public Constructors
 
-        public RuleSet() { }
+        public RuleSet()
+        { }
 
         #endregion Public Constructors
 

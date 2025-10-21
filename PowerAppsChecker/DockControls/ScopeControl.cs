@@ -1,10 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Windows.Forms;
+﻿using Rappen.XTB.Helpers;
 using Rappen.XTB.PAC.Helpers;
-using System.Diagnostics;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
+using System.Windows.Forms;
 using XrmToolBox.Extensibility;
 
 namespace Rappen.XTB.PAC.DockControls
@@ -14,8 +14,7 @@ namespace Rappen.XTB.PAC.DockControls
         #region Private Fields
 
         private readonly PAC pac;
-        private string language;
-        private string serviceUrl;
+        private PACClientInfo clientinfo;
 
         #endregion Private Fields
 
@@ -31,8 +30,7 @@ namespace Rappen.XTB.PAC.DockControls
         public ScopeControl(PAC pac)
         {
             this.pac = pac;
-            serviceUrl = new PACClientInfo().ServiceUrl;
-            language = null;
+            clientinfo = new PACClientInfo();
             InitializeComponent();
             originalSize = Size;
         }
@@ -83,10 +81,10 @@ namespace Rappen.XTB.PAC.DockControls
             var enabled = true;
             pac.WorkAsync(new WorkAsyncInfo()
             {
-                Message = "Loading rulesets",
+                Message = $"Loading rulesets from {clientinfo.Region}{Environment.NewLine}{clientinfo.ServiceUrl}",
                 Work = (worker, args) =>
                 {
-                    args.Result = PACHelper.GetRuleSets(serviceUrl);
+                    args.Result = PACHelper.GetRuleSets(pac, clientinfo.ServiceUrl);
                 },
                 PostWorkCallBack = (args) =>
                 {
@@ -110,12 +108,12 @@ namespace Rappen.XTB.PAC.DockControls
             txtSolutions.Text = string.Join(", ", solutions.Select(s => s.ToString()));
         }
 
-        internal void SetUrlAndLanguage(string url, string language)
+        internal void SetClientInfo(PACClientInfo newclient)
         {
-            serviceUrl = url;
-            var oldlang = this.language;
-            this.language = language;
-            if (language != oldlang)
+            var oldurl = clientinfo.ServiceUrl;
+            var oldlang = clientinfo.Language;
+            clientinfo = newclient;
+            if (clientinfo.ServiceUrl != oldurl || clientinfo.Language != oldlang)
             {
                 LoadRules();
             }
@@ -164,14 +162,14 @@ namespace Rappen.XTB.PAC.DockControls
 
         private void linkExclusions_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Process.Start("https://docs.microsoft.com/en-us/powerapps/developer/common-data-service/checker/webapi/analyze#body");
+            UrlUtils.OpenUrl("https://learn.microsoft.com/power-platform/alm/checker-api/analyze#body");
         }
 
         private void linkRuleId_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             if (lvRules.SelectedItems.Count > 0 && lvRules.SelectedItems[0].Tag is Rule rule)
             {
-                Process.Start(rule.GuidanceUrl.Replace("client=PAChecker", "client=Rappen.XTB.PAC"));
+                UrlUtils.OpenUrl(rule.GuidanceUrl.Replace("client=PAChecker", "client=Rappen.XTB.PAC"));
             }
         }
 
@@ -181,10 +179,10 @@ namespace Rappen.XTB.PAC.DockControls
             var enabled = true;
             pac.WorkAsync(new WorkAsyncInfo()
             {
-                Message = "Loading rules",
+                Message = $"Loading rules from {clientinfo.Region}{Environment.NewLine}{clientinfo.ServiceUrl}",
                 Work = (worker, args) =>
                 {
-                    args.Result = PACHelper.GetRules(serviceUrl, language);
+                    args.Result = PACHelper.GetRules(pac, clientinfo);
                 },
                 PostWorkCallBack = (args) =>
                 {
@@ -214,10 +212,10 @@ namespace Rappen.XTB.PAC.DockControls
             pac.Enable(false);
             pac.WorkAsync(new WorkAsyncInfo()
             {
-                Message = $"Loading rules for {ruleset.Name}",
+                Message = $"Loading rules for {ruleset.Name} from{clientinfo.Region}{Environment.NewLine}{clientinfo.ServiceUrl}",
                 Work = (worker, args) =>
                 {
-                    args.Result = PACHelper.GetRules(serviceUrl, language, ruleset.Id);
+                    args.Result = PACHelper.GetRules(pac, clientinfo, ruleset.Id);
                 },
                 PostWorkCallBack = (args) =>
                 {
@@ -234,7 +232,7 @@ namespace Rappen.XTB.PAC.DockControls
                         }
                         foreach (var rule in rulelist)
                         {
-                            var item = rules.FirstOrDefault(i => i.Tag is Helpers.Rule && ((Helpers.Rule)i.Tag).Code == rule.Code);
+                            var item = rules.FirstOrDefault(i => i.Tag is Rule && ((Rule)i.Tag).Code == rule.Code);
                             if (item != null)
                             {
                                 item.Checked = true;

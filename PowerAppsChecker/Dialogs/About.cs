@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Rappen.XTB.Helpers;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
@@ -28,20 +29,20 @@ namespace Rappen.XTB.PAC.Dialogs
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            pac.ai.WriteEvent("About-OpenHomepage");
-            System.Diagnostics.Process.Start("https://jonasr.app");
+            pac.Log("About-OpenHomepage");
+            UrlUtils.OpenUrl("https://jonasr.app");
         }
 
         private void linkLabel2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            pac.ai.WriteEvent("About-OpenBlog");
-            System.Diagnostics.Process.Start("https://jonasr.app");
+            pac.Log("About-OpenBlog");
+            UrlUtils.OpenUrl("https://jonasr.app");
         }
 
         private void linkLabel4_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            pac.ai.WriteEvent("About-OpenTwitter");
-            System.Diagnostics.Process.Start("https://twitter.com/rappen");
+            pac.Log("About-OpenTwitter");
+            UrlUtils.OpenUrl("https://x.com/rappen");
         }
 
         private void PopulateAssemblies()

@@ -13,7 +13,7 @@ namespace Rappen.XTB.PAC
         public Guid ClientIdForUser { get; set; }
         public Guid ClientIdForSecret { get; set; }
         public string ClientSecret { get; set; }
-        public string Region { get; set; } = "Default";
+        public string Region { get; set; } = "";
         public string ServiceUrl { get; set; }
         public string Language { get; set; } = "Default";
         public string SolutionName { get; set; }

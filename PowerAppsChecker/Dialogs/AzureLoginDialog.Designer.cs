@@ -45,14 +45,14 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.picClient = new System.Windows.Forms.PictureBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.cbLanguage = new System.Windows.Forms.ComboBox();
+            this.label7 = new System.Windows.Forms.Label();
             this.txtRegionUrl = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.picRegion = new System.Windows.Forms.PictureBox();
             this.cbRegion = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
             this.btnCancel = new System.Windows.Forms.Button();
-            this.label7 = new System.Windows.Forms.Label();
-            this.cbLanguage = new System.Windows.Forms.ComboBox();
             this.panClientSecret.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picSecret)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picTenant)).BeginInit();
@@ -153,7 +153,9 @@
             this.picSecret.Size = new System.Drawing.Size(24, 24);
             this.picSecret.TabIndex = 31;
             this.picSecret.TabStop = false;
-            this.picSecret.Click += new System.EventHandler(this.picSecret_Click);
+            this.picSecret.Tag = "https://learn.microsoft.com/entra/identity-platform/howto-create-service-principa" +
+    "l-portal#option-3-create-a-new-client-secret";
+            this.picSecret.Click += new System.EventHandler(this.picOpenLink_Click);
             // 
             // picTenant
             // 
@@ -164,7 +166,8 @@
             this.picTenant.Size = new System.Drawing.Size(24, 24);
             this.picTenant.TabIndex = 29;
             this.picTenant.TabStop = false;
-            this.picTenant.Click += new System.EventHandler(this.picTenant_Click);
+            this.picTenant.Tag = "https://learn.microsoft.com/sharepoint/find-your-office-365-tenant-id";
+            this.picTenant.Click += new System.EventHandler(this.picOpenLink_Click);
             // 
             // label4
             // 
@@ -224,7 +227,9 @@
             this.picClient.Size = new System.Drawing.Size(24, 24);
             this.picClient.TabIndex = 30;
             this.picClient.TabStop = false;
-            this.picClient.Click += new System.EventHandler(this.picClient_Click);
+            this.picClient.Tag = "https://learn.microsoft.com/powershell/powerapps/get-started-powerapps-checker?vi" +
+    "ew=pa-ps-latest#power-apps-checker-authentication-and-authorization";
+            this.picClient.Click += new System.EventHandler(this.picOpenLink_Click);
             // 
             // groupBox2
             // 
@@ -241,6 +246,24 @@
             this.groupBox2.TabIndex = 4;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Power Apps Checker Service";
+            // 
+            // cbLanguage
+            // 
+            this.cbLanguage.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbLanguage.FormattingEnabled = true;
+            this.cbLanguage.Location = new System.Drawing.Point(108, 80);
+            this.cbLanguage.Name = "cbLanguage";
+            this.cbLanguage.Size = new System.Drawing.Size(255, 21);
+            this.cbLanguage.TabIndex = 30;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(25, 83);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(55, 13);
+            this.label7.TabIndex = 29;
+            this.label7.Text = "Language";
             // 
             // txtRegionUrl
             // 
@@ -268,7 +291,9 @@
             this.picRegion.Size = new System.Drawing.Size(24, 24);
             this.picRegion.TabIndex = 28;
             this.picRegion.TabStop = false;
-            this.picRegion.Click += new System.EventHandler(this.picRegion_Click);
+            this.picRegion.Tag = "https://learn.microsoft.com/power-platform/alm/checker-api/overview#determine-a-g" +
+    "eography";
+            this.picRegion.Click += new System.EventHandler(this.picOpenLink_Click);
             // 
             // cbRegion
             // 
@@ -276,10 +301,11 @@
             this.cbRegion.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbRegion.FormattingEnabled = true;
             this.cbRegion.Items.AddRange(new object[] {
-            "Default",
-            "United States First Release",
+            "",
             "United States",
+            "United States First Release",
             "Europe",
+            "Sweden",
             "Asia",
             "Australia",
             "Japan",
@@ -288,6 +314,14 @@
             "South America",
             "United Kingdom",
             "France",
+            "Germany",
+            "United Arab Emirates",
+            "Switzerland",
+            "South Africa",
+            "Korea",
+            "Norway",
+            "Singapore",
+            "China",
             "[Custom]"});
             this.cbRegion.Location = new System.Drawing.Point(108, 26);
             this.cbRegion.Name = "cbRegion";
@@ -314,24 +348,6 @@
             this.btnCancel.TabIndex = 6;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = false;
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(25, 83);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(55, 13);
-            this.label7.TabIndex = 29;
-            this.label7.Text = "Language";
-            // 
-            // cbLanguage
-            // 
-            this.cbLanguage.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbLanguage.FormattingEnabled = true;
-            this.cbLanguage.Location = new System.Drawing.Point(108, 80);
-            this.cbLanguage.Name = "cbLanguage";
-            this.cbLanguage.Size = new System.Drawing.Size(255, 21);
-            this.cbLanguage.TabIndex = 30;
             // 
             // AzureLoginDialog
             // 

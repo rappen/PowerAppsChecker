@@ -1,13 +1,12 @@
 ﻿using Microsoft.CodeAnalysis.Sarif;
+using Rappen.XTB.Helpers;
 using Rappen.XTB.PAC.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Text;
 using System.Windows.Forms;
 using XrmToolBox.Extensibility;
@@ -16,7 +15,6 @@ namespace Rappen.XTB.PAC.DockControls
 {
     public partial class SarifControl : WeifenLuo.WinFormsUI.Docking.DockContent
     {
-
         #region Private Fields
 
         private readonly PAC pac;
@@ -109,7 +107,7 @@ namespace Rappen.XTB.PAC.DockControls
             {
                 if (od.ShowDialog() == DialogResult.OK)
                 {
-                    pac.ai.WriteEvent("OpenSarifFile");
+                    pac.Log("OpenSarifFile");
                     Reset();
                     txtResultFile.Text = od.FileName;
                     var sarif = File.ReadAllText(od.FileName);
@@ -134,7 +132,7 @@ namespace Rappen.XTB.PAC.DockControls
             {
                 if (sd.ShowDialog() == DialogResult.OK)
                 {
-                    pac.ai.WriteEvent("SaveSarifFile");
+                    pac.Log("SaveSarifFile");
                     txtResultFile.Text = sd.FileName;
                     SaveSarifToFile(sd.FileName);
                     MessageBox.Show($"{sd.FileName} saved!", "Save", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -315,7 +313,7 @@ namespace Rappen.XTB.PAC.DockControls
         {
             if (e.Link?.LinkData != null)
             {
-                Process.Start(e.Link.LinkData.ToString());
+                UrlUtils.OpenUrl(e.Link.LinkData.ToString());
             }
         }
 
@@ -428,12 +426,12 @@ namespace Rappen.XTB.PAC.DockControls
             }
             splitter.Panel2.SuspendLayout();
             lblDetailHeader.Text = $"Details - {result.Severity}";
-            txtRule.Text = result.Rule.Code;
+            txtRule.Text = result.Rule?.Code;
             txtCategory.Text = result.Category.ToString();
             txtIssue.Text = Encoding.UTF8.GetString(Encoding.Default.GetBytes(result.Message));
-            txtFix.Text = result.Rule.HowToFix?.Summary;
+            txtFix.Text = result.Rule?.HowToFix;
             txtComponent.Text = result.Component.ToString();
-            txtLocation.Text = result.FilePath.ToString();
+            txtLocation.Text = result.FilePath?.ToString();
             txtLine.Text = result.StartLine > 0 ? result.StartLine.ToString() : string.Empty;
             txtType.Text = result.Type;
             txtModule.Text = result.Module;
